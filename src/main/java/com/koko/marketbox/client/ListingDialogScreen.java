@@ -24,7 +24,7 @@ import java.util.List;
 public class ListingDialogScreen extends Screen {
 
     private static final int W = 320;
-    private static final int H = 282;
+    private static final int H = 268;
     private static final int PAD = 10;
     /** 与服务端 MAX_PRICE_CENTS 保持一致：100 万 */
     private static final double MAX_TOTAL_PRICE = 1_000_000.0;
@@ -85,12 +85,12 @@ public class ListingDialogScreen extends Screen {
                 Component.translatable("gui.marketbox.market.follow_lowest"), b -> followLowest()));
 
         // 时长循环按钮
-        this.expiryButton = new StyledButton(left + PAD + 42, top + 200, 110, 16,
+        this.expiryButton = new StyledButton(left + PAD + 42, top + 190, 110, 16,
                 expiryLabel(), b -> cycleExpiry());
         this.addRenderableWidget(this.expiryButton);
 
         // 每人限购（0 = 不限）
-        this.limitBox = new EditBox(this.font, left + PAD + 42, top + 224, 60, 16, Component.empty());
+        this.limitBox = new EditBox(this.font, left + PAD + 42, top + 214, 60, 16, Component.empty());
         this.limitBox.setMaxLength(4);
         this.limitBox.setFilter(s -> s.isEmpty() || s.chars().allMatch(Character::isDigit));
         this.limitBox.setValue("0");
@@ -303,12 +303,12 @@ public class ListingDialogScreen extends Screen {
 
         // 时长
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.expiry_label"),
-                left + PAD, top + 204, 0xAAAAAA, false);
+                left + PAD, top + 194, 0xAAAAAA, false);
 
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.limit_label_short"),
-                left + PAD, top + 228, 0xAAAAAA, false);
+                left + PAD, top + 218, 0xAAAAAA, false);
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.no_limit_hint"),
-                left + PAD + 108, top + 228, 0x777777, false);
+                left + PAD + 108, top + 218, 0x777777, false);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
