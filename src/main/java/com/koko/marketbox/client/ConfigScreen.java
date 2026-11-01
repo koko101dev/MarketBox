@@ -69,6 +69,9 @@ public class ConfigScreen extends Screen {
     EditBox quick2Box;
     EditBox quick3Box;
     StyledButton saveButton;
+    /** 底栏按钮：渲染时单独处理，不参与内容区的裁剪 */
+    private final java.util.List<net.minecraft.client.gui.components.AbstractWidget> bottomBarWidgets =
+            new java.util.ArrayList<>();
     /** 是否处于按键监听状态（点击按键按钮后，等待下一次按键） */
     boolean listeningForKey = false;
 
@@ -235,17 +238,24 @@ public class ConfigScreen extends Screen {
         int totalBtnWidth = btnWidth * 3 + 8 * 2;
         int startX = leftPos + (guiWidth - totalBtnWidth) / 2;
 
-        this.addRenderableWidget(new StyledButton(startX, btnY, btnWidth, btnHeight,
-                Component.translatable("gui.marketbox.config.reset_defaults"), b -> resetToDefaults()));
+        bottomBarWidgets.clear();
+
+        var resetBtn = new StyledButton(startX, btnY, btnWidth, btnHeight,
+                Component.translatable("gui.marketbox.config.reset_defaults"), b -> resetToDefaults());
+        this.addRenderableWidget(resetBtn);
+        bottomBarWidgets.add(resetBtn);
 
         StyledButton saveBtn = new StyledButton(startX + btnWidth + 8, btnY, btnWidth, btnHeight,
                 Component.translatable("gui.marketbox.config.save"), b -> ConfigScreenState.save(this));
         this.addRenderableWidget(saveBtn);
+        bottomBarWidgets.add(saveBtn);
         saveButton = saveBtn;
         saveButton.active = false;
 
-        this.addRenderableWidget(new StyledButton(startX + (btnWidth + 8) * 2, btnY, btnWidth, btnHeight,
-                Component.translatable("gui.marketbox.config.cancel"), b -> this.onClose()));
+        var cancelBtn = new StyledButton(startX + (btnWidth + 8) * 2, btnY, btnWidth, btnHeight,
+                Component.translatable("gui.marketbox.config.cancel"), b -> this.onClose());
+        this.addRenderableWidget(cancelBtn);
+        bottomBarWidgets.add(cancelBtn);
     }
 
     /** 按键绑定行 */
@@ -436,13 +446,24 @@ public class ConfigScreen extends Screen {
             }
         }
 
+        // 内容区的控件也要裁剪：否则滚动时输入框会盖在底栏上。
+        // 先只渲染非底栏控件，再单独渲染底栏。
+        for (var child : this.children()) {
+            if (child instanceof net.minecraft.client.gui.components.Renderable r
+                    && !bottomBarWidgets.contains(child)) {
+                r.render(guiGraphics, mouseX, mouseY, partialTick);
+            }
+        }
+
         guiGraphics.disableScissor();
 
         // 底部按钮栏：实底 + 顶部分隔线，避免被内容透视
         guiGraphics.fill(leftPos, contentBottom, leftPos + guiWidth, topPos + guiHeight, 0xF0101010);
         guiGraphics.fill(leftPos, contentBottom, leftPos + guiWidth, contentBottom + 1, 0xFF3A3A3A);
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        for (var widget : bottomBarWidgets) {
+            widget.render(guiGraphics, mouseX, mouseY, partialTick);
+        }
 
         if (saveButton != null) {
             saveButton.active = ConfigScreenState.isDirty(this);
