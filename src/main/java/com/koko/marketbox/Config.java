@@ -38,8 +38,7 @@ public final class Config {
         public double interestRate = 0.05;
         /**
          * 结息周期，单位：分钟。
-         * 默认 1440 分钟 = 24 小时（真实时间），配合 0.05% 的利率年化约 18%。
-         * 早期版本用秒（1800 = 30 分钟），复利过猛，已改用分钟并把默认值调到一天。
+         * 默认 1440 分钟 = 24 小时（真实时间），配合 0.05% 的日利率，复利年化约 20%。
          */
         public int interestIntervalMinutes = 1440;
         /** 市场成交手续费百分比（0-100），从卖家实收中扣除 */
@@ -57,7 +56,6 @@ public final class Config {
     public static final class Client {
         public boolean showHud = true;
         public boolean showMarketPriceTooltip = true;
-        /** 是否关闭 1.20.2+ 的菜单背景模糊，保证界面可读性 */
         /**
          * 是否把全局菜单模糊度也设为 0。
          * 默认 false：本模组界面自身已跳过模糊，无需干预其他模组与原版界面。
@@ -97,7 +95,7 @@ public final class Config {
             return parsed == null ? fallback : parsed;
         } catch (Exception e) {
             // 配置损坏不应导致游戏崩溃，回落默认值
-            LOGGER.error("读取配置失败 {}（类型={}）：{}", path, e.getClass().getSimpleName(), e.getMessage());
+            LOGGER.error("读取配置失败 " + path, e);
             return fallback;
         }
     }
@@ -107,7 +105,7 @@ public final class Config {
             Files.createDirectories(path.getParent());
             Files.writeString(path, GSON.toJson(value), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            LOGGER.error("写入配置失败 {}（类型={}）：{}", path, e.getClass().getSimpleName(), e.getMessage());
+            LOGGER.error("写入配置失败 " + path, e);
         }
     }
 
