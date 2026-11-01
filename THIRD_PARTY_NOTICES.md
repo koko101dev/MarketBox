@@ -28,7 +28,7 @@
 ### 联系
 
 如果你是上述资源的作者，对本项目的使用方式有异议，请通过
-[Issues](https://github.com/chen-0917/MarketBox/issues) 联系，我会在确认后立即移除相关资源。
+[Issues](https://github.com/koko101dev/MarketBox/issues) 联系，我会在确认后立即移除相关资源。
 
 ---
 

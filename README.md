@@ -4,7 +4,7 @@
 
 > Minecraft 1.21.1 · Fabric · Java 21
 
-[GitHub](https://github.com/chen-0917/MarketBox) · [问题反馈](https://github.com/chen-0917/MarketBox/issues) · [最新版本](https://github.com/chen-0917/MarketBox/releases)
+[GitHub](https://github.com/koko101dev/MarketBox) · [问题反馈](https://github.com/koko101dev/MarketBox/issues) · [最新版本](https://github.com/koko101dev/MarketBox/releases)
 
 ---
 
@@ -172,7 +172,7 @@
 
 ## 反馈
 
-遇到 Bug 请到 [Issues](https://github.com/chen-0917/MarketBox/issues) 提交，尽量附上：
+遇到 Bug 请到 [Issues](https://github.com/koko101dev/MarketBox/issues) 提交，尽量附上：
 
 - 游戏版本、Fabric Loader 与 Fabric API 版本
 - 完整报错日志（`logs/latest.log`）

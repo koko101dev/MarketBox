@@ -114,7 +114,20 @@ final class MarketScreenRenderer {
         
         // Scissors to clip content
         guiGraphics.enableScissor(startX, startY, startX + viewWidth, startY + viewHeight);
-        
+
+        // 空状态提示，避免整片区域看着像加载失败
+        if (listings.isEmpty()) {
+            var emptyFont = net.minecraft.client.Minecraft.getInstance().font;
+            guiGraphics.drawCenteredString(emptyFont,
+                    Component.translatable("gui.marketbox.market.empty_hint"),
+                    startX + viewWidth / 2, startY + viewHeight / 2 - 12, 0x888888);
+            guiGraphics.drawCenteredString(emptyFont,
+                    Component.translatable("gui.marketbox.market.empty_hint_sub"),
+                    startX + viewWidth / 2, startY + viewHeight / 2 + 4, 0x666666);
+            guiGraphics.disableScissor();
+            return;
+        }
+
         for (int i = 0; i < listings.size(); i++) {
             MarketListing listing = listings.get(i);
             int row = i / cardsPerRow;

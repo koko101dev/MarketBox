@@ -25,7 +25,7 @@ import java.util.List;
 public class ListingDialogScreen extends Screen {
 
     private static final int W = 320;
-    private static final int H = 246;
+    private static final int H = 232;
     private static final int PAD = 10;
 
     private final Screen parent;
@@ -81,7 +81,7 @@ public class ListingDialogScreen extends Screen {
                 Component.translatable("gui.marketbox.market.follow_lowest"), b -> followLowest()));
 
         // 时长循环按钮
-        this.expiryButton = new StyledButton(left + PAD, top + 186, 120, 16,
+        this.expiryButton = new StyledButton(left + PAD + 42, top + 184, 110, 16,
                 expiryLabel(), b -> cycleExpiry());
         this.addRenderableWidget(this.expiryButton);
 
@@ -254,7 +254,7 @@ public class ListingDialogScreen extends Screen {
 
         // 时长
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.expiry_label"),
-                left + PAD + 126, top + 190, 0xAAAAAA, false);
+                left + PAD, top + 188, 0xAAAAAA, false);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }

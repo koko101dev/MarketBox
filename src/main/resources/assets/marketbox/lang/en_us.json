@@ -214,5 +214,8 @@
   "gui.marketbox.market.click_to_list": "Click an item in your inventory to list it",
   "gui.marketbox.market.remain_min": "%s min",
   "gui.marketbox.market.remain_expired": "Expired",
-  "gui.marketbox.market.more_listings": "%s more..."
+  "gui.marketbox.market.more_listings": "%s more...",
+  "gui.marketbox.market.list_item_button": "+ List an Item",
+  "gui.marketbox.market.empty_hint": "No listings yet",
+  "gui.marketbox.market.empty_hint_sub": "Click \"+ List an Item\" on the left to start selling"
 }

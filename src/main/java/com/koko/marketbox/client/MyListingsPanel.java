@@ -45,7 +45,7 @@ final class MyListingsPanel {
     }
 
     private static int listTop(MarketScreen screen) {
-        return screen.topPos + 45 + HEADER_HEIGHT;
+        return screen.topPos + 66 + HEADER_HEIGHT;
     }
 
     static void render(MarketScreen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
@@ -58,7 +58,7 @@ final class MyListingsPanel {
         // 标题
         guiGraphics.drawCenteredString(font,
                 Component.translatable("gui.marketbox.market.my_listings", mine.size()),
-                screen.leftPos + screen.sidebarWidth / 2, screen.topPos + 45, 0xDDDDDD);
+                screen.leftPos + screen.sidebarWidth / 2, screen.topPos + 66, 0xDDDDDD);
 
         if (mine.isEmpty()) {
             guiGraphics.drawCenteredString(font,

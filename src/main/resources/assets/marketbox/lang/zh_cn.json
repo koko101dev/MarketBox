@@ -214,5 +214,8 @@
   "gui.marketbox.market.click_to_list": "点击背包物品即可上架",
   "gui.marketbox.market.remain_min": "%s 分钟",
   "gui.marketbox.market.remain_expired": "已过期",
-  "gui.marketbox.market.more_listings": "还有 %s 条…"
+  "gui.marketbox.market.more_listings": "还有 %s 条…",
+  "gui.marketbox.market.list_item_button": "+ 上架物品",
+  "gui.marketbox.market.empty_hint": "暂时没有挂单",
+  "gui.marketbox.market.empty_hint_sub": "点击左侧「+ 上架物品」开始出售"
 }

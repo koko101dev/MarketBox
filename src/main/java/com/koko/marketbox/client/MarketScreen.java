@@ -36,6 +36,7 @@ public class MarketScreen extends Screen {
     ItemStack selectedItem = ItemStack.EMPTY;
     StyledButton claimButton;
     boolean isSelectingItem = false;
+    StyledButton listItemButton;
     
     // Right side components
     EditBox searchBox;
@@ -85,6 +86,14 @@ public class MarketScreen extends Screen {
         int inputX = leftPos + PADDING;
         int totalWidth = sidebarWidth - PADDING * 2;
         int claimY = topPos + guiHeight - 42;
+
+        // 上架入口：左栏顶部的显式按钮（原先是一个看不见的 40x40 方框）
+        this.listItemButton = new StyledButton(inputX, topPos + 40, totalWidth, 20,
+                Component.translatable("gui.marketbox.market.list_item_button"), b -> {
+            this.isSelectingItem = true;
+            this.rebuildWidgets();
+        });
+        this.addRenderableWidget(this.listItemButton);
 
         // Claim button（固定左栏底部）
         this.claimButton = new StyledButton(inputX, claimY, totalWidth, 20, Component.translatable("gui.marketbox.market.claim_button"), (btn) -> {
@@ -183,8 +192,12 @@ public class MarketScreen extends Screen {
         if (feePercent > 0) {
             String feeHint = Component.translatable("gui.marketbox.market.fee_hint",
                     String.format("%.1f", feePercent)).getString();
-            guiGraphics.drawString(this.font, feeHint,
-                    titleX + this.font.width(this.title) / 2 + 10, topPos + 6, 0x996633, false);
+            int fx = titleX + this.font.width(this.title) / 2 + 10;
+            int fw = this.font.width(feeHint);
+            // 加底框提升可读性，原先的暗棕色几乎看不见
+            guiGraphics.fill(fx - 3, topPos + 3, fx + fw + 3, topPos + 15, 0x66000000);
+            guiGraphics.renderOutline(fx - 3, topPos + 3, fw + 6, 12, 0x66FFAA00);
+            guiGraphics.drawString(this.font, feeHint, fx, topPos + 6, 0xFFCC66, false);
         }
         
         MarketScreenRenderer.renderLeftSection(this, guiGraphics, mouseX, mouseY);
@@ -257,16 +270,6 @@ public class MarketScreen extends Screen {
         // If no widget was clicked, we manually unfocus our input boxes
         this.searchBox.setFocused(false);
 
-        // Check if clicking the item selection box
-        int boxSize = 40;
-        int boxX = leftPos + (sidebarWidth - boxSize) / 2;
-        int boxY = topPos + 45;
-        
-        if (mouseX >= boxX && mouseX <= boxX + boxSize && mouseY >= boxY && mouseY <= boxY + boxSize) {
-            isSelectingItem = !isSelectingItem;
-            return true;
-        }
-        
         // Check if clicking inventory while selecting
         if (isSelectingItem) {
             Player player = Minecraft.getInstance().player;
