@@ -16,8 +16,16 @@ public class MoneyUtils {
      * 定义所有面值及其对应的物品，按从大到小排序
      */
     public static final Map<Double, net.minecraft.world.item.Item> DENOMINATIONS = new java.util.LinkedHashMap<>();
+
+    /**
+     * 物品到面额的反向索引。
+     * 统计背包金额时每格都要判断是不是货币，遍历 DENOMINATIONS 是 8 次比较，
+     * 走这张表只要 1 次查找。该方法每 2 秒对每个在线玩家调用一次。
+     */
+    private static final Map<net.minecraft.world.item.Item, Double> BY_ITEM = new java.util.HashMap<>();
     
     static {
+        // 反向索引在下面统一填充
         DENOMINATIONS.put(100.0, ModItems.MONEY_100);
         DENOMINATIONS.put(50.0, ModItems.MONEY_50);
         DENOMINATIONS.put(20.0, ModItems.MONEY_20);
@@ -26,6 +34,7 @@ public class MoneyUtils {
         DENOMINATIONS.put(1.0, ModItems.MONEY_1);
         DENOMINATIONS.put(0.1, ModItems.MONEY_0_1);
         DENOMINATIONS.put(0.01, ModItems.MONEY_0_01);
+        DENOMINATIONS.forEach((value, item) -> BY_ITEM.put(item, value));
     }
 
     /**
@@ -83,22 +92,18 @@ public class MoneyUtils {
             ItemStack stack = inventory.getItem(i);
             if (stack.isEmpty()) continue;
 
-            for (Map.Entry<Double, net.minecraft.world.item.Item> entry : DENOMINATIONS.entrySet()) {
-                if (stack.is(entry.getValue())) {
-                    total += entry.getKey() * stack.getCount();
-                    break;
-                }
+            Double value = BY_ITEM.get(stack.getItem());
+            if (value != null) {
+                total += value * stack.getCount();
             }
         }
 
         // 副手
         for (var hand : inventory.offhand) {
             if (hand.isEmpty()) continue;
-            for (Map.Entry<Double, net.minecraft.world.item.Item> entry : DENOMINATIONS.entrySet()) {
-                if (hand.is(entry.getValue())) {
-                    total += entry.getKey() * hand.getCount();
-                    break;
-                }
+            Double handValue = BY_ITEM.get(hand.getItem());
+            if (handValue != null) {
+                total += handValue * hand.getCount();
             }
         }
         return total;

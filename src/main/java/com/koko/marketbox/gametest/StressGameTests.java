@@ -66,6 +66,38 @@ public class StressGameTests implements FabricGameTest {
         helper.succeed();
     }
 
+    /**
+     * 货币识别与反查表一致性。
+     * 背包金额统计改成查表后，必须保证每种面额都能被识别，
+     * 否则玩家的现金会凭空少算。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 200)
+    public void everyDenominationIsRecognized(GameTestHelper helper) {
+        var denominations = com.koko.marketbox.util.MoneyUtils.DENOMINATIONS;
+        if (denominations.isEmpty()) {
+            helper.fail("面额表为空");
+            return;
+        }
+
+        int checked = 0;
+        for (var entry : denominations.entrySet()) {
+            ItemStack stack = new ItemStack(entry.getValue(), 3);
+            if (!com.koko.marketbox.util.MoneyUtils.isCurrency(stack)) {
+                helper.fail("面额 " + entry.getKey() + " 未被识别为货币");
+                return;
+            }
+            checked++;
+        }
+
+        // 非货币物品必须被判为不可卖
+        if (com.koko.marketbox.util.MoneyUtils.isCurrency(new ItemStack(Items.STONE))) {
+            helper.fail("石头被误判为货币");
+            return;
+        }
+        System.out.println("[Stress] 面额识别检查通过，共 " + checked + " 种");
+        helper.succeed();
+    }
+
     /** 一千个玩家的余额数据存读耗时：决定服务器保存时的卡顿程度 */
     @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 1200)
     public void saveAndLoadThousandPlayers(GameTestHelper helper) {
