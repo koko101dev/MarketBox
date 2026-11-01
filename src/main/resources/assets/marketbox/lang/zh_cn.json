@@ -9,7 +9,7 @@
   "gui.marketbox.interest_rate": "当前利率",
   "gui.marketbox.total_interest": "已产生总利息",
   "gui.marketbox.predicted_interest": "预计下次收益",
-  "gui.marketbox.next_interest": "利息倒计时",
+  "gui.marketbox.next_interest": "下次结息倒计时",
   "gui.marketbox.button.feature1": "存入",
   "gui.marketbox.button.feature2": "取出",
   "gui.marketbox.market.title": "市场",

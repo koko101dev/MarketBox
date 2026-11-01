@@ -42,7 +42,7 @@
   "gui.marketbox.interest_rate": "Current Interest Rate",
   "gui.marketbox.total_interest": "Total Interest Generated",
   "gui.marketbox.predicted_interest": "Predicted Next Interest",
-  "gui.marketbox.next_interest": "Interest Countdown",
+  "gui.marketbox.next_interest": "Next payout in",
   "gui.marketbox.button.feature1": "Deposit",
   "gui.marketbox.button.feature2": "Withdraw",
   "gui.marketbox.market.title": "Market",
