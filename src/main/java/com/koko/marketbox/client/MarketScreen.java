@@ -89,12 +89,18 @@ public class MarketScreen extends Screen {
         int claimY = topPos + guiHeight - 146;
 
         // 上架入口：左栏顶部的显式按钮（原先是一个看不见的 40x40 方框）
-        this.listItemButton = new StyledButton(inputX, topPos + 40, totalWidth, 20,
+        int halfWidth = (totalWidth - 4) / 2;
+        this.listItemButton = new StyledButton(inputX, topPos + 40, halfWidth, 20,
                 Component.translatable("gui.marketbox.market.list_item_button"), b -> {
             this.isSelectingItem = true;
             this.rebuildWidgets();
         });
         this.addRenderableWidget(this.listItemButton);
+
+        // 批量上架：列出背包可卖物品，逐个打开上架窗口，省去反复开关背包
+        this.addRenderableWidget(new StyledButton(inputX + halfWidth + 4, topPos + 40, halfWidth, 20,
+                Component.translatable("gui.marketbox.market.bulk_button"),
+                b -> Minecraft.getInstance().setScreen(new BulkListScreen(this))));
 
         // Claim button（固定左栏底部）
         this.claimButton = new StyledButton(inputX, claimY, totalWidth, 20, Component.translatable("gui.marketbox.market.claim_button"), (btn) -> {

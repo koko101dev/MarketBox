@@ -294,5 +294,10 @@
   "gui.marketbox.stats.cat.transfer_out": "转账",
   "gui.marketbox.stats.cat.admin": "管理",
   "gui.marketbox.stats.cat.treasury": "金库",
-  "gui.marketbox.stats.cat.other": "其他"
+  "gui.marketbox.stats.cat.other": "其他",
+  "gui.marketbox.market.bulk_button": "批量",
+  "gui.marketbox.market.bulk_title": "批量上架",
+  "gui.marketbox.market.bulk_hint": "点击物品打开上架窗口，完成后可继续下一件",
+  "gui.marketbox.market.bulk_empty": "背包里没有可卖的物品",
+  "gui.marketbox.market.bulk_click": "点击上架"
 }

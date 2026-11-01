@@ -294,5 +294,10 @@
   "gui.marketbox.stats.cat.transfer_out": "sent",
   "gui.marketbox.stats.cat.admin": "admin",
   "gui.marketbox.stats.cat.treasury": "treasury",
-  "gui.marketbox.stats.cat.other": "other"
+  "gui.marketbox.stats.cat.other": "other",
+  "gui.marketbox.market.bulk_button": "Bulk",
+  "gui.marketbox.market.bulk_title": "Bulk listing",
+  "gui.marketbox.market.bulk_hint": "Click an item to list it, then continue with the next",
+  "gui.marketbox.market.bulk_empty": "Nothing sellable in your inventory",
+  "gui.marketbox.market.bulk_click": "Click to list"
 }
