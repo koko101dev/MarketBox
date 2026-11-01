@@ -1,0 +1,64 @@
+package com.koko.marketbox.client;
+
+import com.koko.marketbox.networking.packet.ActionFeedbackPacket;
+import com.koko.marketbox.networking.packet.SyncLeaderboardPacket;
+import com.koko.marketbox.networking.packet.MarketListingAddedPacket;
+import com.koko.marketbox.networking.packet.MarketListingRemovedPacket;
+import com.koko.marketbox.networking.packet.SyncMarketListingsPacket;
+import com.koko.marketbox.networking.packet.SyncPlayerBalancePacket;
+import com.koko.marketbox.networking.packet.SyncPricesPacket;
+import com.koko.marketbox.util.PriceManager;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.network.chat.Component;
+
+/**
+ * 下行包（服务端 -> 客户端）处理。
+ * 全部切回客户端主线程执行，避免在 netty 线程操作界面状态。
+ */
+public final class ClientPacketHandlers {
+    private ClientPacketHandlers() {
+    }
+
+    public static void register() {
+        ClientPlayNetworking.registerGlobalReceiver(SyncPlayerBalancePacket.ID, (payload, context) ->
+                context.client().execute(() -> {
+                    ClientData.setPlayerBalance(payload.balance());
+                    ClientData.setInterestData(payload.totalInterest(), payload.lastInterestTime(),
+                            payload.interestRate(), payload.intervalSeconds());
+                    ClientData.setIncomeExpenseData(payload.totalIncome(), payload.totalExpense());
+                    ClientData.setPendingPayment(payload.pendingPayment());
+                    ClientData.setReturnedItems(payload.returnedItems());
+                    ClientData.setTransactions(payload.transactions());
+                }));
+
+        ClientPlayNetworking.registerGlobalReceiver(SyncLeaderboardPacket.ID, (payload, context) ->
+                context.client().execute(() -> ClientData.setLeaderboard(payload.entries())));
+
+        ClientPlayNetworking.registerGlobalReceiver(SyncMarketListingsPacket.ID, (payload, context) ->
+                context.client().execute(() ->
+                        ClientData.acceptListingChunk(payload.page(), payload.totalPages(), payload.listings())));
+
+        ClientPlayNetworking.registerGlobalReceiver(MarketListingAddedPacket.ID, (payload, context) ->
+                context.client().execute(() -> ClientData.addMarketListing(payload.listing())));
+
+        ClientPlayNetworking.registerGlobalReceiver(MarketListingRemovedPacket.ID, (payload, context) ->
+                context.client().execute(() -> ClientData.removeMarketListing(payload.listingId())));
+
+        ClientPlayNetworking.registerGlobalReceiver(SyncPricesPacket.ID, (payload, context) ->
+                context.client().execute(() -> PriceManager.updatePrices(payload.prices())));
+
+        ClientPlayNetworking.registerGlobalReceiver(ActionFeedbackPacket.ID, (payload, context) ->
+                context.client().execute(() -> {
+                    Component message = payload.arg().isEmpty()
+                            ? Component.translatable(payload.messageKey())
+                            : Component.translatable(payload.messageKey(), payload.arg());
+                    if (context.client().screen instanceof MarketBoxScreen screen) {
+                        screen.showFeedback(message, payload.error());
+                    } else if (context.client().screen instanceof MarketScreen screen) {
+                        screen.showFeedback(message, payload.error());
+                    } else if (context.client().screen instanceof TransferScreen screen) {
+                        screen.showFeedback(message, payload.error());
+                    }
+                }));
+    }
+}

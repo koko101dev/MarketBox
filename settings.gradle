@@ -1,0 +1,13 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+// 显式固定 Gradle 项目名，避免默认取目录名导致项目名随文件夹改名而漂移
+rootProject.name = 'MarketBox'

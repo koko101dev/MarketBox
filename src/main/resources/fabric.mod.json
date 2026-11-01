@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "MarketBox",
+  "description": "A server-side economy mod: earn interest on deposits, trade items on a live marketplace, and track your wealth with statistics and leaderboards.",
+  "authors": [
+    "koko101"
+  ],
+  "contact": {
+    "homepage": "https://github.com/chen-0917/MarketBox",
+    "sources": "https://github.com/chen-0917/MarketBox",
+    "issues": "https://github.com/chen-0917/MarketBox/issues"
+  },
+  "license": "MIT",
+  "icon": "logo.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.koko.marketbox.MarketBox"
+    ],
+    "client": [
+      "com.koko.marketbox.client.MarketBoxClient"
+    ],
+    "modmenu": [
+      "com.koko.marketbox.client.ModMenuIntegration"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "~1.21.1",
+    "java": ">=21"
+  },
+  "suggests": {
+    "modmenu": ">=11.0.0"
+  }
+}

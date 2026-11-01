@@ -1,0 +1,176 @@
+package com.koko.marketbox;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import net.fabricmc.loader.api.FabricLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+/**
+ * 配置系统：Fabric 无内置配置 API，改用 JSON 文件持久化。
+ * 分为服务端权威的 common 配置与客户端本地的 client 配置。
+ */
+public final class Config {
+    private static final Logger LOGGER = LoggerFactory.getLogger("MarketBox/Config");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    private static final Path COMMON_PATH = FabricLoader.getInstance().getConfigDir().resolve("marketbox-common.json");
+    private static final Path CLIENT_PATH = FabricLoader.getInstance().getConfigDir().resolve("marketbox-client.json");
+
+    /** HUD 显示位置 */
+    public enum HudPosition {
+        TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
+    }
+
+    /** HUD 文字样式 */
+    public enum HudTextStyle {
+        NONE, SHADOW, BACKGROUND
+    }
+
+    /** 服务端权威配置（利息相关） */
+    public static final class Common {
+        public double interestRate = 0.19;
+        public int interestIntervalSeconds = 1800;
+    }
+
+    /** 客户端本地配置（HUD 相关） */
+    public static final class Client {
+        public boolean showHud = true;
+        public boolean showMarketPriceTooltip = true;
+        /** 是否关闭 1.20.2+ 的菜单背景模糊，保证界面可读性 */
+        public boolean disableMenuBlur = true;
+        /** 银行页快捷金额按钮的前三个档位（第四个固定为「全部」） */
+        public double quickAmount1 = 100;
+        public double quickAmount2 = 1000;
+        public double quickAmount3 = 10000;
+        public HudPosition hudPosition = HudPosition.TOP_LEFT;
+        public HudTextStyle hudTextStyle = HudTextStyle.NONE;
+        public double hudScale = 1.0;
+        public int hudXOffset = 0;
+        public int hudYOffset = 0;
+    }
+
+    private static Common common = new Common();
+    private static Client client = new Client();
+
+    private Config() {
+    }
+
+    /** 加载全部配置，失败时回落默认值并记录日志 */
+    public static void load() {
+        common = read(COMMON_PATH, Common.class, new Common());
+        client = read(CLIENT_PATH, Client.class, new Client());
+        LOGGER.info("配置加载完成：利率={}%，周期={}秒", common.interestRate, common.interestIntervalSeconds);
+    }
+
+    private static <T> T read(Path path, Class<T> type, T fallback) {
+        try {
+            if (!Files.exists(path)) {
+                write(path, fallback);
+                return fallback;
+            }
+            T parsed = GSON.fromJson(Files.readString(path, StandardCharsets.UTF_8), type);
+            return parsed == null ? fallback : parsed;
+        } catch (Exception e) {
+            // 配置损坏不应导致游戏崩溃，回落默认值
+            LOGGER.error("读取配置失败 {}（类型={}）：{}", path, e.getClass().getSimpleName(), e.getMessage());
+            return fallback;
+        }
+    }
+
+    private static void write(Path path, Object value) {
+        try {
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, GSON.toJson(value), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("写入配置失败 {}（类型={}）：{}", path, e.getClass().getSimpleName(), e.getMessage());
+        }
+    }
+
+    // ---- 服务端配置 ----
+
+    public static double getInterestRate() {
+        return common.interestRate;
+    }
+
+    public static int getInterestIntervalSeconds() {
+        return common.interestIntervalSeconds;
+    }
+
+    /** 更新利息参数并立即持久化，供命令与配置包调用 */
+    public static void setInterestSettings(double rate, int intervalSeconds) {
+        common.interestRate = rate;
+        common.interestIntervalSeconds = intervalSeconds;
+        write(COMMON_PATH, common);
+    }
+
+    // ---- 客户端配置 ----
+
+    public static boolean isShowHud() {
+        return client.showHud;
+    }
+
+    public static boolean isShowMarketPriceTooltip() {
+        return client.showMarketPriceTooltip;
+    }
+
+    public static double getQuickAmount(int index) {
+        return switch (index) {
+            case 1 -> client.quickAmount1;
+            case 2 -> client.quickAmount2;
+            default -> client.quickAmount3;
+        };
+    }
+
+    /** 保存快捷金额三档（小于等于 0 的值会被忽略，保留原值） */
+    public static void saveQuickAmounts(double a, double b, double c) {
+        if (a > 0) client.quickAmount1 = a;
+        if (b > 0) client.quickAmount2 = b;
+        if (c > 0) client.quickAmount3 = c;
+        write(CLIENT_PATH, client);
+    }
+
+    public static boolean isDisableMenuBlur() {
+        return client.disableMenuBlur;
+    }
+
+    public static HudPosition getHudPosition() {
+        return client.hudPosition;
+    }
+
+    public static HudTextStyle getHudTextStyle() {
+        return client.hudTextStyle;
+    }
+
+    public static double getHudScale() {
+        return client.hudScale;
+    }
+
+    public static int getHudXOffset() {
+        return client.hudXOffset;
+    }
+
+    public static int getHudYOffset() {
+        return client.hudYOffset;
+    }
+
+    /** 保存客户端 HUD 设置 */
+    public static void saveClient(boolean showHud, boolean showTooltip, boolean disableMenuBlur,
+                                  HudPosition position, HudTextStyle style, double scale,
+                                  int xOffset, int yOffset) {
+        client.disableMenuBlur = disableMenuBlur;
+        client.showHud = showHud;
+        client.showMarketPriceTooltip = showTooltip;
+        client.hudPosition = position;
+        client.hudTextStyle = style;
+        client.hudScale = scale;
+        client.hudXOffset = xOffset;
+        client.hudYOffset = yOffset;
+        write(CLIENT_PATH, client);
+    }
+}

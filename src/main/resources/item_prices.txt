@@ -1,0 +1,2304 @@
+# Minecraft 1.20.1 物品物价清单 (完整重制版)
+# 格式: itemID 价格 // 物品名称
+# 价格参考逻辑: 
+# - 基础方块: 1.00 - 10.00
+# - 稀有资源: 100.00 - 5000.00
+# - 极稀有/战利品: 10000.00+
+# - 现实逻辑: 宝石 > 金属 > 木材 > 土石
+
+# === [建筑方块] (BUILDING_BLOCKS) ===
+# 木材系列 (原木10.00, 木板2.50, 台阶1.25, 楼梯3.75)
+# 橡木
+minecraft:oak_log 10.00 // 橡木原木
+minecraft:oak_planks 2.50 // 橡木木板
+minecraft:oak_stairs 3.75 // 橡木楼梯
+minecraft:oak_slab 1.25 // 橡木台阶
+minecraft:oak_fence 2.50 // 橡木栅栏
+minecraft:oak_fence_gate 5.00 // 橡木栅栏门
+minecraft:oak_door 5.00 // 橡木门
+minecraft:spruce_door 5.00 // 云杉木门
+minecraft:birch_door 5.00 // 白桦木门
+minecraft:jungle_door 5.00 // 丛林木门
+minecraft:acacia_door 5.00 // 金合欢木门
+minecraft:dark_oak_door 5.00 // 深色橡木门
+minecraft:mangrove_door 6.00 // 红树木门
+minecraft:cherry_door 7.00 // 樱花木门
+minecraft:bamboo_door 5.00 // 竹门
+minecraft:crimson_door 8.00 // 绯红木门
+minecraft:warped_door 8.00 // 诡异木门
+minecraft:iron_door 50.00 // 铁门
+
+# === [活板门补充] (TRAPDOORS_SUPPLEMENT) ===
+minecraft:oak_trapdoor 5.00 // 橡木活板门
+minecraft:spruce_trapdoor 5.00 // 云杉木活板门
+minecraft:birch_trapdoor 5.00 // 白桦木活板门
+minecraft:jungle_trapdoor 5.00 // 丛林木活板门
+minecraft:acacia_trapdoor 5.00 // 金合欢木活板门
+minecraft:dark_oak_trapdoor 5.00 // 深色橡木活板门
+minecraft:mangrove_trapdoor 6.00 // 红树木活板门
+minecraft:cherry_trapdoor 7.00 // 樱花木活板门
+minecraft:bamboo_trapdoor 5.00 // 竹活板门
+minecraft:crimson_trapdoor 8.00 // 绯红木活板门
+minecraft:warped_trapdoor 8.00 // 诡异木活板门
+minecraft:iron_trapdoor 40.00 // 铁活板门
+
+# === [告示牌补充] (SIGNS_SUPPLEMENT) ===
+minecraft:oak_sign 5.00 // 橡木告示牌
+minecraft:spruce_sign 5.00 // 云杉木告示牌
+minecraft:birch_sign 5.00 // 白桦木告示牌
+minecraft:jungle_sign 5.00 // 丛林木告示牌
+minecraft:acacia_sign 5.00 // 金合欢木告示牌
+minecraft:dark_oak_sign 5.00 // 深色橡木告示牌
+minecraft:mangrove_sign 6.00 // 红树木告示牌
+minecraft:cherry_sign 7.00 // 樱花木告示牌
+minecraft:bamboo_sign 5.00 // 竹告示牌
+minecraft:crimson_sign 8.00 // 绯红木告示牌
+minecraft:warped_sign 8.00 // 诡异木告示牌
+
+# === [悬挂式告示牌补充] (HANGING_SIGNS_SUPPLEMENT) ===
+minecraft:oak_hanging_sign 10.00 // 悬挂式橡木告示牌
+minecraft:spruce_hanging_sign 10.00 // 悬挂式云杉木告示牌
+minecraft:birch_hanging_sign 10.00 // 悬挂式白桦木告示牌
+minecraft:jungle_hanging_sign 10.00 // 悬挂式丛林木告示牌
+minecraft:acacia_hanging_sign 10.00 // 悬挂式金合欢木告示牌
+minecraft:dark_oak_hanging_sign 10.00 // 悬挂式深色橡木告示牌
+minecraft:mangrove_hanging_sign 12.00 // 悬挂式红树木告示牌
+minecraft:cherry_hanging_sign 14.00 // 悬挂式樱花木告示牌
+minecraft:bamboo_hanging_sign 10.00 // 悬挂式竹告示牌
+minecraft:crimson_hanging_sign 15.00 // 悬挂式绯红木告示牌
+minecraft:warped_hanging_sign 15.00 // 悬挂式诡异木告示牌
+
+# === [按钮补充] (BUTTONS_SUPPLEMENT) ===
+minecraft:oak_button 1.00 // 橡木按钮
+minecraft:spruce_button 1.00 // 云杉木按钮
+minecraft:birch_button 1.00 // 白桦木按钮
+minecraft:jungle_button 1.00 // 丛林木按钮
+minecraft:acacia_button 1.00 // 金合欢木按钮
+minecraft:dark_oak_button 1.00 // 深色橡木按钮
+minecraft:mangrove_button 1.00 // 红树木按钮
+minecraft:cherry_button 1.00 // 樱花木按钮
+minecraft:bamboo_button 1.00 // 竹按钮
+minecraft:crimson_button 2.00 // 绯红木按钮
+minecraft:warped_button 2.00 // 诡异木按钮
+minecraft:stone_button 2.00 // 石头按钮
+minecraft:polished_blackstone_button 3.00 // 磨制黑石按钮
+
+# === [铁砧补充] (ANVILS_SUPPLEMENT) ===
+minecraft:anvil 150.00 // 铁砧
+minecraft:chipped_anvil 100.00 // 微损的铁砧
+minecraft:damaged_anvil 50.00 // 损坏的铁砧
+minecraft:oak_trapdoor 7.50 // 橡木活板门
+minecraft:oak_sign 5.00 // 橡木告示牌
+minecraft:oak_hanging_sign 10.00 // 橡木悬挂式告示牌
+minecraft:stripped_oak_log 11.00 // 去皮橡木原木
+minecraft:oak_wood 13.35 // 橡木
+
+# 云杉
+minecraft:spruce_log 10.00 // 云杉原木
+minecraft:spruce_planks 2.50 // 云杉木板
+minecraft:spruce_stairs 3.75 // 云杉楼梯
+minecraft:spruce_slab 1.25 // 云杉台阶
+minecraft:spruce_fence 2.50 // 云杉栅栏
+minecraft:spruce_fence_gate 5.00 // 云杉栅栏门
+minecraft:spruce_door 5.00 // 云杉门
+minecraft:spruce_trapdoor 7.50 // 云杉活板门
+minecraft:spruce_sign 5.00 // 云杉告示牌
+minecraft:spruce_hanging_sign 10.00 // 云杉悬挂式告示牌
+
+# 白桦
+minecraft:birch_log 10.00 // 白桦原木
+minecraft:birch_planks 2.50 // 白桦木板
+minecraft:birch_stairs 3.75 // 白桦楼梯
+minecraft:birch_slab 1.25 // 白桦台阶
+
+# 丛林
+minecraft:jungle_log 10.00 // 丛林原木
+minecraft:jungle_planks 2.50 // 丛林木板
+minecraft:jungle_stairs 3.75 // 丛林楼梯
+minecraft:jungle_slab 1.25 // 丛林台阶
+
+# 金合欢
+minecraft:acacia_log 10.00 // 金合欢原木
+minecraft:acacia_planks 2.50 // 金合欢木板
+minecraft:acacia_stairs 3.75 // 金合欢楼梯
+minecraft:acacia_slab 1.25 // 金合欢台阶
+
+# 深色橡木
+minecraft:dark_oak_log 10.00 // 深色橡木原木
+minecraft:dark_oak_planks 2.50 // 深色橡木木板
+minecraft:dark_oak_stairs 3.75 // 深色橡木楼梯
+minecraft:dark_oak_slab 1.25 // 深色橡木台阶
+
+# 红树林 (1.19+)
+minecraft:mangrove_log 11.00 // 红树原木
+minecraft:mangrove_planks 2.80 // 红树木板
+minecraft:mangrove_stairs 4.20 // 红树楼梯
+minecraft:mangrove_slab 1.40 // 红树台阶
+minecraft:mangrove_roots 3.00 // 红树根
+minecraft:muddy_mangrove_roots 3.50 // 沾泥红树根
+
+# 樱花 (1.20)
+minecraft:cherry_log 12.00 // 樱花原木
+minecraft:cherry_planks 3.00 // 樱花木板
+minecraft:cherry_stairs 4.50 // 樱花楼梯
+minecraft:cherry_slab 1.50 // 樱花台阶
+minecraft:cherry_sign 6.00 // 樱花告示牌
+minecraft:cherry_hanging_sign 12.00 // 樱花悬挂式告示牌
+
+# 竹子 (1.20)
+minecraft:bamboo_block 10.00 // 竹块
+minecraft:bamboo_planks 2.50 // 竹板
+minecraft:bamboo_stairs 3.75 // 竹楼梯
+minecraft:bamboo_slab 1.25 // 竹台阶
+minecraft:bamboo_mosaic 3.50 // 竹马赛克
+minecraft:bamboo_mosaic_stairs 5.25 // 竹马赛克楼梯
+minecraft:bamboo_mosaic_slab 1.75 // 竹马赛克台阶
+minecraft:bamboo_sign 5.00 // 竹告示牌
+minecraft:bamboo_hanging_sign 10.00 // 竹悬挂式告示牌
+
+# 下界木材 (绯红/诡异)
+minecraft:crimson_stem 15.00 // 绯红菌柄
+minecraft:crimson_planks 3.75 // 绯红木板
+minecraft:crimson_stairs 5.60 // 绯红楼梯
+minecraft:crimson_slab 1.85 // 绯红台阶
+minecraft:warped_stem 15.00 // 诡异菌柄
+minecraft:warped_planks 3.75 // 诡异木板
+minecraft:warped_stairs 5.60 // 诡异楼梯
+minecraft:crimson_nylium 20.00 // 绯红菌岩
+minecraft:warped_nylium 20.00 // 诡异菌岩
+minecraft:crimson_fungus 10.00 // 绯红菌
+minecraft:warped_fungus 10.00 // 诡异菌
+minecraft:crimson_roots 5.00 // 绯红菌索
+minecraft:warped_roots 5.00 // 诡异菌索
+minecraft:nether_sprouts 5.00 // 下界苗
+minecraft:weeping_vines 8.00 // 垂泪藤
+minecraft:twisting_vines 8.00 // 缠怨藤
+minecraft:shroomlight 35.00 // 菌光体
+minecraft:nether_wart_block 25.00 // 下界疣块
+minecraft:warped_wart_block 25.00 // 诡异疣块
+minecraft:soul_fire 50.00 // 灵魂火
+minecraft:soul_torch 10.00 // 灵魂火把
+minecraft:soul_lantern 30.00 // 灵魂灯笼
+minecraft:soul_campfire 50.00 // 灵魂营火
+minecraft:soul_sand 10.00 // 灵魂沙
+minecraft:soul_soil 12.00 // 灵魂土
+minecraft:basalt 5.00 // 玄武岩
+minecraft:polished_basalt 8.00 // 磨制玄武岩
+minecraft:smooth_basalt 10.00 // 平滑玄武岩
+minecraft:blackstone 7.00 // 黑石
+minecraft:polished_blackstone 10.00 // 磨制黑石
+minecraft:polished_blackstone_bricks 15.00 // 磨制黑石砖
+minecraft:gilded_blackstone 200.00 // 镶金黑石
+minecraft:chiseled_polished_blackstone 20.00 // 雕纹磨制黑石
+minecraft:cracked_polished_blackstone_bricks 12.00 // 裂纹磨制黑石砖
+minecraft:crying_obsidian 500.00 // 哭泣的黑曜石
+minecraft:lodestone 2500.00 // 磁石
+minecraft:respawn_anchor 8000.00 // 重生锚
+
+# === [下界合金系列] (NETHERITE_SERIES) ===
+minecraft:ancient_debris 1500.00 // 远古残骸
+minecraft:netherite_scrap 1500.00 // 下界合金碎片
+minecraft:netherite_ingot 6500.00 // 下界合金锭
+minecraft:netherite_block 58500.00 // 下界合金块
+minecraft:netherite_sword 8500.00 // 下界合金剑
+minecraft:netherite_pickaxe 8500.00 // 下界合金镐
+minecraft:netherite_axe 8500.00 // 下界合金斧
+minecraft:netherite_shovel 8500.00 // 下界合金锹
+minecraft:netherite_hoe 8500.00 // 下界合金锄
+minecraft:netherite_helmet 10000.00 // 下界合金头盔
+minecraft:netherite_chestplate 15000.00 // 下界合金胸甲
+minecraft:netherite_leggings 13000.00 // 下界合金护腿
+minecraft:netherite_boots 9000.00 // 下界合金靴子
+minecraft:netherite_upgrade_smithing_template 20000.00 // 下界合金升级模版
+
+# === [1.21 试炼系列] (TRIAL_CHAMBER_1_21) ===
+minecraft:mace 150000.00 // 重锤
+minecraft:heavy_core 120000.00 // 沉重核心
+minecraft:breeze_rod 1500.00 // 微风杆
+minecraft:wind_charge 500.00 // 风弹
+minecraft:crafter 2500.00 // 合成器
+minecraft:trial_key 2000.00 // 试炼钥匙
+minecraft:ominous_trial_key 8000.00 // 不祥试炼钥匙
+minecraft:trial_spawner 50000.00 // 试炼刷怪笼
+minecraft:vault 100000.00 // 宝库
+minecraft:ominous_bottle 1500.00 // 不祥之瓶
+minecraft:bogged_spawn_egg 1000.00 // 沼骸刷怪蛋
+minecraft:breeze_spawn_egg 2500.00 // 微风人刷怪蛋
+
+# === [1.21 铜与凝灰岩装饰] (COPPER_TUFF_1_21) ===
+minecraft:chiseled_copper 80.00 // 雕纹铜块
+minecraft:copper_grate 60.00 // 铜格栅
+minecraft:copper_bulb 150.00 // 铜灯
+minecraft:tuff_stairs 4.50 // 凝灰岩楼梯
+minecraft:tuff_slab 1.50 // 凝灰岩台阶
+minecraft:tuff_wall 3.30 // 凝灰岩墙
+minecraft:chiseled_tuff 10.00 // 雕纹凝灰岩
+minecraft:polished_tuff 12.00 // 磨制凝灰岩
+minecraft:tuff_bricks 15.00 // 凝灰岩砖
+minecraft:chiseled_tuff_bricks 20.00 // 雕纹凝灰岩砖
+
+# === [1.21.2 苍白花园与树脂] (PALE_GARDEN_1_21_2) ===
+minecraft:pale_oak_log 15.00 // 苍白橡木原木
+minecraft:pale_oak_wood 18.00 // 苍白橡木
+minecraft:stripped_pale_oak_log 16.00 // 去皮苍白橡木原木
+minecraft:stripped_pale_oak_wood 20.00 // 去皮苍白橡木
+minecraft:pale_oak_planks 4.00 // 苍白橡木板
+minecraft:pale_oak_stairs 6.00 // 苍白橡木楼梯
+minecraft:pale_oak_slab 2.00 // 苍白橡木台阶
+minecraft:pale_oak_fence 5.00 // 苍白橡木栅栏
+minecraft:pale_oak_fence_gate 10.00 // 苍白橡木栅栏门
+minecraft:pale_oak_door 10.00 // 苍白橡木门
+minecraft:pale_oak_trapdoor 10.00 // 苍白橡木活板门
+minecraft:pale_oak_pressure_plate 5.00 // 苍白橡木压力板
+minecraft:pale_oak_button 2.00 // 苍白橡木按钮
+minecraft:pale_oak_sapling 50.00 // 苍白橡木树苗
+minecraft:pale_oak_leaves 5.00 // 苍白橡木树叶
+minecraft:pale_moss_block 30.00 // 苍白苔藓块
+minecraft:pale_moss_carpet 10.00 // 苍白苔藓地毯
+minecraft:pale_hanging_moss 15.00 // 苍白垂苔
+minecraft:creaking_heart 5000.00 // 哐啷者之心
+minecraft:creaking_spawn_egg 2500.00 // 哐啷者刷怪蛋
+minecraft:resin_clump 100.00 // 树脂团
+minecraft:resin_brick 150.00 // 树脂砖
+minecraft:resin_bricks 1500.00 // 树脂砖块
+minecraft:resin_brick_stairs 2250.00 // 树脂砖楼梯
+minecraft:resin_brick_slab 750.00 // 树脂砖台阶
+minecraft:resin_brick_wall 1650.00 // 树脂砖墙
+minecraft:chiseled_resin_bricks 2000.00 // 錾制树脂砖
+minecraft:closed_eyeblossom 200.00 // 闭合的眼眸花
+minecraft:open_eyeblossom 500.00 // 张开的眼眸花
+
+# === [1.21 更多变体] (MORE_1_21_VARIANTS) ===
+minecraft:white_bundle 600.00 // 白色收纳袋
+minecraft:orange_bundle 600.00 // 橙色收纳袋
+minecraft:magenta_bundle 600.00 // 品红色收纳袋
+minecraft:light_blue_bundle 600.00 // 淡蓝色收纳袋
+minecraft:yellow_bundle 600.00 // 黄色收纳袋
+minecraft:lime_bundle 600.00 // 黄绿色收纳袋
+minecraft:pink_bundle 600.00 // 粉红色收纳袋
+minecraft:gray_bundle 600.00 // 灰色收纳袋
+minecraft:light_gray_bundle 600.00 // 淡灰色收纳袋
+minecraft:cyan_bundle 600.00 // 青色收纳袋
+minecraft:purple_bundle 600.00 // 紫色收纳袋
+minecraft:blue_bundle 600.00 // 蓝色收纳袋
+minecraft:brown_bundle 600.00 // 棕色收纳袋
+minecraft:green_bundle 600.00 // 绿色收纳袋
+minecraft:red_bundle 600.00 // 红色收纳袋
+minecraft:black_bundle 600.00 // 黑色收纳袋
+minecraft:flow_banner_pattern 1500.00 // 旋流旗帜图案
+minecraft:guster_banner_pattern 1500.00 // 喷风旗帜图案
+minecraft:flow_pottery_sherd 1200.00 // 旋流纹样陶片
+minecraft:guster_pottery_sherd 1200.00 // 喷风纹样陶片
+minecraft:scrape_pottery_sherd 1200.00 // 刮削纹样陶片
+minecraft:flow_armor_trim_smithing_template 10000.00 // 旋流盔甲纹饰
+minecraft:bolt_armor_trim_smithing_template 10000.00 // 螺栓盔甲纹饰
+
+# === [基础与自然补全] (BASIC_NATURE_SUPPLEMENT) ===
+minecraft:air 0.00 // 空气
+minecraft:dirt 1.00 // 泥土
+minecraft:coarse_dirt 1.20 // 粗制泥土
+minecraft:podzol 2.50 // 灰化土
+minecraft:grass_block 5.00 // 草方块
+minecraft:mycelium 15.00 // 菌丝体
+minecraft:oak_sapling 10.00 // 橡树树苗
+minecraft:spruce_sapling 10.00 // 云杉树苗
+minecraft:birch_sapling 10.00 // 白桦树苗
+minecraft:jungle_sapling 10.00 // 丛林树苗
+minecraft:acacia_sapling 10.00 // 金合欢树苗
+minecraft:dark_oak_sapling 10.00 // 深色橡树树苗
+minecraft:bedrock 999999.00 // 基岩
+minecraft:sand 1.00 // 沙子
+minecraft:red_sand 1.50 // 红沙
+minecraft:gravel 1.00 // 砾石
+minecraft:sponge 150.00 // 海绵
+minecraft:wet_sponge 120.00 // 湿海绵
+minecraft:lapis_block 180.00 // 青金石块
+minecraft:note_block 25.00 // 音符盒
+minecraft:cobweb 50.00 // 蜘蛛网
+minecraft:dead_bush 5.00 // 枯萎的灌木
+minecraft:grass 1.00 // 矮草丛
+minecraft:fern 2.00 // 蕨
+minecraft:sunflower 15.00 // 向日葵
+minecraft:lilac 15.00 // 丁香
+minecraft:rose_bush 15.00 // 玫瑰丛
+minecraft:peony 15.00 // 牡丹
+minecraft:tall_grass 2.00 // 高草丛
+minecraft:large_fern 4.00 // 大型蕨
+
+# === [方块变体补全] (BLOCK_VARIANTS_SUPPLEMENT) ===
+minecraft:chiseled_sandstone 7.00 // 雕纹砂岩
+minecraft:chiseled_red_sandstone 8.00 // 雕纹红砂岩
+minecraft:cut_sandstone 7.00 // 切制砂岩
+minecraft:cut_red_sandstone 8.00 // 切制红砂岩
+minecraft:smooth_quartz 80.00 // 平滑石英块
+minecraft:chiseled_quartz_block 70.00 // 雕纹石英块
+minecraft:cracked_stone_bricks 2.50 // 裂纹石砖
+minecraft:chiseled_stone_bricks 4.50 // 雕纹石砖
+minecraft:mossy_cobblestone 4.00 // 苔石
+minecraft:infester_stone 5.00 // 虫蚀石头
+minecraft:infester_cobblestone 5.00 // 虫蚀圆石
+minecraft:infester_stone_bricks 5.00 // 虫蚀石砖
+minecraft:infester_mossy_stone_bricks 5.00 // 虫蚀苔石砖
+minecraft:infester_cracked_stone_bricks 5.00 // 虫蚀裂纹石砖
+minecraft:infester_chiseled_stone_bricks 5.00 // 虫蚀雕纹石砖
+minecraft:brown_mushroom_block 15.00 // 棕色蘑菇方块
+minecraft:red_mushroom_block 15.00 // 红色蘑菇方块
+minecraft:mushroom_stem 10.00 // 蘑菇柄
+minecraft:iron_bars 15.00 // 铁栏杆
+
+# === [功能与装饰补全] (FUNCTIONAL_DECOR_SUPPLEMENT) ===
+minecraft:ladder 5.00 // 梯子
+minecraft:snow 1.00 // 雪
+minecraft:cactus 10.00 // 仙人掌
+minecraft:clay 15.00 // 黏土
+minecraft:pumpkin 10.00 // 南瓜
+minecraft:carved_pumpkin 15.00 // 雕刻南瓜
+minecraft:jack_o_lantern 25.00 // 南瓜灯
+minecraft:netherrack 1.00 // 下界岩
+minecraft:glowstone 60.00 // 荧光石
+minecraft:beacon 50000.00 // 信标
+minecraft:conduit 15000.00 // 潮涌核心
+minecraft:heart_of_the_sea 10000.00 // 海洋之心
+minecraft:nautilus_shell 500.00 // 鹦鹉螺壳
+minecraft:scute 150.00 // 鳞甲
+minecraft:turtle_scute 150.00 // 海龟鳞甲
+minecraft:dragon_egg 1000000.00 // 龙蛋
+minecraft:end_crystal 1500.00 // 末地水晶
+minecraft:ender_eye 250.00 // 末影之眼
+minecraft:chorus_fruit 15.00 // 紫颂果
+minecraft:popped_chorus_fruit 20.00 // 爆裂紫颂果
+minecraft:shulker_shell 500.00 // 潜影壳
+minecraft:totem_of_undying 5000.00 // 不死图腾
+
+# === [工具与消耗品补全] (TOOLS_CONSUMABLES_SUPPLEMENT) ===
+minecraft:wooden_sword 10.00 // 木剑
+minecraft:wooden_shovel 8.00 // 木锹
+minecraft:wooden_pickaxe 15.00 // 木镐
+minecraft:wooden_axe 15.00 // 木斧
+minecraft:wooden_hoe 12.00 // 木锄
+minecraft:stone_sword 15.00 // 石剑
+minecraft:stone_shovel 12.00 // 石锹
+minecraft:stone_pickaxe 25.00 // 石镐
+minecraft:stone_axe 25.00 // 石斧
+minecraft:stone_hoe 20.00 // 石锄
+minecraft:iron_sword 250.00 // 铁剑
+minecraft:iron_shovel 150.00 // 铁锹
+minecraft:iron_pickaxe 400.00 // 铁镐
+minecraft:iron_axe 400.00 // 铁斧
+minecraft:iron_hoe 300.00 // 铁锄
+minecraft:diamond_sword 5000.00 // 钻石剑
+minecraft:diamond_shovel 3000.00 // 钻石锹
+minecraft:diamond_pickaxe 8000.00 // 钻石镐
+minecraft:diamond_axe 8000.00 // 钻石斧
+minecraft:diamond_hoe 6000.00 // 钻石锄
+minecraft:golden_sword 180.00 // 金剑
+minecraft:golden_shovel 120.00 // 金锹
+minecraft:golden_pickaxe 250.00 // 金镐
+minecraft:golden_axe 250.00 // 金斧
+minecraft:golden_hoe 180.00 // 金锄
+minecraft:bow 50.00 // 弓
+minecraft:crossbow 150.00 // 弩
+minecraft:arrow 2.00 // 箭
+minecraft:spectral_arrow 10.00 // 光灵箭
+minecraft:trident 5000.00 // 三叉戟
+minecraft:elytra 25000.00 // 鞘翅
+minecraft:shield 150.00 // 盾牌
+
+# === [食物与材料补全] (FOOD_MATERIALS_SUPPLEMENT) ===
+minecraft:apple 5.00 // 苹果
+minecraft:bread 10.00 // 面包
+minecraft:porkchop 10.00 // 生猪排
+minecraft:cooked_porkchop 15.00 // 熟猪排
+minecraft:beef 10.00 // 生牛肉
+minecraft:cooked_beef 15.00 // 熟牛肉
+minecraft:chicken 8.00 // 生鸡肉
+minecraft:cooked_chicken 12.00 // 熟鸡肉
+minecraft:mutton 10.00 // 生羊肉
+minecraft:cooked_mutton 15.00 // 熟羊肉
+minecraft:rabbit 10.00 // 生兔肉
+minecraft:cooked_rabbit 15.00 // 熟兔肉
+minecraft:rabbit_foot 50.00 // 兔子脚
+minecraft:rabbit_hide 15.00 // 兔子皮
+minecraft:carrot 2.00 // 胡萝卜
+minecraft:potato 2.00 // 马铃薯
+minecraft:baked_potato 5.00 // 烤马铃薯
+minecraft:poisonous_potato 1.00 // 毒马铃薯
+minecraft:golden_carrot 100.00 // 金胡萝卜
+minecraft:golden_apple 500.00 // 金苹果
+minecraft:enchanted_golden_apple 50000.00 // 附魔金苹果
+minecraft:melon_slice 2.00 // 西瓜片
+minecraft:sweet_berries 2.00 // 甜浆果
+minecraft:glow_berries 5.00 // 发光浆果
+minecraft:kelp 1.50 // 海带
+minecraft:dried_kelp 2.00 // 干海带
+minecraft:dried_kelp_block 20.00 // 干海带块
+minecraft:cookie 5.00 // 曲奇
+minecraft:cake 100.00 // 蛋糕
+minecraft:pumpkin_pie 50.00 // 南瓜派
+minecraft:sugar 5.00 // 糖
+minecraft:egg 2.00 // 鸡蛋
+minecraft:wheat 5.00 // 小麦
+minecraft:wheat_seeds 1.00 // 小麦种子
+minecraft:pumpkin_seeds 5.00 // 南瓜种子
+minecraft:melon_seeds 5.00 // 西瓜种子
+minecraft:beetroot 5.00 // 甜菜
+minecraft:beetroot_seeds 1.00 // 甜菜种子
+minecraft:cocoa_beans 5.00 // 可可豆
+minecraft:honey_bottle 25.00 // 蜂蜜瓶
+minecraft:honey_block 100.00 // 蜂蜜块
+
+# === [海洋与珊瑚补全] (OCEAN_CORAL_SUPPLEMENT) ===
+minecraft:sea_pickle 20.00 // 海泡菜
+minecraft:seagrass 2.00 // 海草
+minecraft:turtle_egg 150.00 // 海龟蛋
+minecraft:tube_coral_block 150.00 // 管珊瑚块
+minecraft:brain_coral_block 150.00 // 脑纹珊瑚块
+minecraft:bubble_coral_block 150.00 // 气泡珊瑚块
+minecraft:fire_coral_block 150.00 // 火珊瑚块
+minecraft:horn_coral_block 150.00 // 鹿角珊瑚块
+minecraft:dead_tube_coral_block 30.00 // 失活的管珊瑚块
+minecraft:dead_brain_coral_block 30.00 // 失活的脑纹珊瑚块
+minecraft:dead_bubble_coral_block 30.00 // 失活的气泡珊瑚块
+minecraft:dead_fire_coral_block 30.00 // 失活的火珊瑚块
+minecraft:dead_horn_coral_block 30.00 // 失活的鹿角珊瑚块
+minecraft:tube_coral 50.00 // 管珊瑚
+minecraft:brain_coral 50.00 // 脑纹珊瑚
+minecraft:bubble_coral 50.00 // 气泡珊瑚
+minecraft:fire_coral 50.00 // 火珊瑚
+minecraft:horn_coral 50.00 // 鹿角珊瑚
+minecraft:dead_tube_coral 10.00 // 失活的管珊瑚
+minecraft:dead_brain_coral 10.00 // 失活的脑纹珊瑚
+minecraft:dead_bubble_coral 10.00 // 失活的气泡珊瑚
+minecraft:dead_fire_coral 10.00 // 失活的火珊瑚
+minecraft:dead_horn_coral 10.00 // 失活的鹿角珊瑚
+minecraft:tube_coral_fan 40.00 // 管珊瑚扇
+minecraft:brain_coral_fan 40.00 // 脑纹珊瑚扇
+minecraft:bubble_coral_fan 40.00 // 气泡珊瑚扇
+minecraft:fire_coral_fan 40.00 // 火珊瑚扇
+minecraft:horn_coral_fan 40.00 // 鹿角珊瑚扇
+minecraft:dead_tube_coral_fan 8.00 // 失活的管珊瑚扇
+minecraft:dead_brain_coral_fan 8.00 // 失活的脑纹珊瑚扇
+minecraft:dead_bubble_coral_fan 8.00 // 失活的气泡珊瑚扇
+minecraft:dead_fire_coral_fan 8.00 // 失活的火珊瑚扇
+minecraft:dead_horn_coral_fan 8.00 // 失活的鹿角珊瑚扇
+
+# === [栅栏、栅栏门与压力板补全] (FENCE_GATE_PLATE_COMPLETION) ===
+# 栅栏 (Fences)
+minecraft:birch_fence 5.00 // 白桦木栅栏
+minecraft:jungle_fence 5.00 // 丛林木栅栏
+minecraft:acacia_fence 5.00 // 金合欢木栅栏
+minecraft:dark_oak_fence 5.00 // 深色橡木栅栏
+minecraft:mangrove_fence 5.50 // 红树木栅栏
+minecraft:cherry_fence 6.00 // 樱花木栅栏
+minecraft:bamboo_fence 5.00 // 竹栅栏
+minecraft:crimson_fence 8.00 // 绯红木栅栏
+minecraft:warped_fence 8.00 // 诡异木栅栏
+minecraft:nether_brick_fence 15.00 // 下界砖栅栏
+
+# 栅栏门 (Fence Gates)
+minecraft:birch_fence_gate 10.00 // 白桦木栅栏门
+minecraft:jungle_fence_gate 10.00 // 丛林木栅栏门
+minecraft:acacia_fence_gate 10.00 // 金合欢木栅栏门
+minecraft:dark_oak_fence_gate 10.00 // 深色橡木栅栏门
+minecraft:mangrove_fence_gate 11.00 // 红树木栅栏门
+minecraft:cherry_fence_gate 12.00 // 樱花木栅栏门
+minecraft:bamboo_fence_gate 10.00 // 竹栅栏门
+minecraft:crimson_fence_gate 15.00 // 绯红木栅栏门
+minecraft:warped_fence_gate 15.00 // 诡异木栅栏门
+
+# 压力板 (Pressure Plates)
+minecraft:bamboo_pressure_plate 5.00 // 竹压力板
+minecraft:crimson_pressure_plate 8.00 // 绯红木压力板
+minecraft:warped_pressure_plate 8.00 // 诡异木压力板
+minecraft:polished_blackstone_pressure_plate 12.00 // 磨制黑石压力板
+minecraft:coarse_dirt 1.20 // 砂土
+minecraft:gravel 1.00 // 沙砾
+minecraft:spruce_wood 12.00 // 云杉木
+minecraft:birch_wood 12.00 // 白桦木
+minecraft:jungle_wood 12.00 // 丛林木
+minecraft:oak_leaves 2.00 // 橡树树叶
+minecraft:white_bed 50.00 // 床
+minecraft:powered_rail 50.00 // 动力铁轨
+minecraft:detector_rail 40.00 // 探测铁轨
+minecraft:sticky_piston 60.00 // 黏性活塞
+minecraft:gold_block 720.00 // 金块
+minecraft:iron_block 135.00 // 铁块
+minecraft:diamond_block 9000.00 // 钻石块
+minecraft:bookshelf 25.00 // 书架
+minecraft:chest 15.00 // 箱子
+minecraft:rail 10.00 // 铁轨
+minecraft:iron_door 50.00 // 铁门
+minecraft:glowstone 60.00 // 荧光石
+minecraft:glass_pane 2.00 // 玻璃板
+minecraft:melon 10.00 // 西瓜
+minecraft:brewing_stand 50.00 // 酿造台
+minecraft:cauldron 35.00 // 炼药锅
+minecraft:redstone_lamp 40.00 // 红石灯
+minecraft:emerald_block 1500.00 // 绿宝石块
+minecraft:command_block 0.00 // 命令方块
+minecraft:slime_block 45.00 // 黏液块
+minecraft:barrier 0.00 // 屏障
+minecraft:iron_trapdoor 40.00 // 铁活板门
+minecraft:hay_block 15.00 // 干草捆
+minecraft:white_carpet 2.00 // 白色地毯
+minecraft:orange_carpet 2.00 // 橙色地毯
+minecraft:magenta_carpet 2.00 // 品红色地毯
+minecraft:light_blue_carpet 2.00 // 淡蓝色地毯
+minecraft:yellow_carpet 2.00 // 黄色地毯
+minecraft:lime_carpet 2.00 // 黄绿色地毯
+minecraft:pink_carpet 2.00 // 粉红色地毯
+minecraft:gray_carpet 2.00 // 灰色地毯
+minecraft:light_gray_carpet 2.00 // 淡灰色地毯
+minecraft:cyan_carpet 2.00 // 青色地毯
+minecraft:purple_carpet 2.00 // 紫色地毯
+minecraft:blue_carpet 2.00 // 蓝色地毯
+minecraft:brown_carpet 2.00 // 棕色地毯
+minecraft:green_carpet 2.00 // 绿色地毯
+minecraft:red_carpet 2.00 // 红色地毯
+minecraft:black_carpet 2.00 // 黑色地毯
+minecraft:coal_block 25.00 // 煤炭块
+minecraft:white_glazed_terracotta 18.00 // 白色带釉陶瓦
+minecraft:orange_glazed_terracotta 18.00 // 橙色带釉陶瓦
+minecraft:magenta_glazed_terracotta 18.00 // 品红色带釉陶瓦
+minecraft:light_blue_glazed_terracotta 18.00 // 淡蓝色带釉陶瓦
+minecraft:yellow_glazed_terracotta 18.00 // 黄色带釉陶瓦
+minecraft:lime_glazed_terracotta 18.00 // 黄绿色带釉陶瓦
+minecraft:pink_glazed_terracotta 18.00 // 粉红色带釉陶瓦
+minecraft:gray_glazed_terracotta 18.00 // 灰色带釉陶瓦
+minecraft:light_gray_glazed_terracotta 18.00 // 淡灰色带釉陶瓦
+minecraft:cyan_glazed_terracotta 18.00 // 青色带釉陶瓦
+minecraft:purple_glazed_terracotta 18.00 // 紫色带釉陶瓦
+minecraft:blue_glazed_terracotta 18.00 // 蓝色带釉陶瓦
+minecraft:brown_glazed_terracotta 18.00 // 棕色带釉陶瓦
+minecraft:green_glazed_terracotta 18.00 // 绿色带釉陶瓦
+minecraft:red_glazed_terracotta 18.00 // 红色带釉陶瓦
+minecraft:black_glazed_terracotta 18.00 // 黑色带釉陶瓦
+minecraft:flint 5.00 // 燧石
+minecraft:bucket 15.00 // 铁桶
+minecraft:water_bucket 20.00 // 水桶
+minecraft:lava_bucket 50.00 // 熔岩桶
+minecraft:minecart 25.00 // 矿车
+minecraft:saddle 150.00 // 鞍
+minecraft:brick 2.50 // 红砖
+minecraft:clay_ball 2.00 // 黏土球
+minecraft:slime_ball 5.00 // 黏液球
+minecraft:chest_minecart 40.00 // 运输矿车
+minecraft:furnace_minecart 40.00 // 动力矿车
+minecraft:fishing_rod 20.00 // 钓鱼竿
+minecraft:glowstone_dust 15.00 // 荧石粉
+minecraft:cod 5.00 // 生鳕鱼
+minecraft:salmon 5.00 // 生鲑鱼
+minecraft:tropical_fish 10.00 // 热带鱼
+minecraft:pufferfish 15.00 // 河豚
+minecraft:map 40.00 // 地图
+minecraft:rotten_flesh 2.00 // 腐肉
+minecraft:nether_wart 5.00 // 下界疣
+minecraft:potion 50.00 // 药水
+minecraft:fermented_spider_eye 25.00 // 发酵蛛眼
+minecraft:skeleton_skull 150.00 // 骷髅头颅
+minecraft:wither_skeleton_skull 1000.00 // 凋灵骷髅头颅
+minecraft:zombie_head 150.00 // 僵尸的头
+minecraft:player_head 100.00 // 玩家的头
+minecraft:creeper_head 250.00 // 苦力怕的头
+minecraft:dragon_head 5000.00 // 龙首
+minecraft:warped_fungus_on_a_stick 30.00 // 诡异菌钓竿
+minecraft:carrot_on_a_stick 25.00 // 胡萝卜钓竿
+minecraft:enchanted_book 500.00 // 附魔书
+minecraft:nether_brick 4.00 // 下界砖
+minecraft:quartz 10.00 // 下界石英
+minecraft:tnt_minecart 60.00 // TNT矿车
+minecraft:hopper_minecart 60.00 // 漏斗矿车
+minecraft:prismarine_shard 10.00 // 海晶碎片
+minecraft:prismarine_crystals 15.00 // 海晶砂粒
+minecraft:iron_horse_armor 500.00 // 铁马铠
+minecraft:gold_horse_armor 1000.00 // 金马铠
+minecraft:diamond_horse_armor 5000.00 // 钻石马铠
+minecraft:lead 15.00 // 拴绳
+minecraft:name_tag 100.00 // 命名牌
+minecraft:command_block_minecart 0.00 // 命令方块矿车
+minecraft:dragon_breath 500.00 // 龙息
+minecraft:splash_potion 60.00 // 喷溅药水
+minecraft:tipped_arrow 15.00 // 药箭
+minecraft:lingering_potion 100.00 // 滞留药水
+minecraft:knowledge_book 0.00 // 知识之书
+minecraft:music_disc_13 500.00 // 音乐唱片（C418 - 13）
+minecraft:music_disc_cat 500.00 // 音乐唱片（C418 - cat）
+minecraft:music_disc_blocks 500.00 // 音乐唱片（C418 - blocks）
+minecraft:music_disc_chirp 500.00 // 音乐唱片（C418 - chirp）
+minecraft:music_disc_far 500.00 // 音乐唱片（C418 - far）
+minecraft:music_disc_mall 500.00 // 音乐唱片（C418 - mall）
+minecraft:music_disc_mellohi 500.00 // 音乐唱片（C418 - mellohi）
+minecraft:music_disc_stal 500.00 // 音乐唱片（C418 - stal）
+minecraft:music_disc_strad 500.00 // 音乐唱片（C418 - strad）
+minecraft:music_disc_ward 500.00 // 音乐唱片（C418 - ward）
+minecraft:music_disc_11 500.00 // 音乐唱片（C418 - 11）
+minecraft:music_disc_wait 500.00 // 音乐唱片（C418 - wait）
+minecraft:music_disc_pigstep 1500.00 // 音乐唱片（Lena Raine - Pigstep）
+minecraft:music_disc_otherside 1500.00 // 音乐唱片（Lena Raine - otherside）
+minecraft:music_disc_5 2000.00 // 音乐唱片（Samuel Åberg - 5）
+minecraft:music_disc_creator_music_box 2000.00 // 音乐唱片（Lena Raine - Creator（八音盒））
+minecraft:music_disc_creator 2000.00 // 音乐唱片（Lena Raine - Creator）
+minecraft:music_disc_precipice 2000.00 // 音乐唱片（Aaron Cherof - Precipice）
+minecraft:music_disc_relic 2000.00 // 音乐唱片（Aaron Cherof - Relic）
+# === [Excel 最终扫尾补全] (EXCEL_FINAL_SWEEP) ===
+minecraft:quartz_slab 120.00 // 双石英台阶
+minecraft:petrified_oak_slab 10.00 // 石化橡木台阶
+minecraft:cobblestone_slab 5.00 // 圆石台阶
+minecraft:brick_slab 20.00 // 红砖台阶
+minecraft:nether_brick_slab 30.00 // 下界砖台阶
+minecraft:brick_block 10.00 // 红砖块
+minecraft:spawner 5000.00 // 刷怪笼
+minecraft:redstone_wire 1.00 // 红石线
+minecraft:furnace 20.00 // 燃烧中的熔炉
+minecraft:cobblestone_stairs 4.50 // 圆石楼梯
+minecraft:redstone_ore 50.00 // 点亮的红石矿石
+minecraft:redstone_torch 5.00 // 熄灭的红石火把
+minecraft:glowstone 60.00 // 荧石
+minecraft:repeater 25.00 // 激活的红石中继器
+minecraft:mossy_stone_bricks 4.00 // 苔石砖
+minecraft:pumpkin_stem 2.00 // 南瓜茎
+minecraft:melon_stem 2.00 // 西瓜茎
+minecraft:brick_stairs 15.00 // 红砖楼梯
+minecraft:nether_brick_stairs 22.50 // 下界砖楼梯
+minecraft:cauldron 20.00 // 装有水的炼药锅
+minecraft:end_portal_frame 0.00 // 末地传送门框架
+minecraft:redstone_lamp 40.00 // 发光的红石灯
+minecraft:cocoa 5.00 // 可可果
+minecraft:tripwire_hook 10.00 // 绊线钩
+minecraft:tripwire 2.00 // 绊线
+minecraft:chipped_anvil 100.00 // 开裂的铁砧
+minecraft:light_weighted_pressure_plate 100.00 // 轻质测重压力板
+minecraft:heavy_weighted_pressure_plate 100.00 // 重质测重压力板
+minecraft:comparator 35.00 // 激活的红石比较器
+minecraft:activator_rail 40.00 // 激活铁轨
+minecraft:dark_oak_leaves 2.00 // 深色橡树树叶
+minecraft:acacia_log 10.00 // 金合欢木
+minecraft:white_banner 30.00 // 站立的旗帜
+minecraft:white_wall_banner 30.00 // 墙上的旗帜
+minecraft:daylight_detector 50.00 // 反向阳光传感器
+minecraft:chorus_plant 15.00 // 紫颂植株
+minecraft:dirt_path 2.00 // 土径
+minecraft:structure_void 0.00 // 结构空位
+minecraft:structure_block 0.00 // 结构方块
+minecraft:mushroom_stew 25.00 // 蘑菇煲
+minecraft:leather_helmet 40.00 // 皮革帽子
+minecraft:leather_chestplate 75.00 // 皮革外套
+minecraft:leather_leggings 65.00 // 皮革裤子
+minecraft:elder_guardian_spawn_egg 10000.00 // 远古守卫者刷怪蛋
+minecraft:sheep_spawn_egg 200.00 // 绵羊刷怪蛋
+minecraft:llama_spawn_egg 800.00 // 羊驼刷怪蛋
+minecraft:cave_air 0.00 // 洞穴空气
+minecraft:void_air 0.00 // 虚空空气
+minecraft:tall_seagrass 4.00 // 高海草
+minecraft:kelp_plant 2.00 // 海带植株
+minecraft:turtle_helmet 500.00 // 海龟壳
+minecraft:debug_stick 0.00 // 调试棒
+minecraft:bubble_column 0.00 // 气泡柱
+minecraft:red_wall_banner 35.00 // 墙上的红色旗帜
+minecraft:black_wall_banner 35.00 // 墙上的黑色旗帜
+minecraft:leather_horse_armor 500.00 // 皮革马铠
+minecraft:suspicious_stew 35.00 // 谜之炖菜
+minecraft:cracked_nether_bricks 12.00 // 裂纹下界砖块
+minecraft:chiseled_nether_bricks 20.00 // 雕纹下界砖块
+minecraft:weeping_vines_plant 8.00 // 垂泪藤植株
+minecraft:twisting_vines_plant 8.00 // 缠怨藤植株
+minecraft:chain 15.00 // 锁链
+minecraft:target 50.00 // 标靶
+minecraft:polished_deepslate_slab 2.25 // 磨制深板岩台阶
+minecraft:cut_copper_stairs 120.00 // 切制铜楼梯
+minecraft:cut_copper_slab 40.00 // 切制铜台阶
+minecraft:light 0.00 // 光源方块
+minecraft:lava_cauldron 50.00 // 装有熔岩的炼药锅
+minecraft:exposed_copper 80.00 // 斑驳的铜块
+minecraft:weathered_copper 90.00 // 锈蚀的铜块
+minecraft:oxidized_copper 100.00 // 氧化的铜块
+minecraft:exposed_cut_copper 85.00 // 斑驳的切制铜块
+minecraft:weathered_cut_copper 95.00 // 锈蚀的切制铜块
+minecraft:oxidized_cut_copper 105.00 // 氧化的切制铜块
+minecraft:exposed_cut_copper_stairs 125.00 // 斑驳的切制铜楼梯
+minecraft:weathered_cut_copper_stairs 135.00 // 锈蚀的切制铜楼梯
+minecraft:oxidized_cut_copper_stairs 145.00 // 氧化的切制铜楼梯
+minecraft:exposed_cut_copper_slab 42.50 // 斑驳的切制铜台阶
+minecraft:weathered_cut_copper_slab 47.50 // 锈蚀的切制铜台阶
+minecraft:oxidized_cut_copper_slab 52.50 // 氧化的切制铜台阶
+minecraft:waxed_copper_block 75.00 // 涂蜡的铜块
+minecraft:waxed_exposed_copper 85.00 // 涂蜡的斑驳铜块
+minecraft:waxed_weathered_copper 95.00 // 涂蜡的锈蚀铜块
+minecraft:waxed_oxidized_copper 105.00 // 涂蜡的氧化铜块
+minecraft:waxed_cut_copper 80.00 // 涂蜡的切制铜块
+minecraft:waxed_exposed_cut_copper 90.00 // 涂蜡的斑驳切制铜块
+minecraft:waxed_weathered_cut_copper 100.00 // 涂蜡的锈蚀切制铜块
+minecraft:waxed_oxidized_cut_copper 110.00 // 涂蜡的氧化切制铜块
+minecraft:waxed_cut_copper_stairs 120.00 // 涂蜡的切制铜楼梯
+minecraft:waxed_exposed_cut_copper_stairs 135.00 // 涂蜡的斑驳切制铜楼梯
+minecraft:waxed_weathered_cut_copper_stairs 150.00 // 涂蜡的锈蚀切制铜楼梯
+minecraft:waxed_oxidized_cut_copper_stairs 165.00 // 涂蜡的氧化切制铜楼梯
+minecraft:waxed_cut_copper_slab 40.00 // 涂蜡的切制铜台阶
+minecraft:waxed_exposed_cut_copper_slab 45.00 // 涂蜡的斑驳切制铜台阶
+minecraft:waxed_weathered_cut_copper_slab 50.00 // 涂蜡的锈蚀切制铜台阶
+minecraft:waxed_oxidized_cut_copper_slab 55.00 // 涂蜡的氧化切制铜台阶
+
+# === [Excel 深度大补全 - 1.21 铜与凝灰岩变体] (EXCEL_DEEP_1_21_VARIANTS) ===
+minecraft:chiseled_copper 80.00 // 雕纹铜块
+minecraft:exposed_chiseled_copper 90.00 // 斑驳的雕纹铜块
+minecraft:weathered_chiseled_copper 100.00 // 锈蚀的雕纹铜块
+minecraft:oxidized_chiseled_copper 110.00 // 氧化的雕纹铜块
+minecraft:waxed_chiseled_copper 85.00 // 涂蜡的雕纹铜块
+minecraft:waxed_exposed_chiseled_copper 95.00 // 涂蜡的斑驳雕纹铜块
+minecraft:waxed_weathered_chiseled_copper 105.00 // 涂蜡的锈蚀雕纹铜块
+minecraft:waxed_oxidized_chiseled_copper 115.00 // 涂蜡的氧化雕纹铜块
+minecraft:copper_grate 60.00 // 铜格栅
+minecraft:exposed_copper_grate 70.00 // 斑驳的铜格栅
+minecraft:weathered_copper_grate 80.00 // 锈蚀的铜格栅
+minecraft:oxidized_copper_grate 90.00 // 氧化的铜格栅
+minecraft:waxed_copper_grate 65.00 // 涂蜡的铜格栅
+minecraft:waxed_exposed_copper_grate 75.00 // 涂蜡的斑驳铜格栅
+minecraft:waxed_weathered_copper_grate 85.00 // 涂蜡的锈蚀铜格栅
+minecraft:waxed_oxidized_copper_grate 95.00 // 涂蜡的氧化铜格栅
+minecraft:copper_bulb 150.00 // 铜灯
+minecraft:exposed_copper_bulb 160.00 // 斑驳的铜灯
+minecraft:weathered_copper_bulb 170.00 // 锈蚀的铜灯
+minecraft:oxidized_copper_bulb 180.00 // 氧化的铜灯
+minecraft:waxed_copper_bulb 155.00 // 涂蜡的铜灯
+minecraft:waxed_exposed_copper_bulb 165.00 // 涂蜡的斑驳铜灯
+minecraft:waxed_weathered_copper_bulb 175.00 // 涂蜡的锈蚀铜灯
+minecraft:waxed_oxidized_copper_bulb 185.00 // 涂蜡的氧化铜灯
+minecraft:copper_door 50.00 // 铜门
+minecraft:exposed_copper_door 60.00 // 斑驳的铜门
+minecraft:weathered_copper_door 70.00 // 锈蚀的铜门
+minecraft:oxidized_copper_door 80.00 // 氧化的铜门
+minecraft:waxed_copper_door 55.00 // 涂蜡的铜门
+minecraft:waxed_exposed_copper_door 65.00 // 涂蜡的斑驳铜门
+minecraft:waxed_weathered_copper_door 75.00 // 涂蜡的锈蚀铜门
+minecraft:waxed_oxidized_copper_door 85.00 // 涂蜡的氧化铜门
+minecraft:copper_trapdoor 40.00 // 铜活板门
+minecraft:exposed_copper_trapdoor 50.00 // 斑驳的铜活板门
+minecraft:weathered_copper_trapdoor 60.00 // 锈蚀的铜活板门
+minecraft:oxidized_copper_trapdoor 70.00 // 氧化的铜活板门
+minecraft:waxed_copper_trapdoor 45.00 // 涂蜡的铜活板门
+minecraft:waxed_exposed_copper_trapdoor 55.00 // 涂蜡的斑驳铜活板门
+minecraft:waxed_weathered_copper_trapdoor 65.00 // 涂蜡的锈蚀铜活板门
+minecraft:waxed_oxidized_copper_trapdoor 75.00 // 涂蜡的氧化铜活板门
+minecraft:polished_tuff_stairs 6.00 // 磨制凝灰岩楼梯
+minecraft:polished_tuff_slab 2.00 // 磨制凝灰岩台阶
+minecraft:polished_tuff_wall 4.40 // 磨制凝灰岩墙
+minecraft:tuff_brick_stairs 7.50 // 凝灰岩砖楼梯
+minecraft:tuff_brick_slab 2.50 // 凝灰岩砖台阶
+minecraft:tuff_brick_wall 5.50 // 凝灰岩砖墙
+
+# === [Excel 深度大补全 - 悬挂告示牌] (EXCEL_DEEP_HANGING_SIGNS) ===
+minecraft:oak_hanging_sign 10.00 // 墙上的悬挂式橡木告示牌
+minecraft:spruce_hanging_sign 10.00 // 墙上的悬挂式云杉木告示牌
+minecraft:birch_hanging_sign 10.00 // 墙上的悬挂式白桦木告示牌
+minecraft:jungle_hanging_sign 10.00 // 墙上的悬挂式丛林木告示牌
+minecraft:acacia_hanging_sign 10.00 // 墙上的悬挂式金合欢木告示牌
+minecraft:dark_oak_hanging_sign 10.00 // 墙上的悬挂式深色橡木告示牌
+minecraft:mangrove_hanging_sign 12.00 // 墙上的悬挂式红树木告示牌
+minecraft:cherry_hanging_sign 14.00 // 墙上的悬挂式樱花木告示牌
+minecraft:bamboo_hanging_sign 10.00 // 墙上的悬挂式竹告示牌
+minecraft:crimson_hanging_sign 15.00 // 墙上的悬挂式绯红木告示牌
+minecraft:warped_hanging_sign 15.00 // 墙上的悬挂式诡异木告示牌
+minecraft:pale_oak_hanging_sign 15.00 // 墙上的悬挂式苍白橡木告示牌
+
+# === [Excel 深度大补全 - 杂项补全] (EXCEL_DEEP_MISC) ===
+minecraft:red_nether_brick_stairs 30.00 // 红色下界砖楼梯
+minecraft:red_nether_brick_slab 10.00 // 红色下界砖台阶
+minecraft:crimson_nylium 20.00 // 绯红菌核
+minecraft:warped_nylium 20.00 // 诡异菌核
+minecraft:stripped_crimson_stem 16.50 // 去皮绯红菌核
+minecraft:stripped_warped_stem 16.50 // 去皮诡异菌核
+minecraft:crimson_stairs 5.60 // 绯红木楼梯
+minecraft:warped_stairs 5.60 // 诡异木楼梯
+minecraft:crimson_slab 1.85 // 绯红木台阶
+minecraft:warped_slab 1.85 // 诡异木台阶
+minecraft:mangrove_stairs 6.00 // 红树木楼梯
+minecraft:mangrove_slab 2.00 // 红树木台阶
+minecraft:mangrove_pressure_plate 2.00 // 红树木压力板
+minecraft:cherry_stairs 7.00 // 樱花木楼梯
+minecraft:cherry_slab 2.50 // 樱花木台阶
+minecraft:cherry_pressure_plate 2.50 // 樱花木压力板
+minecraft:jigsaw 0.00 // 拼图方块
+minecraft:potted_dead_bush 15.00 // 枯萎的灌木盆栽
+minecraft:torch 2.50 // 墙上的火把
+minecraft:redstone_torch 5.00 // 墙上的红石火把
+minecraft:soul_torch 5.00 // 墙上的灵魂火把
+minecraft:netherite_upgrade_smithing_template 20000.00 // 下界合金升级
+minecraft:sentry_armor_trim_smithing_template 5000.00 // 哨兵盔甲纹饰
+minecraft:vex_armor_trim_smithing_template 5000.00 // 恼鬼盔甲纹饰
+minecraft:wild_armor_trim_smithing_template 5000.00 // 荒野盔甲纹饰
+minecraft:piglin_head 500.00 // 猪灵的头
+minecraft:piglin_wall_head 500.00 // 墙上的猪灵的头
+minecraft:torchflower 30.00 // 火把花
+minecraft:torchflower_crop 30.00 // 火把花植株
+minecraft:potted_torchflower 50.00 // 火把花盆栽
+minecraft:torchflower_seeds 500000.00 // 火把花种子
+minecraft:pink_petals 15.00 // 粉红色花簇
+minecraft:pitcher_plant 30.00 // 瓶子草
+minecraft:pitcher_crop 30.00 // 瓶子草植株
+minecraft:pitcher_pod 500000.00 // 瓶子草荚果
+minecraft:suspicious_gravel 10.00 // 可疑的沙砾
+minecraft:chiseled_bookshelf 30.00 // 雕纹书架
+minecraft:angler_pottery_sherd 800.00 // 垂钓纹样陶片
+minecraft:archer_pottery_sherd 800.00 // 弓箭纹样陶片
+minecraft:arms_up_pottery_sherd 800.00 // 举臂纹样陶片
+minecraft:blade_pottery_sherd 800.00 // 利刃纹样陶片
+minecraft:brewer_pottery_sherd 800.00 // 佳酿纹样陶片
+minecraft:burn_pottery_sherd 800.00 // 烈焰纹样陶片
+minecraft:hoglin_spawn_egg 600.00 // 疣猪兽刷怪蛋
+minecraft:zoglin_spawn_egg 1000.00 // 僵尸疣猪兽刷怪蛋
+minecraft:cave_vines_plant 5.00 // 洞穴藤蔓植株
+minecraft:big_dripleaf_stem 15.00 // 大型垂滴叶茎
+minecraft:candle_cake 110.00 // 插上蜡烛的蛋糕
+minecraft:white_candle_cake 112.00 // 插上白色蜡烛的蛋糕
+minecraft:orange_candle_cake 112.00 // 插上橙色蜡烛的蛋糕
+minecraft:magenta_candle_cake 112.00 // 插上品红色蜡烛的蛋糕
+minecraft:light_blue_candle_cake 112.00 // 插上淡蓝色蜡烛的蛋糕
+minecraft:yellow_candle_cake 112.00 // 插上黄色蜡烛的蛋糕
+minecraft:lime_candle_cake 112.00 // 插上黄绿色蜡烛的蛋糕
+minecraft:pink_candle_cake 112.00 // 插上粉红色蜡烛的蛋糕
+minecraft:gray_candle_cake 112.00 // 插上灰色蜡烛的蛋糕
+minecraft:light_gray_candle_cake 112.00 // 插上淡灰色蜡烛的蛋糕
+minecraft:cyan_candle_cake 112.00 // 插上青色蜡烛的蛋糕
+minecraft:purple_candle_cake 112.00 // 插上紫色蜡烛的蛋糕
+minecraft:blue_candle_cake 112.00 // 插上蓝色蜡烛的蛋糕
+minecraft:brown_candle_cake 112.00 // 插上棕色蜡烛的蛋糕
+minecraft:green_candle_cake 112.00 // 插上绿色蜡烛的蛋糕
+minecraft:red_candle_cake 112.00 // 插上红色蜡烛的蛋糕
+minecraft:black_candle_cake 112.00 // 插上黑色蜡烛的蛋糕
+minecraft:spruce_stairs 4.50 // 云杉木楼梯
+minecraft:birch_stairs 4.50 // 白桦木楼梯
+minecraft:jungle_stairs 4.50 // 丛林木楼梯
+minecraft:acacia_stairs 4.50 // 金合欢木楼梯
+minecraft:spruce_slab 1.50 // 云杉木台阶
+minecraft:birch_slab 1.50 // 白桦木台阶
+minecraft:jungle_slab 1.50 // 丛林木台阶
+minecraft:acacia_slab 1.50 // 金合欢木台阶
+minecraft:spruce_fence_gate 10.00 // 云杉木栅栏门
+minecraft:birch_fence_gate 10.00 // 白桦木栅栏门
+minecraft:jungle_fence_gate 10.00 // 丛林木栅栏门
+minecraft:acacia_fence_gate 10.00 // 金合欢木栅栏门
+minecraft:dark_oak_fence_gate 10.00 // 深色橡木栅栏门
+minecraft:spruce_fence 5.00 // 云杉木栅栏
+minecraft:birch_fence 5.00 // 白桦木栅栏
+minecraft:jungle_fence 5.00 // 丛林木栅栏
+minecraft:acacia_fence 5.00 // 金合欢木栅栏
+minecraft:dark_oak_fence 5.00 // 深色橡木栅栏
+minecraft:spruce_pressure_plate 2.00 // 云杉木压力板
+minecraft:birch_pressure_plate 2.00 // 白桦木压力板
+minecraft:jungle_pressure_plate 2.00 // 丛林木压力板
+minecraft:acacia_pressure_plate 2.00 // 金合欢木压力板
+minecraft:spruce_button 1.00 // 云杉木按钮
+minecraft:birch_button 1.00 // 白桦木按钮
+minecraft:jungle_button 1.00 // 丛林木按钮
+minecraft:acacia_button 1.00 // 金合欢木按钮
+minecraft:dark_oak_button 1.00 // 深色橡木按钮
+minecraft:stripped_spruce_log 11.00 // 去皮云杉木
+minecraft:stripped_birch_log 11.00 // 去皮白桦木
+minecraft:stripped_jungle_log 11.00 // 去皮丛林木
+minecraft:stripped_acacia_log 11.00 // 去皮金合欢木
+minecraft:mangrove_wood 14.50 // 红树木
+minecraft:stripped_mangrove_wood 15.50 // 去皮红树木
+minecraft:cherry_wood 16.00 // 樱花木
+minecraft:stripped_cherry_wood 17.50 // 去皮樱花木
+minecraft:bamboo_block 10.00 // 竹块
+minecraft:stripped_bamboo_block 12.00 // 去皮竹块
+minecraft:crimson_hyphae 20.00 // 绯红菌核
+minecraft:stripped_crimson_hyphae 22.00 // 去皮绯红菌核
+minecraft:warped_hyphae 20.00 // 诡异菌核
+minecraft:stripped_warped_hyphae 22.00 // 去皮诡异菌核
+
+# === [Excel 最终大补全 - 1.21 & 1.21.2] (EXCEL_FINAL_GRAND_1_21) ===
+minecraft:trial_key 2000.00 // 试炼钥匙
+minecraft:ominous_trial_key 8000.00 // 不祥试炼钥匙
+minecraft:heavy_core 120000.00 // 沉重核心
+minecraft:mace 150000.00 // 重锤
+minecraft:breeze_rod 1500.00 // 旋风棒
+minecraft:bogged_spawn_egg 1000.00 // 沼骸刷怪蛋
+minecraft:breeze_spawn_egg 2500.00 // 旋风人刷怪蛋
+minecraft:creaking_heart 5000.00 // 嘎枝之心
+minecraft:creaking_spawn_egg 2500.00 // 嘎枝刷怪蛋
+minecraft:pale_oak_log 15.00 // 苍白橡木原木
+minecraft:pale_oak_wood 18.00 // 苍白橡木
+minecraft:pale_oak_planks 4.00 // 苍白橡木木板
+minecraft:pale_oak_stairs 6.00 // 苍白橡木楼梯
+minecraft:pale_oak_slab 2.00 // 苍白橡木台阶
+minecraft:pale_moss_block 30.00 // 苍白苔藓块
+minecraft:pale_moss_carpet 10.00 // 苍白覆地苔藓
+minecraft:pale_hanging_moss 15.00 // 苍白垂须
+minecraft:resin_clump 100.00 // 树脂团
+minecraft:resin_brick 150.00 // 树脂砖
+minecraft:resin_bricks 1500.00 // 树脂砖块
+minecraft:chiseled_resin_bricks 2000.00 // 雕纹树脂砖块
+minecraft:flow_banner_pattern 1500.00 // 涡流旗帜图案
+minecraft:guster_banner_pattern 1500.00 // 旋风旗帜图案
+minecraft:flow_pottery_sherd 1200.00 // 涡流纹样陶片
+minecraft:guster_pottery_sherd 1200.00 // 旋风纹样陶片
+minecraft:scrape_pottery_sherd 1200.00 // 刮削纹样陶片
+minecraft:flow_armor_trim_smithing_template 10000.00 // 涡流盔甲纹饰
+minecraft:bolt_armor_trim_smithing_template 10000.00 // 镶铆盔甲纹饰
+minecraft:white_bundle 600.00 // 白色收纳袋
+minecraft:brick_banner_pattern 250.00 // 砖纹旗帜图案
+minecraft:curly_border_banner_pattern 250.00 // 波纹边旗帜图案
+
+# === [Excel 最终大补全 - 石材与深板岩] (EXCEL_FINAL_GRAND_STONE) ===
+minecraft:red_nether_brick_stairs 30.00 // 红色下界砖楼梯
+minecraft:red_nether_brick_slab 10.00 // 红色下界砖台阶
+minecraft:deepslate 4.00 // 深板岩
+minecraft:cobbled_deepslate 3.00 // 深板岩圆石
+minecraft:polished_deepslate 4.50 // 磨制深板岩
+minecraft:infested_deepslate 5.00 // 虫蚀深板岩
+minecraft:deepslate_bricks 5.00 // 深板岩砖
+minecraft:cracked_deepslate_bricks 4.00 // 裂纹深板岩砖
+minecraft:deepslate_tiles 5.50 // 深板岩瓦
+minecraft:cracked_deepslate_tiles 4.50 // 裂纹深板岩瓦
+minecraft:chiseled_deepslate 6.00 // 雕纹深板岩
+minecraft:cobbled_deepslate_wall 3.30 // 深板岩圆石墙
+minecraft:polished_deepslate_wall 5.00 // 磨制深板岩墙
+minecraft:deepslate_brick_wall 5.50 // 深板岩砖墙
+minecraft:deepslate_tile_wall 6.00 // 深板岩瓦墙
+minecraft:cobbled_deepslate_stairs 4.50 // 深板岩圆石楼梯
+minecraft:polished_deepslate_stairs 6.75 // 磨制深板岩楼梯
+minecraft:deepslate_brick_stairs 7.50 // 深板岩砖楼梯
+minecraft:deepslate_tile_stairs 8.25 // 深板岩瓦楼梯
+minecraft:cobbled_deepslate_slab 1.50 // 深板岩圆石台阶
+minecraft:polished_deepslate_slab 2.25 // 深板岩台阶
+minecraft:deepslate_brick_slab 2.50 // 深板岩砖台阶
+minecraft:deepslate_tile_slab 2.75 // 深板岩瓦台阶
+minecraft:rooted_dirt 2.00 // 缠根泥土
+minecraft:calcite 4.00 // 方解石
+minecraft:tuff 3.00 // 凝灰岩
+minecraft:dripstone_block 5.00 // 滴水石块
+minecraft:pointed_dripstone 10.00 // 滴水石锥
+minecraft:raw_iron 15.00 // 粗铁
+minecraft:raw_copper 5.00 // 粗铜
+minecraft:raw_gold 80.00 // 粗金
+minecraft:powder_snow 10.00 // 细雪
+minecraft:powder_snow_bucket 100.00 // 装有细雪的炼药锅
+minecraft:music_disc_5 10000.00 // 唱片残片（音乐唱片 - 5）
+minecraft:mangrove_roots 5.00 // 沾泥的红树根
+minecraft:potted_mangrove_propagule 25.00 // 红树胎生苗盆栽
+minecraft:mud_bricks 7.00 // 泥坯
+minecraft:reinforced_deepslate 500.00 // 强化深板岩
+minecraft:recovery_compass 5000.00 // 追溯指针
+minecraft:snow_golem_spawn_egg 1000.00 // 雪傀儡刷怪蛋
+minecraft:ender_dragon_spawn_egg 100000.00 // 末影龙刷怪蛋
+minecraft:wither_spawn_egg 50000.00 // 凋灵刷怪蛋
+minecraft:water 0.00 // 水
+minecraft:lava 0.00 // 熔岩
+minecraft:piston_head 0.00 // 活塞头
+minecraft:moving_piston 0.00 // 移动的活塞
+minecraft:blue_orchid 5.00 // 蓝花美耳草
+minecraft:pink_tulip 5.00 // 粉红色郁金香
+minecraft:wheat 10.00 // 小麦植株
+minecraft:farmland 5.00 // 耕地
+minecraft:oak_wall_sign 5.00 // 墙上的橡木告示牌
+minecraft:spruce_wall_sign 5.00 // 墙上的云杉木告示牌
+minecraft:birch_wall_sign 5.00 // 墙上的白桦木告示牌
+minecraft:jungle_wall_sign 5.00 // 墙上的丛林木告示牌
+minecraft:acacia_wall_sign 5.00 // 墙上的金合欢木告示牌
+minecraft:dark_oak_wall_sign 5.00 // 墙上的深色橡木告示牌
+minecraft:mangrove_wall_sign 6.00 // 墙上的红树木告示牌
+minecraft:cherry_wall_sign 7.00 // 墙上的樱花木告示牌
+minecraft:bamboo_wall_sign 5.00 // 墙上的竹告示牌
+minecraft:crimson_wall_sign 8.00 // 墙上的绯红木告示牌
+minecraft:warped_wall_sign 8.00 // 墙上的诡异木告示牌
+minecraft:skeleton_wall_skull 150.00 // 墙上的骷髅头颅
+minecraft:wither_skeleton_wall_skull 1000.00 // 墙上的凋灵骷髅头颅
+minecraft:zombie_wall_head 150.00 // 墙上的僵尸的头
+minecraft:player_wall_head 100.00 // 墙上的玩家的头
+minecraft:creeper_wall_head 250.00 // 墙上的苦力怕的头
+minecraft:dragon_wall_head 5000.00 // 墙上的龙首
+minecraft:white_wall_banner 30.00 // 墙上的白色旗帜
+minecraft:orange_wall_banner 35.00 // 墙上的橙色旗帜
+minecraft:magenta_wall_banner 35.00 // 墙上的品红色旗帜
+minecraft:light_blue_wall_banner 35.00 // 墙上的淡蓝色旗帜
+minecraft:yellow_wall_banner 35.00 // 墙上的黄色旗帜
+minecraft:lime_wall_banner 35.00 // 墙上的黄绿色旗帜
+minecraft:pink_wall_banner 35.00 // 墙上的粉红色旗帜
+minecraft:gray_wall_banner 35.00 // 墙上的灰色旗帜
+minecraft:light_gray_wall_banner 35.00 // 墙上的淡灰色旗帜
+minecraft:cyan_wall_banner 35.00 // 墙上的青色旗帜
+minecraft:purple_wall_banner 35.00 // 墙上的紫色旗帜
+minecraft:blue_wall_banner 35.00 // 墙上的蓝色旗帜
+minecraft:brown_wall_banner 35.00 // 墙上的棕色旗帜
+minecraft:green_wall_banner 35.00 // 墙上的绿色旗帜
+minecraft:red_wall_banner 35.00 // 红色墙上的旗帜
+minecraft:black_wall_banner 35.00 // 黑色墙上的旗帜
+
+# === [盆栽系列] (POTTED_PLANTS) ===
+minecraft:potted_oak_sapling 20.00 // 橡树树苗盆栽
+minecraft:potted_spruce_sapling 20.00 // 云杉树苗盆栽
+minecraft:potted_birch_sapling 20.00 // 白桦树苗盆栽
+minecraft:potted_jungle_sapling 20.00 // 丛林树苗盆栽
+minecraft:potted_acacia_sapling 20.00 // 金合欢树苗盆栽
+minecraft:potted_dark_oak_sapling 20.00 // 深色橡树树苗盆栽
+minecraft:potted_mangrove_propagule 25.00 // 红树胎生苗盆栽
+minecraft:potted_cherry_sapling 30.00 // 樱花树苗盆栽
+minecraft:potted_fern 15.00 // 蕨盆栽
+minecraft:potted_dandelion 15.00 // 蒲公英盆栽
+minecraft:potted_poppy 15.00 // 虞美人盆栽
+minecraft:potted_blue_orchid 15.00 // 兰花盆栽
+minecraft:potted_allium 15.00 // 绒球葱盆栽
+minecraft:potted_azure_bluet 15.00 // 蓝花美耳草盆栽
+minecraft:potted_red_tulip 15.00 // 红色郁金香盆栽
+minecraft:potted_orange_tulip 15.00 // 橙色郁金香盆栽
+minecraft:potted_white_tulip 15.00 // 白色郁金香盆栽
+minecraft:potted_pink_tulip 15.00 // 粉红色郁金香盆栽
+minecraft:potted_oxeye_daisy 15.00 // 滨菊盆栽
+minecraft:potted_cornflower 15.00 // 矢车菊盆栽
+minecraft:potted_lily_of_the_valley 15.00 // 铃兰盆栽
+minecraft:potted_wither_rose 200.00 // 凋灵玫瑰盆栽
+minecraft:potted_red_mushroom 15.00 // 红色蘑菇盆栽
+minecraft:potted_brown_mushroom 15.00 // 棕色蘑菇盆栽
+minecraft:potted_cactus 20.00 // 仙人掌盆栽
+minecraft:potted_azalea_bush 25.00 // 杜鹃花丛盆栽
+minecraft:potted_flowering_azalea_bush 35.00 // 盛开的杜鹃花丛盆栽
+minecraft:potted_bamboo 20.00 // 竹子盆栽
+minecraft:potted_crimson_fungus 25.00 // 绯红菌盆栽
+minecraft:potted_warped_fungus 25.00 // 诡异菌盆栽
+minecraft:potted_crimson_roots 20.00 // 绯红菌索盆栽
+minecraft:potted_warped_roots 20.00 // 诡异菌索盆栽
+
+# === [Excel 深度补充 - 墙面与悬挂] (EXCEL_DEEP_WALL_HANGING) ===
+minecraft:oak_wall_sign 5.00 // 墙上的橡木告示牌
+minecraft:spruce_wall_sign 5.00 // 墙上的云杉木告示牌
+minecraft:birch_wall_sign 5.00 // 墙上的白桦木告示牌
+minecraft:jungle_wall_sign 5.00 // 墙上的丛林木告示牌
+minecraft:acacia_wall_sign 5.00 // 墙上的金合欢木告示牌
+minecraft:dark_oak_wall_sign 5.00 // 墙上的深色橡木告示牌
+minecraft:mangrove_wall_sign 6.00 // 墙上的红树木告示牌
+minecraft:cherry_wall_sign 7.00 // 墙上的樱花木告示牌
+minecraft:bamboo_wall_sign 5.00 // 墙上的竹告示牌
+minecraft:crimson_wall_sign 8.00 // 墙上的绯红木告示牌
+minecraft:warped_wall_sign 8.00 // 墙上的诡异木告示牌
+minecraft:oak_hanging_sign 10.00 // 悬挂式橡木告示牌
+minecraft:spruce_hanging_sign 10.00 // 悬挂式云杉木告示牌
+minecraft:birch_hanging_sign 10.00 // 悬挂式白桦木告示牌
+minecraft:jungle_hanging_sign 10.00 // 悬挂式丛林木告示牌
+minecraft:acacia_hanging_sign 10.00 // 悬挂式金合欢木告示牌
+minecraft:dark_oak_hanging_sign 10.00 // 悬挂式深色橡木告示牌
+minecraft:mangrove_hanging_sign 12.00 // 悬挂式红树木告示牌
+minecraft:cherry_hanging_sign 14.00 // 悬挂式樱花木告示牌
+minecraft:bamboo_hanging_sign 10.00 // 悬挂式竹告示牌
+minecraft:crimson_hanging_sign 15.00 // 悬挂式绯红木告示牌
+minecraft:warped_hanging_sign 15.00 // 悬挂式诡异木告示牌
+
+# === [Excel 深度补充 - 珊瑚与海洋墙面] (EXCEL_DEEP_CORAL_WALL) ===
+minecraft:tube_coral_wall_fan 40.00 // 墙上的管珊瑚扇
+minecraft:brain_coral_wall_fan 40.00 // 墙上的脑纹珊瑚扇
+minecraft:bubble_coral_wall_fan 40.00 // 墙上的气泡珊瑚扇
+minecraft:fire_coral_wall_fan 40.00 // 墙上的火珊瑚扇
+minecraft:horn_coral_wall_fan 40.00 // 墙上的鹿角珊瑚扇
+minecraft:dead_tube_coral_wall_fan 8.00 // 墙上的失活管珊瑚扇
+minecraft:dead_brain_coral_wall_fan 8.00 // 墙上的失活脑纹珊瑚扇
+minecraft:dead_bubble_coral_wall_fan 8.00 // 墙上的失活气泡珊瑚扇
+minecraft:dead_fire_coral_wall_fan 8.00 // 墙上的失活火珊瑚扇
+minecraft:dead_horn_coral_wall_fan 8.00 // 墙上的失活鹿角珊瑚扇
+
+# === [Excel 深度补充 - 技术方块与变体] (EXCEL_DEEP_TECHNICAL) ===
+minecraft:smooth_stone_slab 3.00 // 双平滑石头台阶
+minecraft:sandstone_slab 6.00 // 双砂岩台阶
+minecraft:petrified_oak_slab 10.00 // 双石化橡木台阶
+minecraft:cobblestone_slab 5.00 // 双圆石台阶
+minecraft:brick_slab 20.00 // 双红砖台阶
+minecraft:stone_brick_slab 6.00 // 双石砖台阶
+minecraft:nether_brick_slab 30.00 // 双下界砖台阶
+minecraft:quartz_slab 120.00 // 双石 quartz 台阶
+minecraft:oak_slab 5.00 // 双橡木台阶
+minecraft:spruce_slab 5.00 // 双云杉木台阶
+minecraft:birch_slab 5.00 // 双桦木台阶
+minecraft:jungle_slab 5.00 // 双丛林木台阶
+minecraft:acacia_slab 5.00 // 双金合欢木台阶
+minecraft:dark_oak_slab 5.00 // 双深色橡木台阶
+minecraft:red_sandstone_slab 14.00 // 双红砂岩台阶
+minecraft:purpur_slab 40.00 // 双紫珀台阶
+minecraft:repeating_command_block 0.00 // 循环型命令方块
+minecraft:chain_command_block 0.00 // 连锁型命令方块
+minecraft:frosted_ice 0.00 // 霜冰
+minecraft:bone_block 30.00 // 骨块
+minecraft:mossy_cobblestone_stairs 6.00 // 苔石楼梯
+minecraft:mossy_stone_brick_stairs 6.00 // 苔石砖楼梯
+minecraft:mossy_cobblestone_slab 2.00 // 苔石台阶
+minecraft:mossy_stone_brick_slab 2.00 // 苔石砖台阶
+minecraft:mossy_cobblestone_wall 4.40 // 苔石墙
+minecraft:mossy_stone_brick_wall 4.40 // 苔石砖墙
+minecraft:brick_wall 11.00 // 红砖墙
+minecraft:nether_brick_wall 16.50 // 下界砖墙
+minecraft:red_nether_brick_wall 22.00 // 红色下界砖墙
+
+# === [1.21 & 1.21.2 完整补全] (NEW_VERSIONS_COMPLETE) ===
+minecraft:grindstone 20.00 // 砂轮
+minecraft:sweet_berry_bush 5.00 // 甜浆果丛
+minecraft:wolf_armor 1500.00 // 狼铠
+minecraft:armadillo_scute 200.00 // 犰狳鳞甲
+minecraft:armadillo_spawn_egg 1000.00 // 犰狳刷怪蛋
+minecraft:resin_bricks 1500.00 // 树脂块
+minecraft:pale_oak_leaves 5.00 // 苍白橡树树叶
+minecraft:pale_oak_sapling 50.00 // 苍白橡树树苗
+minecraft:potted_pale_oak_sapling 60.00 // 苍白橡树树苗盆栽
+minecraft:potted_closed_eyeblossom 250.00 // 闭合的眼眸花盆栽
+minecraft:potted_open_eyeblossom 550.00 // 张开的眼眸花盆栽
+minecraft:pale_oak_sign 5.00 // 苍白橡木告示牌
+minecraft:pale_oak_wall_sign 5.00 // 墙上的苍白橡木告示牌
+minecraft:pale_oak_hanging_sign 10.00 // 悬挂式苍白橡木告示牌
+minecraft:pale_oak_boat 20.00 // 苍白橡木船
+minecraft:pale_oak_chest_boat 35.00 // 苍白橡木运输船
+minecraft:creaking_heart 5000.00 // 嘎枝之心
+minecraft:creaking_spawn_egg 2500.00 // 嘎枝刷怪蛋
+
+# 石材系列
+minecraft:cobblestone 2.50 // 圆石
+minecraft:stone 3.00 // 石头
+minecraft:stone_stairs 4.50 // 石头楼梯
+minecraft:stone_slab 1.50 // 石头台阶
+minecraft:stone_bricks 3.00 // 石砖
+minecraft:stone_brick_stairs 4.50 // 石砖楼梯
+minecraft:stone_brick_slab 1.50 // 石砖台阶
+minecraft:stone_brick_wall 3.30 // 石砖墙
+minecraft:mossy_stone_bricks 4.00 // 苔藓石砖
+minecraft:mossy_stone_brick_stairs 6.00 // 苔藓石砖楼梯
+minecraft:mossy_stone_brick_slab 2.00 // 苔藓石砖台阶
+minecraft:mossy_stone_brick_wall 4.40 // 苔藓石砖墙
+minecraft:smooth_stone 3.50 // 平滑石头
+minecraft:smooth_stone_slab 1.75 // 平滑石头台阶
+minecraft:granite 2.80 // 花岗岩
+minecraft:granite_stairs 4.20 // 花岗岩楼梯
+minecraft:granite_slab 1.40 // 花岗岩台阶
+minecraft:granite_wall 3.10 // 花岗岩墙
+minecraft:polished_granite 4.20 // 磨制花岗岩
+minecraft:polished_granite_stairs 6.30 // 磨制花岗岩楼梯
+minecraft:polished_granite_slab 2.10 // 磨制花岗岩台阶
+minecraft:diorite 2.80 // 闪长岩
+minecraft:diorite_stairs 4.20 // 闪长岩楼梯
+minecraft:diorite_slab 1.40 // 闪长岩台阶
+minecraft:diorite_wall 3.10 // 闪长岩墙
+minecraft:polished_diorite 4.20 // 磨制闪长岩
+minecraft:polished_diorite_stairs 6.30 // 磨制闪长岩楼梯
+minecraft:polished_diorite_slab 2.10 // 磨制闪长岩台阶
+minecraft:andesite 2.80 // 安山岩
+minecraft:andesite_stairs 4.20 // 安山岩楼梯
+minecraft:andesite_slab 1.40 // 安山岩台阶
+minecraft:andesite_wall 3.10 // 安山岩墙
+minecraft:polished_andesite 4.20 // 磨制安山岩
+minecraft:polished_andesite_stairs 6.30 // 磨制安山岩楼梯
+minecraft:polished_andesite_slab 2.10 // 磨制安山岩台阶
+minecraft:deepslate 4.00 // 深层岩
+minecraft:cobbled_deepslate 3.00 // 圆石深层岩
+minecraft:cobbled_deepslate_stairs 4.50 // 圆石深层岩楼梯
+minecraft:cobbled_deepslate_slab 1.50 // 圆石深层岩台阶
+minecraft:cobbled_deepslate_wall 3.30 // 圆石深层岩墙
+minecraft:polished_deepslate 4.50 // 磨制深层岩
+minecraft:polished_deepslate_stairs 6.75 // 磨制深层岩楼梯
+minecraft:polished_deepslate_slab 2.25 // 磨制深层岩台阶
+minecraft:polished_deepslate_wall 5.00 // 磨制深层岩墙
+minecraft:deepslate_bricks 5.00 // 深层岩砖
+minecraft:deepslate_brick_stairs 7.50 // 深层岩砖楼梯
+minecraft:deepslate_brick_slab 2.50 // 深层岩砖台阶
+minecraft:deepslate_brick_wall 5.50 // 深层岩砖墙
+minecraft:deepslate_tiles 5.50 // 深层岩瓦
+minecraft:deepslate_tile_stairs 8.25 // 深层岩瓦楼梯
+minecraft:deepslate_tile_slab 2.75 // 深层岩瓦台阶
+minecraft:deepslate_tile_wall 6.00 // 深层岩瓦墙
+minecraft:chiseled_deepslate 6.00 // 錾制深层岩
+minecraft:cracked_deepslate_bricks 4.00 // 裂纹深层岩砖
+minecraft:cracked_deepslate_tiles 4.50 // 裂纹深层岩瓦
+minecraft:reinforced_deepslate 500.00 // 强化深层岩
+minecraft:tuff 3.00 // 凝灰岩
+minecraft:tuff_stairs 4.50 // 凝灰岩楼梯
+minecraft:tuff_slab 1.50 // 凝灰岩台阶
+minecraft:tuff_wall 3.30 // 凝灰岩墙
+minecraft:calcite 4.00 // 方解石
+minecraft:calcite_stairs 6.00 // 方解石楼梯
+minecraft:calcite_slab 2.00 // 方解石台阶
+minecraft:calcite_wall 4.40 // 方解石墙
+minecraft:dripstone_block 5.00 // 滴水石块
+minecraft:bricks 10.00 // 砖块
+minecraft:brick_stairs 15.00 // 砖块楼梯
+minecraft:brick_slab 5.00 // 砖块台阶
+minecraft:brick_wall 11.00 // 砖块墙
+minecraft:mud_bricks 7.00 // 泥砖
+minecraft:mud_brick_stairs 10.50 // 泥砖楼梯
+minecraft:mud_brick_slab 3.50 // 泥砖台阶
+minecraft:mud_brick_wall 7.70 // 泥砖墙
+minecraft:packed_mud 5.00 // 填充泥巴
+minecraft:sandstone 6.00 // 砂岩
+minecraft:sandstone_stairs 9.00 // 砂岩楼梯
+minecraft:sandstone_slab 3.00 // 砂岩台阶
+minecraft:sandstone_wall 6.60 // 砂岩墙
+minecraft:chiseled_sandstone 7.00 // 錾制砂岩
+minecraft:cut_sandstone 7.00 // 切制砂岩
+minecraft:cut_sandstone_slab 3.50 // 切制砂岩台阶
+minecraft:smooth_sandstone 8.00 // 平滑砂岩
+minecraft:smooth_sandstone_stairs 12.00 // 平滑砂岩楼梯
+minecraft:smooth_sandstone_slab 4.00 // 平滑砂岩台阶
+minecraft:red_sandstone 7.00 // 红砂岩
+minecraft:red_sandstone_stairs 10.50 // 红砂岩楼梯
+minecraft:red_sandstone_slab 3.50 // 红砂岩台阶
+minecraft:red_sandstone_wall 7.70 // 红砂岩墙
+minecraft:chiseled_red_sandstone 8.00 // 錾制红砂岩
+minecraft:cut_red_sandstone 8.00 // 切制红砂岩
+minecraft:cut_red_sandstone_slab 4.00 // 切制红砂岩台阶
+minecraft:smooth_red_sandstone 9.00 // 平滑红砂岩
+minecraft:smooth_red_sandstone_stairs 13.50 // 平滑红砂岩楼梯
+minecraft:smooth_red_sandstone_slab 4.50 // 平滑红砂岩台阶
+minecraft:quartz_block 60.00 // 石英块
+minecraft:quartz_stairs 90.00 // 石英楼梯
+minecraft:quartz_slab 30.00 // 石英台阶
+minecraft:chiseled_quartz_block 70.00 // 錾制石英块
+minecraft:quartz_bricks 70.00 // 石英砖
+minecraft:quartz_pillar 70.00 // 石英柱
+minecraft:smooth_quartz 80.00 // 平滑石英
+minecraft:smooth_quartz_stairs 120.00 // 平滑石英楼梯
+minecraft:smooth_quartz_slab 40.00 // 平滑石英台阶
+minecraft:nether_bricks 15.00 // 下界砖块
+minecraft:nether_brick_stairs 22.50 // 下界砖块楼梯
+minecraft:nether_brick_slab 7.50 // 下界砖块台阶
+minecraft:nether_brick_wall 16.50 // 下界砖块墙
+minecraft:red_nether_bricks 20.00 // 红色下界砖块
+minecraft:red_nether_brick_stairs 30.00 // 红色下界砖块楼梯
+minecraft:red_nether_brick_slab 10.00 // 红色下界砖块台阶
+minecraft:red_nether_brick_wall 22.00 // 红色下界砖块墙
+minecraft:blackstone 7.00 // 黑石
+minecraft:blackstone_stairs 10.50 // 黑石楼梯
+minecraft:blackstone_slab 3.50 // 黑石台阶
+minecraft:blackstone_wall 7.70 // 黑石墙
+minecraft:polished_blackstone 8.00 // 磨制黑石
+minecraft:polished_blackstone_stairs 12.00 // 磨制黑石楼梯
+minecraft:polished_blackstone_slab 4.00 // 磨制黑石台阶
+minecraft:polished_blackstone_wall 8.80 // 磨制黑石墙
+minecraft:polished_blackstone_bricks 9.00 // 磨制黑石砖
+minecraft:polished_blackstone_brick_stairs 13.50 // 磨制黑石砖楼梯
+minecraft:polished_blackstone_brick_slab 4.50 // 磨制黑石砖台阶
+minecraft:polished_blackstone_brick_wall 9.90 // 磨制黑石砖墙
+minecraft:end_stone 15.00 // 末地石
+minecraft:end_stone_bricks 18.00 // 末地石砖
+minecraft:end_stone_brick_stairs 27.00 // 末地石砖楼梯
+minecraft:end_stone_brick_slab 9.00 // 末地石砖台阶
+minecraft:end_stone_brick_wall 19.80 // 末地石砖墙
+minecraft:purpur_block 20.00 // 紫珀块
+minecraft:purpur_stairs 30.00 // 紫珀楼梯
+minecraft:purpur_slab 10.00 // 紫珀台阶
+minecraft:purpur_pillar 25.00 // 紫珀柱
+minecraft:prismarine 40.00 // 海晶石
+minecraft:prismarine_stairs 60.00 // 海晶石楼梯
+minecraft:prismarine_slab 20.00 // 海晶石台阶
+minecraft:prismarine_wall 44.00 // 海晶石墙
+minecraft:prismarine_bricks 50.00 // 海晶石砖
+minecraft:prismarine_brick_stairs 75.00 // 海晶石砖楼梯
+minecraft:prismarine_brick_slab 25.00 // 海晶石砖台阶
+minecraft:dark_prismarine 60.00 // 暗海晶石
+minecraft:dark_prismarine_stairs 90.00 // 暗海晶石楼梯
+minecraft:dark_prismarine_slab 30.00 // 暗海晶石台阶
+
+# === [染色方块补充] (COLORED_BLOCKS_SUPPLEMENT) ===
+# 染色玻璃 (8.00)
+minecraft:white_stained_glass 8.00 // 白色染色玻璃
+minecraft:orange_stained_glass 8.00 // 橙色染色玻璃
+minecraft:magenta_stained_glass 8.00 // 品红色染色玻璃
+minecraft:light_blue_stained_glass 8.00 // 淡蓝色染色玻璃
+minecraft:yellow_stained_glass 8.00 // 黄色染色玻璃
+minecraft:lime_stained_glass 8.00 // 黄绿色染色玻璃
+minecraft:pink_stained_glass 8.00 // 粉红色染色玻璃
+minecraft:gray_stained_glass 8.00 // 灰色染色玻璃
+minecraft:light_gray_stained_glass 8.00 // 淡灰色染色玻璃
+minecraft:cyan_stained_glass 8.00 // 青色染色玻璃
+minecraft:purple_stained_glass 8.00 // 紫色染色玻璃
+minecraft:blue_stained_glass 8.00 // 蓝色染色玻璃
+minecraft:brown_stained_glass 8.00 // 棕色染色玻璃
+minecraft:green_stained_glass 8.00 // 绿色染色玻璃
+minecraft:red_stained_glass 8.00 // 红色染色玻璃
+minecraft:black_stained_glass 8.00 // 黑色染色玻璃
+# 染色玻璃板 (3.00)
+minecraft:white_stained_glass_pane 3.00 // 白色染色玻璃板
+minecraft:orange_stained_glass_pane 3.00 // 橙色染色玻璃板
+minecraft:magenta_stained_glass_pane 3.00 // 品红色染色玻璃板
+minecraft:light_blue_stained_glass_pane 3.00 // 淡蓝色染色玻璃板
+minecraft:yellow_stained_glass_pane 3.00 // 黄色染色玻璃板
+minecraft:lime_stained_glass_pane 3.00 // 黄绿色染色玻璃板
+minecraft:pink_stained_glass_pane 3.00 // 粉红色染色玻璃板
+minecraft:gray_stained_glass_pane 3.00 // 灰色染色玻璃板
+minecraft:light_gray_stained_glass_pane 3.00 // 淡灰色染色玻璃板
+minecraft:cyan_stained_glass_pane 3.00 // 青色染色玻璃板
+minecraft:purple_stained_glass_pane 3.00 // 紫色染色玻璃板
+minecraft:blue_stained_glass_pane 3.00 // 蓝色染色玻璃板
+minecraft:brown_stained_glass_pane 3.00 // 棕色染色玻璃板
+minecraft:green_stained_glass_pane 3.00 // 绿色染色玻璃板
+minecraft:red_stained_glass_pane 3.00 // 红色染色玻璃板
+minecraft:black_stained_glass_pane 3.00 // 黑色染色玻璃板
+# 混凝土粉末 (10.00)
+minecraft:white_concrete_powder 10.00 // 白色混凝土粉末
+minecraft:orange_concrete_powder 10.00 // 橙色混凝土粉末
+minecraft:magenta_concrete_powder 10.00 // 品红色混凝土粉末
+minecraft:light_blue_concrete_powder 10.00 // 淡蓝色混凝土粉末
+minecraft:yellow_concrete_powder 10.00 // 黄色混凝土粉末
+minecraft:lime_concrete_powder 10.00 // 黄绿色混凝土粉末
+minecraft:pink_concrete_powder 10.00 // 粉红色混凝土粉末
+minecraft:gray_concrete_powder 10.00 // 灰色混凝土粉末
+minecraft:light_gray_concrete_powder 10.00 // 淡灰色混凝土粉末
+minecraft:cyan_concrete_powder 10.00 // 青色混凝土粉末
+minecraft:purple_concrete_powder 10.00 // 紫色混凝土粉末
+minecraft:blue_concrete_powder 10.00 // 蓝色混凝土粉末
+minecraft:brown_concrete_powder 10.00 // 棕色混凝土粉末
+minecraft:green_concrete_powder 10.00 // 绿色混凝土粉末
+minecraft:red_concrete_powder 10.00 // 红色混凝土粉末
+minecraft:black_concrete_powder 10.00 // 黑色混凝土粉末
+# 釉面陶瓦 (18.00)
+minecraft:white_glazed_terracotta 18.00 // 白色釉面陶瓦
+minecraft:orange_glazed_terracotta 18.00 // 橙色釉面陶瓦
+minecraft:magenta_glazed_terracotta 18.00 // 品红色釉面陶瓦
+minecraft:light_blue_glazed_terracotta 18.00 // 淡蓝色釉面陶瓦
+minecraft:yellow_glazed_terracotta 18.00 // 黄色釉面陶瓦
+minecraft:lime_glazed_terracotta 18.00 // 黄绿色釉面陶瓦
+minecraft:pink_glazed_terracotta 18.00 // 粉红色釉面陶瓦
+minecraft:gray_glazed_terracotta 18.00 // 灰色釉面陶瓦
+minecraft:light_gray_glazed_terracotta 18.00 // 淡灰色釉面陶瓦
+minecraft:cyan_glazed_terracotta 18.00 // 青色釉面陶瓦
+minecraft:purple_glazed_terracotta 18.00 // 紫色釉面陶瓦
+minecraft:blue_glazed_terracotta 18.00 // 蓝色釉面陶瓦
+minecraft:brown_glazed_terracotta 18.00 // 棕色釉面陶瓦
+minecraft:green_glazed_terracotta 18.00 // 绿色釉面陶瓦
+minecraft:red_glazed_terracotta 18.00 // 红色釉面陶瓦
+minecraft:black_glazed_terracotta 18.00 // 黑色釉面陶瓦
+
+# === [自然与植被补充] (NATURAL_VEGETATION_SUPPLEMENT) ===
+# 树叶 (2.00)
+minecraft:oak_leaves 2.00 // 橡木树叶
+minecraft:spruce_leaves 2.00 // 云杉树叶
+minecraft:birch_leaves 2.00 // 白桦树叶
+minecraft:jungle_leaves 2.00 // 丛林树叶
+minecraft:acacia_leaves 2.00 // 金合欢树叶
+minecraft:dark_oak_leaves 2.00 // 深色橡木树叶
+minecraft:mangrove_leaves 2.50 // 红树树叶
+minecraft:cherry_leaves 3.00 // 樱花树叶
+minecraft:azalea_leaves 3.50 // 杜鹃树叶
+minecraft:flowering_azalea_leaves 5.00 // 开花杜鹃树叶
+# 其他植物
+minecraft:lily_pad 15.00 // 睡莲
+minecraft:vine 8.00 // 藤蔓
+minecraft:glow_lichen 12.00 // 发光地衣
+minecraft:hanging_roots 5.00 // 垂根
+minecraft:big_dripleaf 20.00 // 大垂滴叶
+minecraft:small_dripleaf 15.00 // 小垂滴叶
+minecraft:spore_blossom 150.00 // 孢子花
+minecraft:pointed_dripstone 10.00 // 滴水石锥
+minecraft:cave_vines 5.00 // 洞穴藤蔓
+minecraft:glow_berries 5.00 // 发光浆果
+minecraft:azalea_leaves 3.00 // 杜鹃树叶
+minecraft:flowering_azalea_leaves 5.00 // 盛开的杜鹃树叶
+minecraft:moss_block 10.00 // 苔藓块
+minecraft:moss_carpet 3.00 // 覆地苔藓
+minecraft:hanging_roots 5.00 // 垂根
+minecraft:big_dripleaf 15.00 // 大型垂滴叶
+minecraft:small_dripleaf 10.00 // 小型垂滴叶
+minecraft:sugar_cane 4.00 // 甘蔗
+minecraft:kelp 1.50 // 海带
+# 珊瑚系列
+minecraft:tube_coral_block 150.00 // 管珊瑚块
+minecraft:brain_coral_block 150.00 // 脑珊瑚块
+minecraft:bubble_coral_block 150.00 // 泡泡珊瑚块
+minecraft:fire_coral_block 150.00 // 火珊瑚块
+minecraft:horn_coral_block 150.00 // 鹿角珊瑚块
+minecraft:tube_coral 50.00 // 管珊瑚
+minecraft:brain_coral 50.00 // 脑珊瑚
+minecraft:bubble_coral 50.00 // 泡泡珊瑚
+minecraft:fire_coral 50.00 // 火珊瑚
+minecraft:horn_coral 50.00 // 鹿角珊瑚
+# 海晶石
+minecraft:prismarine 40.00 // 海晶石
+minecraft:prismarine_bricks 50.00 // 海晶石砖
+minecraft:dark_prismarine 60.00 // 暗海晶石
+# 其他
+minecraft:end_rod 120.00 // 末地烛
+minecraft:chorus_plant 50.00 // 紫颂植物
+minecraft:sculk 100.00 // 幽匿感测块
+minecraft:sculk_vein 20.00 // 幽匿脉络
+minecraft:sculk_catalyst 2500.00 // 幽匿催化体
+minecraft:sculk_shrieker 5000.00 // 幽匿尖啸体
+
+# === [红石与功能性方块补充] (REDSTONE_FUNCTIONAL_SUPPLEMENT) ===
+# 按钮与压力板
+minecraft:stone_button 2.00 // 石头按钮
+minecraft:oak_button 1.00 // 橡木按钮
+minecraft:spruce_button 1.00 // 云杉按钮
+minecraft:birch_button 1.00 // 白桦按钮
+minecraft:jungle_button 1.00 // 丛林按钮
+minecraft:acacia_button 1.00 // 金合欢按钮
+minecraft:dark_oak_button 1.00 // 深色橡木按钮
+minecraft:mangrove_button 1.00 // 红树按钮
+minecraft:cherry_button 1.00 // 樱花按钮
+minecraft:stone_pressure_plate 5.00 // 石头压力板
+minecraft:oak_pressure_plate 2.00 // 橡木压力板
+minecraft:spruce_pressure_plate 2.00 // 云杉压力板
+minecraft:birch_pressure_plate 2.00 // 白桦压力板
+minecraft:jungle_pressure_plate 2.00 // 丛林压力板
+minecraft:acacia_pressure_plate 2.00 // 金合欢压力板
+minecraft:dark_oak_pressure_plate 2.00 // 深色橡木压力板
+minecraft:mangrove_pressure_plate 2.00 // 红树压力板
+minecraft:cherry_pressure_plate 2.00 // 樱花压力板
+minecraft:light_weighted_pressure_plate 25.00 // 轻质测重压力板 (金)
+minecraft:heavy_weighted_pressure_plate 20.00 // 重质测重压力板 (铁)
+# 装饰与容器
+minecraft:item_frame 15.00 // 物品展示框
+minecraft:glow_item_frame 30.00 // 发光物品展示框
+minecraft:armor_stand 25.00 // 盔甲架
+minecraft:painting 15.00 // 画
+minecraft:white_banner 30.00 // 白色旗帜
+minecraft:orange_banner 30.00 // 橙色旗帜
+minecraft:trapped_chest 40.00 // 陷阱箱
+minecraft:ender_eye 250.00 // 末影之眼
+# 潜影盒补充
+minecraft:orange_shulker_box 1300.00 // 橙色潜影盒
+minecraft:magenta_shulker_box 1300.00 // 品红色潜影盒
+minecraft:light_blue_shulker_box 1300.00 // 淡蓝色潜影盒
+minecraft:yellow_shulker_box 1300.00 // 黄色潜影盒
+minecraft:lime_shulker_box 1300.00 // 黄绿色潜影盒
+minecraft:pink_shulker_box 1300.00 // 粉红色潜影盒
+minecraft:gray_shulker_box 1300.00 // 灰色潜影盒
+minecraft:light_gray_shulker_box 1300.00 // 淡灰色潜影盒
+minecraft:cyan_shulker_box 1300.00 // 青色潜影盒
+minecraft:purple_shulker_box 1300.00 // 紫色潜影盒
+minecraft:blue_shulker_box 1300.00 // 蓝色潜影盒
+minecraft:brown_shulker_box 1300.00 // 棕色潜影盒
+minecraft:green_shulker_box 1300.00 // 绿色潜影盒
+minecraft:red_shulker_box 1300.00 // 红色潜影盒
+minecraft:black_shulker_box 1300.00 // 黑色潜影盒
+
+# === [低级工具与装备补充] (LOWER_TOOLS_ARMOR_SUPPLEMENT) ===
+# 木质工具
+minecraft:wooden_pickaxe 15.00 // 木镐
+minecraft:wooden_sword 10.00 // 木剑
+minecraft:wooden_axe 15.00 // 木斧
+minecraft:wooden_shovel 8.00 // 木锹
+minecraft:wooden_hoe 12.00 // 木锄
+# 石质工具
+minecraft:stone_pickaxe 25.00 // 石镐
+minecraft:stone_sword 15.00 // 石剑
+minecraft:stone_axe 25.00 // 石斧
+minecraft:stone_shovel 12.00 // 石锹
+minecraft:stone_hoe 20.00 // 石锄
+# 金质工具
+minecraft:golden_pickaxe 250.00 // 金镐
+minecraft:golden_sword 180.00 // 金剑
+minecraft:golden_axe 250.00 // 金斧
+minecraft:golden_shovel 120.00 // 金锹
+minecraft:golden_hoe 180.00 // 金锄
+# 盔甲补充
+minecraft:leather_helmet 40.00 // 皮革头盔
+minecraft:leather_chestplate 75.00 // 皮革胸甲
+minecraft:leather_leggings 65.00 // 皮革护腿
+minecraft:leather_boots 35.00 // 皮革靴子
+minecraft:golden_helmet 450.00 // 金头盔
+minecraft:golden_chestplate 800.00 // 金胸甲
+minecraft:golden_leggings 700.00 // 金护腿
+minecraft:golden_boots 400.00 // 金靴子
+minecraft:chainmail_helmet 1000.00 // 锁链头盔
+minecraft:chainmail_chestplate 1800.00 // 锁链胸甲
+minecraft:chainmail_leggings 1500.00 // 锁链护腿
+minecraft:chainmail_boots 900.00 // 锁链靴子
+minecraft:turtle_helmet 500.00 // 龟壳
+
+# === [消耗品与材料补充] (CONSUMABLES_MATERIALS_SUPPLEMENT) ===
+minecraft:paper 2.00 // 纸
+minecraft:book 15.00 // 书
+minecraft:writable_book 25.00 // 书与羽毛
+minecraft:map 40.00 // 空地图
+minecraft:glass_bottle 5.00 // 玻璃瓶
+minecraft:honeycomb 20.00 // 蜜脾
+minecraft:honeycomb_block 80.00 // 蜜脾块
+minecraft:spider_eye 15.00 // 蜘蛛眼
+minecraft:fermented_spider_eye 25.00 // 发酵蜘蛛眼
+minecraft:glistering_melon_slice 100.00 // 闪烁的西瓜片
+minecraft:blaze_powder 50.00 // 烈焰粉
+minecraft:magma_cream 40.00 // 岩浆膏
+minecraft:ender_pearl 120.00 // 末影珍珠
+minecraft:gold_nugget 11.11 // 金粒
+minecraft:iron_nugget 2.77 // 铁粒
+minecraft:experience_bottle 500.00 // 附魔之瓶
+minecraft:firework_rocket 30.00 // 烟花火箭
+minecraft:firework_star 25.00 // 烟火之星
+minecraft:brick 2.50 // 砖块 (单枚)
+minecraft:nether_brick 4.00 // 下界砖 (单枚)
+minecraft:clay_ball 2.00 // 粘土球
+
+# === [食物补充] (FOOD_SUPPLEMENT) ===
+minecraft:rabbit_stew 30.00 // 兔肉煲
+minecraft:mushroom_stew 25.00 // 蘑菇牛排
+minecraft:beetroot_soup 25.00 // 甜菜汤
+minecraft:pumpkin_pie 45000.00 // 南瓜派 (农业奢侈品)
+minecraft:cookie 10.00 // 曲奇
+minecraft:cake 50.00 // 蛋糕
+minecraft:pumpkin 35000.00 // 南瓜 (兼种子产物)
+minecraft:melon 140000.00 // 西瓜 (整块)
+
+# === [1.20 考古与杂项补充] (ARCHAEOLOGY_MISC_SUPPLEMENT) ===
+minecraft:brush 50.00 // 刷子
+minecraft:suspicious_sand 10.00 // 可疑的沙子
+minecraft:suspicious_gravel 10.00 // 可疑的碎石
+minecraft:decorated_pot 3200.00 // 饰纹陶罐
+minecraft:echo_shard 1500.00 // 回响碎片
+minecraft:recovery_compass 5000.00 // 回归罗盘
+minecraft:bundle 500.00 // 收纳袋
+minecraft:goat_horn 500.00 // 山羊角
+minecraft:echo_shard 1500.00 // 回响碎片
+minecraft:disc_fragment_5 2000.00 // 唱片碎片 5
+minecraft:music_disc_5 10000.00 // 音乐唱片 5
+
+# === [青蛙与幽匿补充] (FROG_SCULK_SUPPLEMENT) ===
+minecraft:frogspawn 50.00 // 青蛙卵
+minecraft:ochre_froglight 1200.00 // 赭黄蛙明灯
+minecraft:verdant_froglight 1200.00 // 青翠蛙明灯
+minecraft:pearlescent_froglight 1200.00 // 珠光蛙明灯
+minecraft:sculk 100.00 // 幽匿块
+minecraft:sculk_vein 20.00 // 幽匿脉络
+minecraft:sculk_catalyst 2500.00 // 幽匿催发体
+minecraft:sculk_shrieker 5000.00 // 幽匿尖啸体
+minecraft:sculk_sensor 500.00 // 幽匿感测体
+minecraft:calibrated_sculk_sensor 1500.00 // 校频幽匿感测体
+minecraft:disc_fragment_5 2000.00 // 唱片碎片 5
+minecraft:music_disc_5 10000.00 // 音乐唱片 5
+
+# === [更多刷怪蛋] (MORE_SPAWN_EGGS) ===
+minecraft:blaze_spawn_egg 800.00 // 烈焰人刷怪蛋
+minecraft:ghast_spawn_egg 1200.00 // 恶魂刷怪蛋
+minecraft:endermite_spawn_egg 400.00 // 末影螨刷怪蛋
+minecraft:shulker_spawn_egg 2500.00 // 潜影贝刷怪蛋
+minecraft:hoglin_spawn_egg 600.00 // 霍格林刷怪蛋
+minecraft:piglin_spawn_egg 500.00 // 猪灵刷怪蛋
+minecraft:piglin_brute_spawn_egg 2000.00 // 猪灵蛮兵刷怪蛋
+minecraft:strider_spawn_egg 400.00 // 炽足兽刷怪蛋
+minecraft:zoglin_spawn_egg 1000.00 // 僵尸霍格林刷怪蛋
+minecraft:zombified_piglin_spawn_egg 400.00 // 僵尸猪灵刷怪蛋
+minecraft:axolotl_spawn_egg 600.00 // 美西螈刷怪蛋
+minecraft:bee_spawn_egg 300.00 // 蜜蜂刷怪蛋
+minecraft:glow_squid_spawn_egg 400.00 // 发光鱿鱼刷怪蛋
+minecraft:goat_spawn_egg 300.00 // 山羊刷怪蛋
+minecraft:allay_spawn_egg 5000.00 // 悦灵刷怪蛋
+minecraft:frog_spawn_egg 300.00 // 青蛙刷怪蛋
+minecraft:tadpole_spawn_egg 200.00 // 蝌蚪刷怪蛋
+minecraft:warden_spawn_egg 50000.00 // 监守者刷怪蛋
+minecraft:camel_spawn_egg 1500.00 // 骆驼刷怪蛋
+minecraft:ravager_spawn_egg 2500.00 // 劫掠兽刷怪蛋
+minecraft:trader_llama_spawn_egg 500.00 // 行商羊驼刷怪蛋
+minecraft:wandering_trader_spawn_egg 1200.00 // 流浪商人刷怪蛋
+minecraft:pillager_spawn_egg 400.00 // 掠夺者刷怪蛋
+minecraft:vindicator_spawn_egg 600.00 // 卫道士刷怪蛋
+minecraft:evoker_spawn_egg 1500.00 // 唤魔者刷怪蛋
+minecraft:witch_spawn_egg 500.00 // 女巫刷怪蛋
+minecraft:elder_guardian_spawn_egg 10000.00 // 古老守卫者刷怪蛋
+minecraft:guardian_spawn_egg 800.00 // 守卫者刷怪蛋
+minecraft:silverfish_spawn_egg 200.00 // 蠹虫刷怪蛋
+minecraft:endermite_spawn_egg 300.00 // 末影螨刷怪蛋
+minecraft:magma_cube_spawn_egg 400.00 // 岩浆怪刷怪蛋
+minecraft:slime_spawn_egg 400.00 // 史莱姆刷怪蛋
+minecraft:wither_skeleton_spawn_egg 1000.00 // 凋灵骷髅刷怪蛋
+minecraft:stray_spawn_egg 400.00 // 流浪者刷怪蛋
+minecraft:husk_spawn_egg 400.00 // 尸壳刷怪蛋
+minecraft:zombie_villager_spawn_egg 800.00 // 僵尸村民刷怪蛋
+minecraft:skeleton_horse_spawn_egg 2000.00 // 骷髅马刷怪蛋
+minecraft:zombie_horse_spawn_egg 2000.00 // 僵尸马刷怪蛋
+minecraft:donkey_spawn_egg 500.00 // 驴刷怪蛋
+minecraft:mule_spawn_egg 800.00 // 骡刷怪蛋
+minecraft:vex_spawn_egg 1200.00 // 恼鬼刷怪蛋
+minecraft:cave_spider_spawn_egg 400.00 // 洞穴蜘蛛刷怪蛋
+minecraft:bat_spawn_egg 150.00 // 蝙蝠刷怪蛋
+minecraft:squid_spawn_egg 200.00 // 鱿鱼刷怪蛋
+minecraft:wolf_spawn_egg 500.00 // 狼刷怪蛋
+minecraft:mooshroom_spawn_egg 1200.00 // 哞菇刷怪蛋
+minecraft:ocelot_spawn_egg 800.00 // 豹猫刷怪蛋
+minecraft:horse_spawn_egg 1000.00 // 马刷怪蛋
+minecraft:rabbit_spawn_egg 300.00 // 兔子刷怪蛋
+minecraft:polar_bear_spawn_egg 1200.00 // 北极熊刷怪蛋
+minecraft:llama_spawn_egg 800.00 // 羊草刷怪蛋
+minecraft:parrot_spawn_egg 1500.00 // 鹦鹉刷怪蛋
+minecraft:cat_spawn_egg 500.00 // 猫刷怪蛋
+minecraft:fox_spawn_egg 500.00 // 狐狸刷怪蛋
+minecraft:panda_spawn_egg 2500.00 // 熊猫刷怪蛋
+minecraft:pufferfish_spawn_egg 300.00 // 河豚刷怪蛋
+minecraft:salmon_spawn_egg 200.00 // 鲑鱼刷怪蛋
+minecraft:cod_spawn_egg 200.00 // 鳕鱼刷怪蛋
+minecraft:tropical_fish_spawn_egg 300.00 // 热带鱼刷怪蛋
+minecraft:drowned_spawn_egg 600.00 // 溺尸刷怪蛋
+minecraft:phantom_spawn_egg 1000.00 // 幻翼刷怪蛋
+minecraft:turtle_spawn_egg 800.00 // 海龟刷怪蛋
+minecraft:dolphin_spawn_egg 1200.00 // 海豚刷怪蛋
+
+# === [旗帜补充] (BANNERS_SUPPLEMENT) ===
+minecraft:white_banner 30.00 // 白色旗帜
+minecraft:orange_banner 35.00 // 橙色旗帜
+minecraft:magenta_banner 35.00 // 品红色旗帜
+minecraft:light_blue_banner 35.00 // 淡蓝色旗帜
+minecraft:yellow_banner 35.00 // 黄色旗帜
+minecraft:lime_banner 35.00 // 黄绿色旗帜
+minecraft:pink_banner 35.00 // 粉红色旗帜
+minecraft:gray_banner 35.00 // 灰色旗帜
+minecraft:light_gray_banner 35.00 // 淡灰色旗帜
+minecraft:cyan_banner 35.00 // 青色旗帜
+minecraft:purple_banner 35.00 // 紫色旗帜
+minecraft:blue_banner 35.00 // 蓝色旗帜
+minecraft:brown_banner 35.00 // 棕色旗帜
+minecraft:green_banner 35.00 // 绿色旗帜
+minecraft:red_banner 35.00 // 红色旗帜
+minecraft:black_banner 35.00 // 黑色旗帜
+
+# === [旗帜图案] (BANNER_PATTERNS) ===
+minecraft:flower_banner_pattern 250.00 // 花朵盾徽旗帜图案
+minecraft:creeper_banner_pattern 500.00 // 苦力怕盾徽旗帜图案
+minecraft:skull_banner_pattern 500.00 // 头颅盾徽旗帜图案
+minecraft:mojang_banner_pattern 2000.00 // Mojang徽标旗帜图案
+minecraft:globe_banner_pattern 1500.00 // 地球旗帜图案
+minecraft:piglin_banner_pattern 1000.00 // 猪鼻旗帜图案
+minecraft:glass 7.00 // 玻璃
+minecraft:tinted_glass 15.00 // 遮光玻璃
+
+# === [彩色方块] (COLORED_BLOCKS) ===
+# 羊毛 (Wool)
+minecraft:white_wool 10.00 // 白色羊毛
+minecraft:orange_wool 12.00 // 橙色羊毛
+minecraft:magenta_wool 12.00 // 品红色羊毛
+minecraft:light_blue_wool 12.00 // 淡蓝色羊毛
+minecraft:yellow_wool 12.00 // 黄色羊毛
+minecraft:lime_wool 12.00 // 黄绿色羊毛
+minecraft:pink_wool 12.00 // 粉红色羊毛
+minecraft:gray_wool 12.00 // 灰色羊毛
+minecraft:light_gray_wool 12.00 // 淡灰色羊毛
+minecraft:cyan_wool 12.00 // 青色羊毛
+minecraft:purple_wool 12.00 // 紫色羊毛
+minecraft:blue_wool 12.00 // 蓝色羊毛
+minecraft:brown_wool 12.00 // 棕色羊毛
+minecraft:green_wool 12.00 // 绿色羊毛
+minecraft:red_wool 12.00 // 红色羊毛
+minecraft:black_wool 12.00 // 黑色羊毛
+
+# 混凝土 (Concrete)
+minecraft:white_concrete 12.00 // 白色混凝土
+minecraft:orange_concrete 12.00 // 橙色混凝土
+minecraft:magenta_concrete 12.00 // 品红色混凝土
+minecraft:light_blue_concrete 12.00 // 淡蓝色混凝土
+minecraft:yellow_concrete 12.00 // 黄色混凝土
+minecraft:lime_concrete 12.00 // 黄绿色混凝土
+minecraft:pink_concrete 12.00 // 粉红色混凝土
+minecraft:gray_concrete 12.00 // 灰色混凝土
+minecraft:light_gray_concrete 12.00 // 淡灰色混凝土
+minecraft:cyan_concrete 12.00 // 青色混凝土
+minecraft:purple_concrete 12.00 // 紫色混凝土
+minecraft:blue_concrete 12.00 // 蓝色混凝土
+minecraft:brown_concrete 12.00 // 棕色混凝土
+minecraft:green_concrete 12.00 // 绿色混凝土
+minecraft:red_concrete 12.00 // 红色混凝土
+minecraft:black_concrete 12.00 // 黑色混凝土
+
+# 陶瓦 (Terracotta)
+minecraft:terracotta 10.00 // 陶瓦
+minecraft:white_terracotta 15.00 // 白色陶瓦
+minecraft:orange_terracotta 15.00 // 橙色陶瓦
+minecraft:magenta_terracotta 15.00 // 品红色陶瓦
+minecraft:light_blue_terracotta 15.00 // 淡蓝色陶瓦
+minecraft:yellow_terracotta 15.00 // 黄色陶瓦
+minecraft:lime_terracotta 15.00 // 黄绿色陶瓦
+minecraft:pink_terracotta 15.00 // 粉红色陶瓦
+minecraft:gray_terracotta 15.00 // 灰色陶瓦
+minecraft:light_gray_terracotta 15.00 // 淡灰色陶瓦
+minecraft:cyan_terracotta 15.00 // 青色陶瓦
+minecraft:purple_terracotta 15.00 // 紫色陶瓦
+minecraft:blue_terracotta 15.00 // 蓝色陶瓦
+minecraft:brown_terracotta 15.00 // 棕色陶瓦
+minecraft:green_terracotta 15.00 // 绿色陶瓦
+minecraft:red_terracotta 15.00 // 红色陶瓦
+minecraft:black_terracotta 15.00 // 黑色陶瓦
+
+# === [天然方块] (NATURAL_BLOCKS) ===
+minecraft:grass_block 5.00 // 草方块
+minecraft:dirt 1.00 // 土块
+minecraft:coarse_dirt 1.50 // 粗泥
+minecraft:rooted_dirt 2.00 // 缠根土
+minecraft:podzol 7.00 // 灰壤
+minecraft:mycelium 30.00 // 菌丝
+minecraft:sand 2.50 // 沙子
+minecraft:red_sand 3.50 // 红沙
+minecraft:gravel 2.50 // 碎石
+minecraft:mud 2.00 // 泥巴
+minecraft:clay 8.00 // 粘土块
+minecraft:snow_block 7.00 // 雪块
+minecraft:ice 10.00 // 冰
+minecraft:packed_ice 30.00 // 浮冰
+minecraft:blue_ice 90.00 // 蓝冰
+minecraft:obsidian 60.00 // 黑曜石
+minecraft:crying_obsidian 150.00 // 哭泣的黑曜石
+minecraft:glowstone 45.00 // 萤石
+minecraft:sea_lantern 80.00 // 海晶灯
+minecraft:magma_block 15.00 // 岩浆块
+minecraft:soul_sand 10.00 // 灵魂沙
+minecraft:soul_soil 10.00 // 灵魂土
+
+# 矿石 (Ore)
+minecraft:coal_ore 18.00 // 煤矿石
+minecraft:deepslate_coal_ore 22.00 // 深层煤矿石
+minecraft:iron_ore 45.00 // 铁矿石
+minecraft:deepslate_iron_ore 55.00 // 深层铁矿石
+minecraft:copper_ore 20.00 // 铜矿石
+minecraft:deepslate_copper_ore 25.00 // 深层铜矿石
+minecraft:gold_ore 200.00 // 金矿石
+minecraft:deepslate_gold_ore 250.00 // 深层金矿石
+minecraft:redstone_ore 35.00 // 红石矿石
+minecraft:deepslate_redstone_ore 45.00 // 深层红石矿石
+minecraft:emerald_ore 3000.00 // 绿宝石矿石
+minecraft:deepslate_emerald_ore 3500.00 // 深层绿宝石矿石
+minecraft:lapis_ore 100.00 // 青金石矿石
+minecraft:deepslate_lapis_ore 120.00 // 深层青金石矿石
+minecraft:diamond_ore 4500.00 // 钻石矿石
+minecraft:deepslate_diamond_ore 5500.00 // 深层钻石矿石
+minecraft:nether_quartz_ore 80.00 // 下界石英矿石
+minecraft:nether_gold_ore 50.00 // 下界金矿石
+minecraft:ancient_debris 9000.00 // 古骸
+
+# 植被与花卉
+minecraft:oak_sapling 7.00 // 橡木树苗
+minecraft:spruce_sapling 7.00 // 云杉树苗
+minecraft:birch_sapling 7.00 // 白桦树苗
+minecraft:jungle_sapling 7.00 // 丛林树苗
+minecraft:acacia_sapling 7.00 // 金合欢树苗
+minecraft:dark_oak_sapling 7.00 // 深色橡木树苗
+minecraft:mangrove_propagule 10.00 // 红树胎生苗
+minecraft:cherry_sapling 12.00 // 樱花树苗
+minecraft:azalea 15.00 // 杜鹃花
+minecraft:flowering_azalea 25.00 // 开花杜鹃花
+minecraft:dandelion 3.00 // 蒲公英
+minecraft:poppy 3.00 // 虞美人
+minecraft:blue_orchid 6.00 // 兰花
+minecraft:allium 6.00 // 绒球葱
+minecraft:azure_bluet 5.00 // 雏菊
+minecraft:red_tulip 5.00 // 红色郁金香
+minecraft:orange_tulip 5.00 // 橙色郁金香
+minecraft:white_tulip 5.00 // 白色郁金香
+minecraft:pink_tulip 5.00 // 粉色郁金香
+minecraft:oxeye_daisy 5.00 // 滨菊
+minecraft:cornflower 5.00 // 矢车菊
+minecraft:lily_of_the_valley 8.00 // 铃兰
+minecraft:wither_rose 150.00 // 凋灵玫瑰
+minecraft:sunflower 10.00 // 向日葵
+minecraft:lilac 10.00 // 丁香
+minecraft:rose_bush 10.00 // 玫瑰丛
+minecraft:peony 10.00 // 牡丹
+minecraft:torchflower 30.00 // 火炬花
+minecraft:pitcher_plant 30.00 // 瓶子草
+minecraft:pink_petals 15.00 // 粉红花瓣
+
+# === [功能性方块] (FUNCTIONAL_BLOCKS) ===
+minecraft:torch 2.50 // 火把
+minecraft:soul_torch 5.00 // 灵魂火把
+minecraft:redstone_torch 5.00 // 红石火把
+minecraft:lantern 15.00 // 灯笼
+minecraft:soul_lantern 20.00 // 灵魂灯笼
+minecraft:crafting_table 10.00 // 工作台
+minecraft:furnace 20.00 // 熔炉
+minecraft:blast_furnace 100.00 // 高炉
+minecraft:smoker 70.00 // 烟熏炉
+minecraft:campfire 15.00 // 营火
+minecraft:soul_campfire 20.00 // 灵魂营火
+minecraft:anvil 750.00 // 铁砧
+minecraft:chipped_anvil 500.00 // 轻微受损的铁砧
+minecraft:damaged_anvil 250.00 // 严重受损的铁砧
+minecraft:enchanting_table 6000.00 // 附魔台
+minecraft:ender_chest 900.00 // 末影箱
+minecraft:shulker_box 1200.00 // 潜影盒
+minecraft:white_shulker_box 1300.00 // 白色潜影盒
+minecraft:beacon 300000.00 // 信标
+minecraft:conduit 45000.00 // 潮汐核心
+minecraft:jukebox 2500.00 // 唱片机
+minecraft:lectern 50.00 // 讲台
+minecraft:composter 15.00 // 堆肥桶
+minecraft:barrel 15.00 // 木桶
+minecraft:loom 15.00 // 织布机
+minecraft:grindstone 20.00 // 石磨
+minecraft:cartography_table 20.00 // 制图台
+minecraft:smithing_table 20.00 // 锻造台
+minecraft:stonecutter 15.00 // 切石机
+minecraft:bell 500.00 // 钟
+minecraft:lodestone 5000.00 // 磁石
+minecraft:respawn_anchor 8000.00 // 重生锚
+minecraft:scaffolding 20.00 // 脚手架
+minecraft:fletching_table 20.00 // 制箭台
+minecraft:bamboo_shoot 10.00 // 竹笋
+
+# === [船与运输船] (BOATS_CHEST_BOATS) ===
+minecraft:oak_boat 20.00 // 橡木船
+minecraft:spruce_boat 20.00 // 云杉木船
+minecraft:birch_boat 20.00 // 白桦木船
+minecraft:jungle_boat 20.00 // 丛林木船
+minecraft:acacia_boat 20.00 // 金合欢木船
+minecraft:dark_oak_boat 20.00 // 深色橡木船
+minecraft:mangrove_boat 22.00 // 红树木船
+minecraft:cherry_boat 25.00 // 樱花木船
+minecraft:bamboo_raft 20.00 // 竹筏
+minecraft:oak_chest_boat 35.00 // 橡木运输船
+minecraft:spruce_chest_boat 35.00 // 云杉木运输船
+minecraft:birch_chest_boat 35.00 // 白桦木运输船
+minecraft:jungle_chest_boat 35.00 // 丛林木运输船
+minecraft:acacia_chest_boat 35.00 // 金合欢木运输船
+minecraft:dark_oak_chest_boat 35.00 // 深色橡木运输船
+minecraft:mangrove_chest_boat 37.00 // 红树木运输船
+minecraft:cherry_chest_boat 40.00 // 樱花木运输船
+minecraft:bamboo_chest_raft 35.00 // 运输竹筏
+
+# 床 (Beds)
+minecraft:white_bed 50.00 // 白色床
+minecraft:orange_bed 55.00 // 橙色床
+minecraft:magenta_bed 55.00 // 品红色床
+minecraft:light_blue_bed 55.00 // 淡蓝色床
+minecraft:yellow_bed 55.00 // 黄色床
+minecraft:lime_bed 55.00 // 黄绿色床
+minecraft:pink_bed 55.00 // 粉红色床
+minecraft:gray_bed 55.00 // 灰色床
+minecraft:light_gray_bed 55.00 // 淡灰色床
+minecraft:cyan_bed 55.00 // 青色床
+minecraft:purple_bed 55.00 // 紫色床
+minecraft:blue_bed 55.00 // 蓝色床
+minecraft:brown_bed 55.00 // 棕色床
+minecraft:green_bed 55.00 // 绿色床
+minecraft:red_bed 55.00 // 红色床
+minecraft:black_bed 55.00 // 黑色床
+
+# === [红石方块] (REDSTONE_BLOCKS) ===
+minecraft:redstone 10.00 // 红石粉
+minecraft:redstone_block 90.00 // 红石块
+minecraft:repeater 30.00 // 红石中继器
+minecraft:comparator 50.00 // 红石比较器
+minecraft:piston 80.00 // 活塞
+minecraft:sticky_piston 110.00 // 粘性活塞
+minecraft:observer 80.00 // 侦测器
+minecraft:hopper 150.00 // 漏斗
+minecraft:dropper 30.00 // 投掷器
+minecraft:dispenser 50.00 // 发射器
+minecraft:tnt 120.00 // TNT
+minecraft:lever 2.00 // 拉杆
+minecraft:daylight_detector 100.00 // 阳光探测器
+minecraft:sculk_sensor 500.00 // 幽匿感测体
+minecraft:calibrated_sculk_sensor 1500.00 // 刻度幽匿感测体
+minecraft:target 50.00 // 靶子
+minecraft:lightning_rod 40.00 // 避雷针
+
+# === [工具与战斗] (TOOLS_AND_COMBAT) ===
+# 铁质工具
+minecraft:iron_pickaxe 85.00 // 铁镐
+minecraft:iron_sword 60.00 // 铁剑
+minecraft:iron_axe 85.00 // 铁斧
+minecraft:iron_shovel 35.00 // 铁锹
+minecraft:iron_hoe 60.00 // 铁锄
+
+# 钻石工具
+minecraft:diamond_pickaxe 7550.00 // 钻石镐
+minecraft:diamond_sword 5050.00 // 钻石剑
+minecraft:diamond_axe 7550.00 // 钻石斧
+minecraft:diamond_shovel 2550.00 // 钻石锹
+minecraft:diamond_hoe 5050.00 // 钻石锄
+
+# 下界合金工具
+minecraft:netherite_pickaxe 35000.00 // 下界合金镐
+minecraft:netherite_sword 32000.00 // 下界合金剑
+
+# 盔甲 (Armor)
+minecraft:iron_helmet 125.00 // 铁头盔
+minecraft:iron_chestplate 200.00 // 铁胸甲
+minecraft:iron_leggings 175.00 // 铁护腿
+minecraft:iron_boots 100.00 // 铁靴子
+
+minecraft:diamond_helmet 12500.00 // 钻石头盔
+minecraft:diamond_chestplate 20000.00 // 钻石胸甲
+minecraft:diamond_leggings 17500.00 // 钻石护腿
+minecraft:diamond_boots 10000.00 // 钻石靴子
+
+minecraft:netherite_helmet 40000.00 // 下界合金头盔
+minecraft:netherite_chestplate 50000.00 // 下界合金胸甲
+
+# 其他战斗物品
+minecraft:bow 50.00 // 弓
+minecraft:crossbow 80.00 // 弩
+minecraft:arrow 5.00 // 箭
+minecraft:shield 100.00 // 盾牌
+minecraft:elytra 80000.00 // 鞘翅
+minecraft:trident 25000.00 // 三叉戟
+minecraft:spyglass 200.00 // 望远镜
+minecraft:totem_of_undying 35000.00 // 不死图腾
+minecraft:goat_horn 500.00 // 山羊角
+
+# === [农业与作物] (AGRICULTURE) ===
+# 警告: 种子获取率为 0.01% 且无法回收，种子及其产物已进入“绝世稀有”价格区间
+minecraft:wheat_seeds 50000.00 // 小麦种子 (绝世稀有)
+minecraft:pumpkin_seeds 150000.00 // 南瓜种子 (绝世稀有)
+minecraft:melon_seeds 150000.00 // 西瓜种子 (绝世稀有)
+minecraft:beetroot_seeds 80000.00 // 甜菜种子 (绝世稀有)
+minecraft:torchflower_seeds 500000.00 // 火炬花种子 (神话级稀有)
+minecraft:pitcher_pod 500000.00 // 瓶子草荚果 (神话级稀有)
+minecraft:carrot 40000.00 // 胡萝卜 (兼种子)
+minecraft:potato 40000.00 // 马铃薯 (兼种子)
+minecraft:poisonous_potato 5000.00 // 毒马铃薯
+minecraft:beetroot 30000.00 // 甜菜根
+minecraft:wheat 45000.00 // 小麦
+minecraft:sugar_cane 4.00 // 甘蔗 (维持原价)
+minecraft:cactus 5.00 // 仙人掌 (维持原价)
+minecraft:cocoa_beans 8.00 // 可可豆
+minecraft:nether_wart 60000.00 // 下界疣 (极度稀有)
+minecraft:chorus_flower 200000.00 // 紫颂花
+minecraft:kelp 1.50 // 海带
+minecraft:dried_kelp 2.50 // 干海带
+minecraft:bamboo 2.00 // 竹子
+minecraft:brown_mushroom 5.00 // 棕色蘑菇
+minecraft:red_mushroom 5.00 // 红色蘑菇
+minecraft:crimson_fungus 8.00 // 绯红菌菇
+minecraft:warped_fungus 8.00 // 诡异菌菇
+minecraft:sea_pickle 15.00 // 海泡石
+
+# === [食物与饮品] (FOOD_AND_DRINKS) ===
+minecraft:apple 5.00 // 苹果
+minecraft:golden_apple 1000.00 // 金苹果
+minecraft:enchanted_golden_apple 350000.00 // 附魔金苹果
+minecraft:melon_slice 25000.00 // 西瓜片 (受极端种子稀有度影响)
+minecraft:sweet_berries 2.00 // 甜浆果
+minecraft:glow_berries 5.00 // 发光浆果
+minecraft:cave_vines 4.00 // 洞穴藤蔓
+minecraft:moss_block 15.00 // 苔藓块
+minecraft:moss_carpet 5.00 // 覆地苔藓
+minecraft:azalea 15.00 // 杜鹃花丛
+minecraft:flowering_azalea 25.00 // 盛开的杜鹃花丛
+minecraft:hanging_roots 5.00 // 垂根
+minecraft:spore_blossom 150.00 // 孢子花
+minecraft:big_dripleaf 20.00 // 大型垂滴叶
+minecraft:small_dripleaf 15.00 // 小型垂滴叶
+
+# === [蜡烛] (CANDLES) ===
+minecraft:candle 10.00 // 蜡烛
+minecraft:white_candle 12.00 // 白色蜡烛
+minecraft:orange_candle 12.00 // 橙色蜡烛
+minecraft:magenta_candle 12.00 // 品红色蜡烛
+minecraft:light_blue_candle 12.00 // 淡蓝色蜡烛
+minecraft:yellow_candle 12.00 // 黄色蜡烛
+minecraft:lime_candle 12.00 // 黄绿色蜡烛
+minecraft:pink_candle 12.00 // 粉红色蜡烛
+minecraft:gray_candle 12.00 // 灰色蜡烛
+minecraft:light_gray_candle 12.00 // 淡灰色蜡烛
+minecraft:cyan_candle 12.00 // 青色蜡烛
+minecraft:purple_candle 12.00 // 紫色蜡烛
+minecraft:blue_candle 12.00 // 蓝色蜡烛
+minecraft:brown_candle 12.00 // 棕色蜡烛
+minecraft:green_candle 12.00 // 绿色蜡烛
+minecraft:red_candle 12.00 // 红色蜡烛
+minecraft:black_candle 12.00 // 黑色蜡烛
+minecraft:chorus_fruit 45000.00 // 紫颂果
+minecraft:bread 120000.00 // 面包 (受极端小麦价格影响)
+minecraft:cooked_beef 20.00 // 牛排
+minecraft:cooked_porkchop 18.00 // 熟猪肉
+minecraft:cooked_mutton 15.00 // 熟羊肉
+minecraft:cooked_chicken 15.00 // 熟鸡肉
+minecraft:cooked_rabbit 15.00 // 熟兔肉
+minecraft:cooked_cod 12.00 // 熟鳕鱼
+minecraft:cooked_salmon 15.00 // 熟鲑鱼
+minecraft:golden_carrot 2500000.00 // 金胡萝卜 (农业奢侈品)
+minecraft:honey_bottle 25.00 // 蜂蜜瓶
+minecraft:milk_bucket 50.00 // 奶桶
+minecraft:honey_bottle 25.00 // 蜂蜜瓶
+minecraft:honey_block 100.00 // 蜂蜜块
+minecraft:honeycomb 20.00 // 蜜脾
+minecraft:honeycomb_block 80.00 // 蜜脾块
+minecraft:bee_nest 150.00 // 蜂巢
+minecraft:beehive 100.00 // 蜂箱
+minecraft:suspicious_stew 35.00 // 迷之炖菜
+
+# === [材料] (INGREDIENTS) ===
+minecraft:coal 7.00 // 煤炭
+minecraft:charcoal 5.00 // 木炭
+minecraft:raw_copper 5.00 // 铜原矿
+minecraft:raw_iron 15.00 // 铁原矿
+minecraft:raw_gold 80.00 // 金原矿
+minecraft:copper_ingot 8.00 // 铜锭
+minecraft:iron_ingot 25.00 // 铁锭
+minecraft:gold_ingot 100.00 // 金锭
+minecraft:raw_copper_block 45.00 // 粗铜块
+minecraft:raw_iron_block 135.00 // 粗铁块
+minecraft:raw_gold_block 720.00 // 粗金块
+
+# === [涂蜡铜系列] (WAXED_COPPER) ===
+minecraft:waxed_copper_block 75.00 // 涂蜡铜块
+minecraft:waxed_exposed_copper 85.00 // 涂蜡斑驳铜块
+minecraft:waxed_weathered_copper 95.00 // 涂蜡锈蚀铜块
+minecraft:waxed_oxidized_copper 105.00 // 涂蜡氧化铜块
+minecraft:waxed_cut_copper 80.00 // 涂蜡切制铜块
+minecraft:waxed_exposed_cut_copper 90.00 // 涂蜡斑驳切制铜块
+minecraft:waxed_weathered_cut_copper 100.00 // 涂蜡锈蚀切制铜块
+minecraft:waxed_oxidized_cut_copper 110.00 // 涂蜡氧化切制铜块
+minecraft:waxed_cut_copper_stairs 120.00 // 涂蜡切制铜楼梯
+minecraft:waxed_exposed_cut_copper_stairs 135.00 // 涂蜡斑驳切制铜楼梯
+minecraft:waxed_weathered_cut_copper_stairs 150.00 // 涂蜡锈蚀切制铜楼梯
+minecraft:waxed_oxidized_cut_copper_stairs 165.00 // 涂蜡氧化切制铜楼梯
+minecraft:waxed_cut_copper_slab 40.00 // 涂蜡切制铜台阶
+minecraft:waxed_exposed_cut_copper_slab 45.00 // 涂蜡斑驳切制铜台阶
+minecraft:waxed_weathered_cut_copper_slab 50.00 // 涂蜡锈蚀切制铜台阶
+minecraft:waxed_oxidized_cut_copper_slab 55.00 // 涂蜡氧化切制铜台阶
+
+minecraft:diamond 2500.00 // 钻石
+minecraft:emerald 1500.00 // 绿宝石
+minecraft:lapis_lazuli 15.00 // 青金石
+minecraft:amethyst_shard 30.00 // 紫水晶碎片
+minecraft:amethyst_block 120.00 // 紫水晶块
+minecraft:budding_amethyst 500.00 // 紫水晶母岩
+minecraft:amethyst_cluster 150.00 // 紫水晶簇
+minecraft:large_amethyst_bud 100.00 // 大型紫晶芽
+minecraft:medium_amethyst_bud 70.00 // 中型紫晶芽
+minecraft:small_amethyst_bud 40.00 // 小型紫晶芽
+
+# === [玄武岩系列] (BASALT_VARIANTS) ===
+minecraft:basalt 5.00 // 玄武岩
+minecraft:polished_basalt 8.00 // 磨制玄武岩
+minecraft:smooth_basalt 10.00 // 平滑玄武岩
+
+# === [更多桶装生物] (BUCKET_ENTITIES) ===
+minecraft:axolotl_bucket 650.00 // 美西螈桶
+minecraft:tadpole_bucket 250.00 // 蝌蚪桶
+minecraft:pufferfish_bucket 350.00 // 河豚桶
+minecraft:salmon_bucket 250.00 // 鲑鱼桶
+minecraft:cod_bucket 250.00 // 鳕鱼桶
+minecraft:tropical_fish_bucket 350.00 // 热带鱼桶
+minecraft:powder_snow_bucket 100.00 // 细雪桶
+
+# === [杂项功能补充] (MISC_FUNCTIONAL_SUPPLEMENT) ===
+minecraft:fire_charge 50.00 // 火焰弹
+minecraft:writable_book 25.00 // 书与笔
+minecraft:written_book 50.00 // 成书
+minecraft:flower_pot 15.00 // 花盆
+minecraft:item_frame 15.00 // 物品展示框
+minecraft:glow_item_frame 30.00 // 荧光物品展示框
+minecraft:armor_stand 25.00 // 盔甲架
+minecraft:painting 15.00 // 画
+minecraft:end_crystal 1500.00 // 末地水晶
+minecraft:experience_bottle 500.00 // 附魔之瓶
+minecraft:spyglass 200.00 // 望远镜
+minecraft:recovery_compass 5000.00 // 追溯指针 (回归罗盘)
+minecraft:echo_shard 1500.00 // 回响碎片
+minecraft:netherite_scrap 6000.00 // 下界合金碎片
+minecraft:netherite_ingot 25000.00 // 下界合金锭
+minecraft:nether_star 300000.00 // 下界之星
+minecraft:stick 1.25 // 木棍
+minecraft:string 3.50 // 线
+minecraft:feather 2.50 // 羽毛
+minecraft:gunpowder 25.00 // 火药
+minecraft:leather 15.00 // 皮革
+minecraft:rabbit_hide 10.00 // 兔子皮
+minecraft:bone 8.00 // 骨头
+minecraft:bone_meal 3.00 // 骨粉
+minecraft:slime_ball 35.00 // 史莱姆球
+minecraft:magma_cream 40.00 // 岩浆膏
+minecraft:ender_pearl 120.00 // 末影珍珠
+minecraft:blaze_rod 100.00 // 烈焰棒
+minecraft:ghast_tear 250.00 // 恶魂之泪
+minecraft:phantom_membrane 200.00 // 夜魅皮膜
+minecraft:scute 150.00 // 鳞甲
+minecraft:snowball 1.00 // 雪球
+minecraft:egg 2.00 // 鸡蛋
+minecraft:compass 50.00 // 指南针
+minecraft:clock 100.00 // 时钟
+minecraft:shears 25.00 // 剪刀
+minecraft:flint_and_steel 15.00 // 打火石
+minecraft:bowl 2.00 // 碗
+minecraft:sugar 5.00 // 糖
+minecraft:ink_sac 10.00 // 墨囊
+minecraft:glow_ink_sac 20.00 // 荧光墨囊
+minecraft:turtle_scute 150.00 // 海龟鳞甲
+minecraft:phantom_membrane 200.00 // 幻翼膜
+minecraft:echo_shard 1500.00 // 回响碎片
+minecraft:disc_fragment_5 2000.00 // 唱片碎片 5
+
+# 染料 (Dyes)
+minecraft:white_dye 7.00 // 白色染料
+minecraft:orange_dye 7.00 // 橙色染料
+minecraft:magenta_dye 7.00 // 品红色染料
+minecraft:light_blue_dye 7.00 // 淡蓝色染料
+minecraft:yellow_dye 7.00 // 黄色染料
+minecraft:lime_dye 7.00 // 黄绿色染料
+minecraft:pink_dye 7.00 // 粉红色染料
+minecraft:gray_dye 7.00 // 灰色染料
+minecraft:light_gray_dye 7.00 // 淡灰色染料
+minecraft:cyan_dye 7.00 // 青色染料
+minecraft:purple_dye 7.00 // 紫色染料
+minecraft:blue_dye 7.00 // 蓝色染料
+minecraft:brown_dye 7.00 // 棕色染料
+minecraft:green_dye 7.00 // 绿色染料
+minecraft:red_dye 7.00 // 红色染料
+minecraft:black_dye 7.00 // 黑色染料
+
+# === [盔甲纹饰] (ARMOR_TRIMS) ===
+minecraft:netherite_upgrade_smithing_template 35000.00 // 下界合金升级模板
+minecraft:sentry_armor_trim_smithing_template 2500.00 // 哨兵盔甲纹饰
+minecraft:vex_armor_trim_smithing_template 2500.00 // 威克斯盔甲纹饰
+minecraft:wild_armor_trim_smithing_template 2500.00 // 野生盔甲纹饰
+minecraft:coast_armor_trim_smithing_template 2500.00 // 海岸盔甲纹饰
+minecraft:dune_armor_trim_smithing_template 2500.00 // 沙丘盔甲纹饰
+minecraft:wayfinder_armor_trim_smithing_template 5000.00 // 寻路者盔甲纹饰
+minecraft:raiser_armor_trim_smithing_template 5000.00 // 提升者盔甲纹饰
+minecraft:shaper_armor_trim_smithing_template 5000.00 // 塑造者盔甲纹饰
+minecraft:host_armor_trim_smithing_template 5000.00 // 宿主盔甲纹饰
+minecraft:ward_armor_trim_smithing_template 8000.00 // 守卫盔甲纹饰
+minecraft:silence_armor_trim_smithing_template 50000.00 // 宁静盔甲纹饰
+minecraft:tide_armor_trim_smithing_template 8000.00 // 潮汐盔甲纹饰
+minecraft:snout_armor_trim_smithing_template 3500.00 // 猪鼻盔甲纹饰
+minecraft:rib_armor_trim_smithing_template 3500.00 // 肋骨盔甲纹饰
+minecraft:eye_armor_trim_smithing_template 5000.00 // 之眼盔甲纹饰
+minecraft:spire_armor_trim_smithing_template 6000.00 // 尖塔盔甲纹饰
+
+# === [陶罐碎片] (POTTERY_SHERDS) ===
+minecraft:angler_pottery_sherd 800.00 // 钓鱼陶罐碎片
+minecraft:archer_pottery_sherd 800.00 // 弓箭手陶罐碎片
+minecraft:arms_up_pottery_sherd 800.00 // 举手陶罐碎片
+minecraft:blade_pottery_sherd 800.00 // 刀刃陶罐碎片
+minecraft:brewer_pottery_sherd 800.00 // 酿造者陶罐碎片
+minecraft:burn_pottery_sherd 800.00 // 燃烧陶罐碎片
+minecraft:danger_pottery_sherd 800.00 // 危险陶罐碎片
+minecraft:explorer_pottery_sherd 800.00 // 探险家陶罐碎片
+minecraft:friend_pottery_sherd 800.00 // 朋友陶罐碎片
+minecraft:heart_pottery_sherd 800.00 // 爱心陶罐碎片
+minecraft:heartbreak_pottery_sherd 800.00 // 碎心陶罐碎片
+minecraft:howl_pottery_sherd 800.00 // 嚎叫陶罐碎片
+minecraft:miner_pottery_sherd 800.00 // 矿工陶罐碎片
+minecraft:mourner_pottery_sherd 800.00 // 哀悼者陶罐碎片
+minecraft:plenty_pottery_sherd 800.00 // 丰饶陶罐碎片
+minecraft:prize_pottery_sherd 800.00 // 奖杯陶罐碎片
+minecraft:sheaf_pottery_sherd 800.00 // 麦捆陶罐碎片
+minecraft:shelter_pottery_sherd 800.00 // 庇护所陶罐碎片
+minecraft:skull_pottery_sherd 800.00 // 头颅陶罐碎片
+minecraft:snort_pottery_sherd 800.00 // 喷气陶罐碎片
+minecraft:burn_pottery_sherd 800.00 // 燃烧纹样陶片
+minecraft:danger_pottery_sherd 800.00 // 危机纹样陶片
+minecraft:explorer_pottery_sherd 800.00 // 探险纹样陶片
+minecraft:friend_pottery_sherd 800.00 // 挚友纹样陶片
+minecraft:heart_pottery_sherd 800.00 // 爱心纹样陶片
+minecraft:heartbreak_pottery_sherd 800.00 // 心碎纹样陶片
+minecraft:howl_pottery_sherd 800.00 // 狼嚎纹样陶片
+minecraft:miner_pottery_sherd 800.00 // 采矿纹样陶片
+minecraft:mourner_pottery_sherd 800.00 // 悲恸纹样陶片
+minecraft:plenty_pottery_sherd 800.00 // 富饶纹样陶片
+minecraft:prize_pottery_sherd 800.00 // 珍宝纹样陶片
+minecraft:sheaf_pottery_sherd 800.00 // 麦捆纹样陶片
+minecraft:shelter_pottery_sherd 800.00 // 树荫纹样陶片
+minecraft:skull_pottery_sherd 800.00 // 头颅纹样陶片
+minecraft:snort_pottery_sherd 800.00 // 嗅探纹样陶片
+
+# === [盔甲纹饰补充] (ARMOR_TRIMS_SUPPLEMENT) ===
+minecraft:wayfinder_armor_trim_smithing_template 5000.00 // 向导盔甲纹饰
+minecraft:raiser_armor_trim_smithing_template 5000.00 // 牧民盔甲纹饰
+minecraft:shaper_armor_trim_smithing_template 5000.00 // 塑造盔甲纹饰
+minecraft:host_armor_trim_smithing_template 5000.00 // 雇主盔甲纹饰
+minecraft:ward_armor_trim_smithing_template 8000.00 // 监守盔甲纹饰
+minecraft:silence_armor_trim_smithing_template 50000.00 // 幽静盔甲纹饰
+minecraft:tide_armor_trim_smithing_template 8000.00 // 潮汐盔甲纹饰
+minecraft:snout_armor_trim_smithing_template 3500.00 // 猪鼻盔甲纹饰
+minecraft:rib_armor_trim_smithing_template 3500.00 // 肋骨盔甲纹饰
+minecraft:eye_armor_trim_smithing_template 5000.00 // 眼眸盔甲纹饰
+minecraft:spire_armor_trim_smithing_template 6000.00 // 尖塔盔甲纹饰
+
+# === [音乐唱片] (MUSIC_DISCS) ===
+minecraft:music_disc_13 1500.00 // 音乐唱片 13
+minecraft:music_disc_cat 1500.00 // 音乐唱片 cat
+minecraft:music_disc_blocks 1500.00 // 音乐唱片 blocks
+minecraft:music_disc_chirp 1500.00 // 音乐唱片 chirp
+minecraft:music_disc_far 1500.00 // 音乐唱片 far
+minecraft:music_disc_mall 1500.00 // 音乐唱片 mall
+minecraft:music_disc_mellohi 1500.00 // 音乐唱片 mellohi
+minecraft:music_disc_stal 1500.00 // 音乐唱片 stal
+minecraft:music_disc_strad 1500.00 // 音乐唱片 strad
+minecraft:music_disc_ward 1500.00 // 音乐唱片 ward
+minecraft:music_disc_11 3000.00 // 音乐唱片 11
+minecraft:music_disc_wait 1500.00 // 音乐唱片 wait
+minecraft:music_disc_otherside 5000.00 // 音乐唱片 otherside
+minecraft:music_disc_pigstep 15000.00 // 音乐唱片 pigstep
+minecraft:music_disc_5 10000.00 // 音乐唱片 5
+minecraft:music_disc_relic 8000.00 // 音乐唱片 relic
+
+# === [刷怪蛋] (SPAWN_EGGS) ===
+minecraft:zombie_spawn_egg 300.00 // 僵尸刷怪蛋
+minecraft:skeleton_spawn_egg 300.00 // 骷髅刷怪蛋
+minecraft:creeper_spawn_egg 500.00 // 苦力怕刷怪蛋
+minecraft:spider_spawn_egg 250.00 // 蜘蛛刷怪蛋
+minecraft:enderman_spawn_egg 1500.00 // 末影人刷怪蛋
+minecraft:villager_spawn_egg 5000.00 // 村民刷怪蛋
+minecraft:pig_spawn_egg 200.00 // 猪刷怪蛋
+minecraft:cow_spawn_egg 200.00 // 牛刷怪蛋
+minecraft:chicken_spawn_egg 200.00 // 鸡刷怪蛋
+minecraft:sheep_spawn_egg 200.00 // 羊刷怪蛋
+minecraft:iron_golem_spawn_egg 8000.00 // 铁傀儡刷怪蛋
+minecraft:warden_spawn_egg 50000.00 // 监守者刷怪蛋
+minecraft:sniffer_spawn_egg 12000.00 // 嗅探兽刷怪蛋
+minecraft:sniffer_egg 6000.00 // 嗅探兽蛋
+
+# === [木材变体补充] (WOOD_VARIANTS_SUPPLEMENT) ===
+# 补充去皮木头、六面木头及其去皮版本
+# 橡木
+minecraft:stripped_oak_wood 14.50 // 去皮橡木
+# 云杉
+minecraft:stripped_spruce_log 11.00 // 去皮云杉原木
+minecraft:spruce_wood 13.35 // 云杉
+minecraft:stripped_spruce_wood 14.50 // 去皮云杉
+# 白桦
+minecraft:stripped_birch_log 11.00 // 去皮白桦原木
+minecraft:birch_wood 13.35 // 白桦
+minecraft:stripped_birch_wood 14.50 // 去皮白桦
+# 丛林
+minecraft:stripped_jungle_log 11.00 // 去皮丛林原木
+minecraft:jungle_wood 13.35 // 丛林
+minecraft:stripped_jungle_wood 14.50 // 去皮丛林
+# 金合欢
+minecraft:stripped_acacia_log 11.00 // 去皮金合欢原木
+minecraft:acacia_wood 13.35 // 金合欢
+minecraft:stripped_acacia_wood 14.50 // 去皮金合欢
+# 深色橡木
+minecraft:stripped_dark_oak_log 11.00 // 去皮深色橡木原木
+minecraft:dark_oak_wood 13.35 // 深色橡木
+minecraft:stripped_dark_oak_wood 14.50 // 去皮深色橡木
+# 红树林
+minecraft:stripped_mangrove_log 12.00 // 去皮红树原木
+minecraft:mangrove_wood 14.50 // 红树
+minecraft:stripped_mangrove_wood 15.50 // 去皮红树
+# 樱花
+minecraft:stripped_cherry_log 13.00 // 去皮樱花原木
+minecraft:cherry_wood 16.00 // 樱花
+minecraft:stripped_cherry_wood 17.50 // 去皮樱花
+# 绯红/诡异 (下界木材)
+minecraft:stripped_crimson_stem 16.50 // 去皮绯红菌柄
+minecraft:crimson_hyphae 20.00 // 绯红菌丝体
+minecraft:stripped_crimson_hyphae 22.00 // 去皮绯红菌丝体
+minecraft:stripped_warped_stem 16.50 // 去皮诡异菌柄
+minecraft:warped_hyphae 20.00 // 诡异菌丝体
+minecraft:stripped_warped_hyphae 22.00 // 去皮诡异菌丝体
+
+# === [建筑与石材变体补充] (BUILDING_STONE_SUPPLEMENT) ===
+# 磨制石材
+minecraft:polished_granite 4.20 // 磨制花岗岩
+minecraft:polished_diorite 4.20 // 磨制闪长岩
+minecraft:polished_andesite 4.20 // 磨制安山岩
+# 墙系列
+minecraft:cobblestone_wall 2.75 // 圆石墙
+minecraft:mossy_cobblestone_wall 3.50 // 苔藓圆石墙
+minecraft:stone_brick_wall 3.30 // 石砖墙
+minecraft:mossy_stone_brick_wall 4.40 // 苔藓石砖墙
+minecraft:granite_wall 3.10 // 花岗岩墙
+minecraft:diorite_wall 3.10 // 闪长岩墙
+minecraft:andesite_wall 3.10 // 安山岩墙
+minecraft:deepslate_wall 4.40 // 深层岩墙
+minecraft:cobbled_deepslate_wall 3.30 // 圆石深层岩墙
+minecraft:polished_deepslate_wall 5.00 // 磨制深层岩墙
+minecraft:deepslate_brick_wall 5.50 // 深层岩砖墙
+minecraft:deepslate_tile_wall 6.00 // 深层岩瓦墙
+# 铜系列
+minecraft:copper_block 72.00 // 铜块
+minecraft:exposed_copper 80.00 // 露天铜块
+minecraft:weathered_copper 90.00 // 锈蚀铜块
+minecraft:oxidized_copper 100.00 // 氧化铜块
+minecraft:cut_copper 75.00 // 切制铜块
+minecraft:exposed_cut_copper 85.00 // 露天切制铜块
+minecraft:weathered_cut_copper 95.00 // 锈蚀切制铜块
+minecraft:oxidized_cut_copper 105.00 // 氧化切制铜块
+# 其他
+minecraft:chiseled_stone_bricks 4.50 // 錾制石砖
+minecraft:cracked_stone_bricks 2.50 // 裂纹石砖
+minecraft:chiseled_deepslate 6.00 // 錾制深层岩
+minecraft:cracked_deepslate_bricks 4.00 // 裂纹深层岩砖
+minecraft:cracked_deepslate_tiles 4.50 // 裂纹深层岩瓦
+minecraft:calcite 4.00 // 方解石
+minecraft:tuff 3.00 // 凝灰岩

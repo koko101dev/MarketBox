@@ -1,0 +1,436 @@
+package com.koko.marketbox.client;
+
+import com.koko.marketbox.Config;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+
+/**
+ * 模组配置界面。
+ * 宽度铺满屏幕，内容列限宽居中；行高随窗口高度自适应，小窗口下不会溢出。
+ * 渲染细节见 {@link ConfigScreenRenderer}，脏检测见 {@link ConfigScreenState}。
+ */
+public class ConfigScreen extends Screen {
+
+    static final int PADDING = 12;
+    /** 基准行高，实际使用 rowHeight */
+    static final int ROW_HEIGHT = 28;
+    private static final int SECTION_HEADER_HEIGHT = 28;
+    private static final int CONTROL_WIDTH = 140;
+    private static final int CONTROL_HEIGHT = 20;
+    private static final int TOGGLE_WIDTH = 60;
+    private static final int BOTTOM_BAR_HEIGHT = 44;
+
+    int guiWidth;
+    int guiHeight;
+    int leftPos;
+    int topPos;
+    /** 内容列（限宽居中），避免超宽屏下标签与控件被拉到两端 */
+    int contentLeft;
+    int contentWidth;
+    /** 当前生效的行高与控件高度，随窗口高度自适应 */
+    int rowHeight = ROW_HEIGHT;
+    int controlHeight = CONTROL_HEIGHT;
+    /** 内容区滚动偏移；窗口放不下全部配置项时可滚动查看 */
+    int scrollOffset = 0;
+    int maxScroll = 0;
+
+    // 临时值（未保存前只改内存）
+    double tempInterestRate;
+    int tempInterestIntervalSeconds;
+    boolean tempShowHud;
+    boolean tempShowMarketPriceTooltip;
+    boolean tempDisableMenuBlur;
+    Config.HudPosition tempHudPosition;
+    Config.HudTextStyle tempHudTextStyle;
+    double tempHudScale;
+    int tempHudXOffset;
+    int tempHudYOffset;
+    double tempQuick1;
+    double tempQuick2;
+    double tempQuick3;
+
+    // 控件
+    private final List<EditBox> editBoxes = new ArrayList<>();
+    EditBox interestRateBox;
+    EditBox interestIntervalBox;
+    EditBox hudScaleBox;
+    EditBox hudXOffsetBox;
+    EditBox hudYOffsetBox;
+    EditBox quick1Box;
+    EditBox quick2Box;
+    EditBox quick3Box;
+    StyledButton saveButton;
+    /** 是否处于按键监听状态（点击按键按钮后，等待下一次按键） */
+    boolean listeningForKey = false;
+
+    // 状态提示
+    Component statusMessage = null;
+    boolean statusIsError = false;
+    long statusTimestamp = 0;
+
+    // 已保存的基线值，用于脏检测
+    double savedInterestRate;
+    int savedInterestIntervalSeconds;
+    boolean savedShowHud;
+    boolean savedShowMarketPriceTooltip;
+    boolean savedDisableMenuBlur;
+    Config.HudPosition savedHudPosition;
+    Config.HudTextStyle savedHudTextStyle;
+    double savedHudScale;
+    int savedHudXOffset;
+    int savedHudYOffset;
+    double savedQuick1;
+    double savedQuick2;
+    double savedQuick3;
+
+    /** 返回时回到的上一级界面（从 Mod Menu 进入时为模组列表，热键进入时为 null） */
+    private final Screen parent;
+
+    public ConfigScreen(Screen parent) {
+        super(Component.translatable("gui.marketbox.config.title"));
+        this.parent = parent;
+        loadCurrentValues();
+    }
+
+    private void loadCurrentValues() {
+        tempInterestRate = Config.getInterestRate();
+        tempInterestIntervalSeconds = Config.getInterestIntervalSeconds();
+        tempShowHud = Config.isShowHud();
+        tempShowMarketPriceTooltip = Config.isShowMarketPriceTooltip();
+        tempDisableMenuBlur = Config.isDisableMenuBlur();
+        tempHudPosition = Config.getHudPosition();
+        tempHudTextStyle = Config.getHudTextStyle();
+        tempHudScale = Config.getHudScale();
+        tempHudXOffset = Config.getHudXOffset();
+        tempHudYOffset = Config.getHudYOffset();
+        tempQuick1 = Config.getQuickAmount(1);
+        tempQuick2 = Config.getQuickAmount(2);
+        tempQuick3 = Config.getQuickAmount(3);
+
+        savedInterestRate = tempInterestRate;
+        savedInterestIntervalSeconds = tempInterestIntervalSeconds;
+        savedShowHud = tempShowHud;
+        savedShowMarketPriceTooltip = tempShowMarketPriceTooltip;
+        savedDisableMenuBlur = tempDisableMenuBlur;
+        savedHudPosition = tempHudPosition;
+        savedHudTextStyle = tempHudTextStyle;
+        savedHudScale = tempHudScale;
+        savedHudXOffset = tempHudXOffset;
+        savedHudYOffset = tempHudYOffset;
+        savedQuick1 = tempQuick1;
+        savedQuick2 = tempQuick2;
+        savedQuick3 = tempQuick3;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        int navWidth = Sidebar.width(this.width);
+        this.guiWidth = this.width - navWidth;
+        this.leftPos = navWidth;
+
+        Sidebar.buttons(this, Sidebar.Page.SETTINGS).forEach(this::addRenderableWidget);
+        this.contentWidth = Math.min(this.guiWidth, 620);
+        this.contentLeft = this.leftPos + (this.guiWidth - this.contentWidth) / 2;
+
+        // 利息 2 行 + HUD 9 行 + 银行设置 3 行；区块标题由 sectionCount 单独计算
+        int contentRows = 2 + 9 + 3;
+
+        // 面板铺满整屏；底部按钮栏固定在底部，中间内容区可滚动
+        this.guiHeight = this.height;
+        this.topPos = 0;
+        this.rowHeight = ROW_HEIGHT;
+        this.controlHeight = CONTROL_HEIGHT;
+
+        int contentHeight = PADDING * 2 + 2 * SECTION_HEADER_HEIGHT + contentRows * rowHeight;
+        int visibleHeight = this.guiHeight - BOTTOM_BAR_HEIGHT;
+        this.maxScroll = Math.max(0, contentHeight - visibleHeight);
+        this.scrollOffset = Math.max(0, Math.min(this.scrollOffset, this.maxScroll));
+
+        editBoxes.clear();
+        // 内容起点包含滚动偏移，滚动时通过 rebuildWidgets 重排控件
+        int y = topPos + PADDING - scrollOffset;
+
+        // === 利息设置 ===
+        y += SECTION_HEADER_HEIGHT;
+        interestRateBox = createEditBox(y, String.format("%.2f", tempInterestRate),
+                s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
+        y += rowHeight;
+        interestIntervalBox = createEditBox(y, String.valueOf(tempInterestIntervalSeconds),
+                s -> s.isEmpty() || s.matches("\\d+"));
+        y += rowHeight;
+
+        // === HUD 设置 ===
+        y += SECTION_HEADER_HEIGHT;
+        addToggleButtons(y, "showHud", tempShowHud);
+        y += rowHeight;
+        addToggleButtons(y, "showMarketPriceTooltip", tempShowMarketPriceTooltip);
+        y += rowHeight;
+        addCycleButton(y, "hudPosition", tempHudPosition.name(), Config.HudPosition.values());
+        y += rowHeight;
+        addCycleButton(y, "hudTextStyle", tempHudTextStyle.name(), Config.HudTextStyle.values());
+        y += rowHeight;
+        hudScaleBox = createEditBox(y, String.format("%.1f", tempHudScale),
+                s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,1})?"));
+        y += rowHeight;
+        hudXOffsetBox = createEditBox(y, String.valueOf(tempHudXOffset),
+                s -> s.isEmpty() || s.matches("-?\\d+"));
+        y += rowHeight;
+        hudYOffsetBox = createEditBox(y, String.valueOf(tempHudYOffset),
+                s -> s.isEmpty() || s.matches("-?\\d+"));
+        y += rowHeight;
+        addToggleButtons(y, "disableMenuBlur", tempDisableMenuBlur);
+        y += rowHeight;
+        addKeyBindRow(y);
+        y += rowHeight;
+
+        // === 银行设置：快捷金额三档（第四个按钮固定为「全部」）===
+        y += SECTION_HEADER_HEIGHT;
+        quick1Box = createEditBox(y, formatAmount(tempQuick1), s -> s.isEmpty() || s.matches("\\d+"));
+        y += rowHeight;
+        quick2Box = createEditBox(y, formatAmount(tempQuick2), s -> s.isEmpty() || s.matches("\\d+"));
+        y += rowHeight;
+        quick3Box = createEditBox(y, formatAmount(tempQuick3), s -> s.isEmpty() || s.matches("\\d+"));
+
+        // === 底部按钮 ===
+        int btnY = topPos + guiHeight - BOTTOM_BAR_HEIGHT + 10;
+        int btnWidth = 80;
+        int btnHeight = 24;
+        int totalBtnWidth = btnWidth * 3 + 8 * 2;
+        int startX = leftPos + (guiWidth - totalBtnWidth) / 2;
+
+        this.addRenderableWidget(new StyledButton(startX, btnY, btnWidth, btnHeight,
+                Component.translatable("gui.marketbox.config.reset_defaults"), b -> resetToDefaults()));
+
+        StyledButton saveBtn = new StyledButton(startX + btnWidth + 8, btnY, btnWidth, btnHeight,
+                Component.translatable("gui.marketbox.config.save"), b -> ConfigScreenState.save(this));
+        this.addRenderableWidget(saveBtn);
+        saveButton = saveBtn;
+        saveButton.active = false;
+
+        this.addRenderableWidget(new StyledButton(startX + (btnWidth + 8) * 2, btnY, btnWidth, btnHeight,
+                Component.translatable("gui.marketbox.config.cancel"), b -> this.onClose()));
+    }
+
+    /** 按键绑定行 */
+    private void addKeyBindRow(int y) {
+        int controlX = contentLeft + contentWidth - PADDING - CONTROL_WIDTH;
+        int controlCenterY = y + rowHeight / 2 - controlHeight / 2;
+        this.addRenderableWidget(ConfigKeyBind.createButton(this, controlX, controlCenterY,
+                CONTROL_WIDTH, controlHeight));
+    }
+
+    /** 供 ConfigKeyBind 触发布局刷新（rebuildWidgets 为 protected） */
+    void refreshWidgets() {
+        this.rebuildWidgets();
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (ConfigKeyBind.handleKeyPressed(this, keyCode, scanCode)) {
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private EditBox createEditBox(int y, String defaultValue, Predicate<String> filter) {
+        int controlX = contentLeft + contentWidth - PADDING - CONTROL_WIDTH;
+        int controlCenterY = y + rowHeight / 2 - controlHeight / 2;
+        EditBox box = new EditBox(this.font, controlX, controlCenterY, CONTROL_WIDTH, controlHeight, Component.empty());
+        box.setMaxLength(10);
+        box.setFilter(filter);
+        box.setValue(defaultValue);
+        box.setCanLoseFocus(true);
+        this.addRenderableWidget(box);
+        editBoxes.add(box);
+        return box;
+    }
+
+    private void addToggleButtons(int y, String configKey, boolean currentValue) {
+        int controlX = contentLeft + contentWidth - PADDING - TOGGLE_WIDTH;
+        int controlCenterY = y + rowHeight / 2 - controlHeight / 2;
+
+        StyledButton toggleBtn = new StyledButton(controlX, controlCenterY, TOGGLE_WIDTH, controlHeight,
+                Component.translatable(currentValue ? "gui.marketbox.config.on" : "gui.marketbox.config.off"),
+                button -> {
+                    boolean newVal = !currentValue;
+                    if (configKey.equals("showHud")) tempShowHud = newVal;
+                    else if (configKey.equals("showMarketPriceTooltip")) tempShowMarketPriceTooltip = newVal;
+                    else if (configKey.equals("disableMenuBlur")) tempDisableMenuBlur = newVal;
+                    this.rebuildWidgets();
+                }, false, currentValue);
+        this.addRenderableWidget(toggleBtn);
+    }
+
+    private <T extends Enum<T>> void addCycleButton(int y, String configKey, String currentValue, T[] values) {
+        int controlX = contentLeft + contentWidth - PADDING - CONTROL_WIDTH;
+        int controlCenterY = y + rowHeight / 2 - controlHeight / 2;
+
+        Component displayText = Component.translatable(
+                "gui.marketbox.config." + configKey + "." + currentValue.toLowerCase());
+
+        StyledButton cycleBtn = new StyledButton(controlX, controlCenterY, CONTROL_WIDTH, controlHeight,
+                displayText, button -> {
+            T current = null;
+            for (T v : values) {
+                if (v.name().equals(currentValue)) {
+                    current = v;
+                    break;
+                }
+            }
+            if (current == null) current = values[0];
+            T next = values[(current.ordinal() + 1) % values.length];
+
+            if (configKey.equals("hudPosition")) tempHudPosition = (Config.HudPosition) next;
+            else if (configKey.equals("hudTextStyle")) tempHudTextStyle = (Config.HudTextStyle) next;
+            this.rebuildWidgets();
+        });
+        this.addRenderableWidget(cycleBtn);
+    }
+
+    private void resetToDefaults() {
+        ConfigScreenState.resetToDefaults(this);
+    }
+
+    /** 整数金额显示为无小数点；输入非法时回落到原值 */
+    private static String formatAmount(double value) {
+        return value == Math.floor(value) ? String.valueOf((long) value) : String.format("%.2f", value);
+    }
+
+
+
+    void showStatus(Component message, boolean isError) {
+        this.statusMessage = message;
+        this.statusIsError = isError;
+        this.statusTimestamp = System.currentTimeMillis();
+    }
+
+    @Override
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+
+        // 左侧导航栏（三个界面共用）
+        Sidebar.render(guiGraphics, this.width, this.height, ClientData.getBankBadgeCount());
+
+        guiGraphics.fill(leftPos, topPos, leftPos + guiWidth, topPos + guiHeight, 0xDD101010);
+        guiGraphics.renderOutline(leftPos, topPos, guiWidth, guiHeight, 0xFF555555);
+
+        int y = topPos + PADDING - scrollOffset;
+
+        ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.section.interest"), y);
+        y += SECTION_HEADER_HEIGHT;
+        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.interest_rate"), y);
+        y += rowHeight;
+        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.interest_interval"), y);
+        y += rowHeight;
+
+        ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.section.hud"), y);
+        y += SECTION_HEADER_HEIGHT;
+        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.show_hud"), y);
+        y += rowHeight;
+        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.show_market_price_tooltip"), y);
+        y += rowHeight;
+        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.hud_position"), y);
+        y += rowHeight;
+        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.hud_text_style"), y);
+        y += rowHeight;
+        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.hud_scale"), y);
+        y += rowHeight;
+        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.hud_x_offset"), y);
+        y += rowHeight;
+        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.hud_y_offset"), y);
+        y += rowHeight;
+        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.disable_menu_blur"), y);
+        y += rowHeight;
+        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.keybind"), y);
+        y += rowHeight;
+
+        ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
+                Component.translatable("gui.marketbox.config.section.bank"), y);
+        y += SECTION_HEADER_HEIGHT;
+        for (int i = 1; i <= 3; i++) {
+            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.quick_amount", String.valueOf(i)), y);
+            y += rowHeight;
+        }
+
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        if (saveButton != null) {
+            saveButton.active = ConfigScreenState.isDirty(this);
+        }
+
+        ConfigScreenRenderer.renderInlineValidation(this, guiGraphics);
+
+        // 内容超出可视区时在右侧显示滚动条，提示可以滚动
+        if (maxScroll > 0) {
+            int visibleHeight = guiHeight - BOTTOM_BAR_HEIGHT;
+            int contentHeight = visibleHeight + maxScroll;
+            int barHeight = Math.max(20, visibleHeight * visibleHeight / contentHeight);
+            int barY = topPos + (visibleHeight - barHeight) * scrollOffset / maxScroll;
+            int barX = contentLeft + contentWidth - 3;
+            guiGraphics.fill(barX, topPos, barX + 3, topPos + visibleHeight, 0x33FFFFFF);
+            guiGraphics.fill(barX, barY, barX + 3, barY + barHeight, 0xFFAAAAAA);
+        }
+
+        if (statusMessage != null) {
+            if (System.currentTimeMillis() - statusTimestamp < 3000) {
+                int color = statusIsError ? 0xFF5555 : 0x55FF55;
+                int textWidth = this.font.width(statusMessage);
+                guiGraphics.drawString(this.font, statusMessage,
+                        leftPos + (guiWidth - textWidth) / 2, topPos + guiHeight - BOTTOM_BAR_HEIGHT - 4, color, false);
+            } else {
+                statusMessage = null;
+            }
+        }
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (maxScroll > 0) {
+            int delta = (int) (-scrollY * 14);
+            int newOffset = Math.max(0, Math.min(maxScroll, scrollOffset + delta));
+            if (newOffset != scrollOffset) {
+                scrollOffset = newOffset;
+                // 控件位置依赖滚动偏移，重排一次
+                this.rebuildWidgets();
+                return true;
+            }
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    @Override
+    public void onClose() {
+        // 从 Mod Menu 打开时返回模组列表，避免直接退出到游戏
+        if (this.minecraft != null) {
+            this.minecraft.setScreen(this.parent);
+        }
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+}

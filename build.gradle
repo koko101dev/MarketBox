@@ -1,0 +1,110 @@
+plugins {
+    id 'fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.mod_group_id
+
+base {
+    archivesName = "MarketBox"
+}
+
+repositories {
+    mavenCentral()
+    // Mod Menu 的发布仓库（仅编译期取 API）
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/releases/"
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    // 使用 Mojang 官方映射：与旧工程类名一致（Level/ServerPlayer/ItemStack 等），降低迁移成本
+    mappings loom.officialMojangMappings()
+
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // Mod Menu：仅编译期引用其 API，属于可选前置，未安装时不加载入口点
+    modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+    // 开发环境自动带上 Mod Menu，方便在 runClient 中验证配置入口
+    modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
+}
+
+// 将版本信息注入 fabric.mod.json
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mod_id", project.mod_id
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version, "mod_id": project.mod_id
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+java {
+    // Minecraft 1.21.1 要求 Java 21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    // 不生成 sources jar：交付物只保留可安装的模组 jar
+}
+
+jar {
+    inputs.property "archivesName", project.base.archivesName.get()
+}
+
+// ---- 版本迭代与产物清理 ----
+
+/**
+ * 递增补丁版本号（4.6.9-AP -> 4.6.10-AP），直接改 gradle.properties 中的一行，保留文件其余格式。
+ * 用法：./gradlew bumpVersion
+ */
+tasks.register('bumpVersion') {
+    doLast {
+        def propsFile = file('gradle.properties')
+        def text = propsFile.text
+        def matcher = text =~ /(?m)^mod_version=(\d+)\.(\d+)\.(\d+)(.*)$/
+        if (!matcher.find()) {
+            throw new GradleException("gradle.properties 中未找到可解析的 mod_version")
+        }
+        def next = "${matcher.group(1)}.${matcher.group(2)}.${matcher.group(3).toInteger() + 1}${matcher.group(4)}"
+        propsFile.text = text.replaceFirst(/(?m)^mod_version=.*$/, "mod_version=${next}".toString())
+        println "[MarketBox] 版本号：${matcher.group(0).replace('mod_version=', '')} -> ${next}"
+    }
+}
+
+/**
+ * 构建结束后清理 build/libs 里的旧版本产物，只保留本次构建的 jar。
+ * 避免反复构建后 libs 目录堆积多个历史版本。
+ */
+tasks.register('pruneOldJars') {
+    doLast {
+        def dir = layout.buildDirectory.dir('libs').get().asFile
+        if (!dir.exists()) {
+            return
+        }
+        def current = "${base.archivesName.get()}-${project.version}"
+        def removed = []
+        dir.listFiles()?.each { f ->
+            if (f.isFile() && f.name.endsWith('.jar') && !f.name.startsWith(current)) {
+                if (f.delete()) {
+                    removed << f.name
+                }
+            }
+        }
+        if (!removed.isEmpty()) {
+            println "[MarketBox] 已清理旧产物：${removed.join(', ')}"
+        }
+        println "[MarketBox] 当前产物：${current}.jar"
+    }
+}
+
+tasks.named('build') {
+    finalizedBy 'pruneOldJars'
+}
