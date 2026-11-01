@@ -25,7 +25,7 @@ import java.util.List;
 public class ListingDialogScreen extends Screen {
 
     private static final int W = 320;
-    private static final int H = 232;
+    private static final int H = 240;
     private static final int PAD = 10;
 
     private final Screen parent;
@@ -86,7 +86,7 @@ public class ListingDialogScreen extends Screen {
         this.addRenderableWidget(this.expiryButton);
 
         // 底部按钮
-        int bottomY = top + H - 34;
+        int bottomY = top + H - 32;
         this.addRenderableWidget(new StyledButton(left + W / 2 - 100, bottomY, 92, 20,
                 Component.translatable("gui.marketbox.market.cancel"), b -> close()));
         this.addRenderableWidget(new StyledButton(left + W / 2 + 8, bottomY, 92, 20,
