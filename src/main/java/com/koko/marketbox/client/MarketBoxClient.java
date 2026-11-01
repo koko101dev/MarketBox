@@ -10,9 +10,10 @@ import net.minecraft.client.Minecraft;
 public class MarketBoxClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        // 1.20.2 起打开任意界面都会对世界背景做高斯模糊，会把界面整体观感拉糊。
-        // 本模组的界面以信息阅读为主，这里统一关闭菜单背景模糊，保证可读性。
-        applyMenuBlurSetting();
+        // 本模组的界面已各自跳过背景模糊（见各 Screen 的 renderBackground），
+        // 不再依赖这个全局开关。此处额外应用一次，供希望关闭所有界面模糊的玩家使用；
+        // 启动阶段设置可能被 options.txt 的加载覆盖，故再注册一次首帧补设。
+        registerDeferredBlurApply();
 
         KeyInit.register();
         ClientEvents.register();
@@ -36,10 +37,24 @@ public class MarketBoxClient implements ClientModInitializer {
      */
     public static void applyMenuBlurSetting() {
         try {
-            int target = com.koko.marketbox.Config.isDisableMenuBlur() ? 0 : 5;
-            Minecraft.getInstance().options.menuBackgroundBlurriness().set(target);
+            // 只在配置要求关闭模糊时干预；否则不动用户的原始设置
+            if (com.koko.marketbox.Config.isDisableMenuBlur()) {
+                Minecraft.getInstance().options.menuBackgroundBlurriness().set(0);
+            }
         } catch (Exception e) {
             com.koko.marketbox.MarketBox.LOGGER.error("应用菜单背景模糊配置失败：{}", e.getClass().getSimpleName());
         }
+    }
+
+    /** 首次 tick 时应用一次：过早设置会被 options.txt 的加载结果覆盖 */
+    private static boolean blurApplied = false;
+
+    public static void registerDeferredBlurApply() {
+        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!blurApplied) {
+                blurApplied = true;
+                applyMenuBlurSetting();
+            }
+        });
     }
 }

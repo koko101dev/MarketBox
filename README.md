@@ -135,7 +135,7 @@
 | `showHud` | `true` | 显示常驻 HUD |
 | `showMarketPriceTooltip` | `true` | 物品提示显示市场价 |
 | `hudPosition` / `hudTextStyle` / `hudScale` / `hudXOffset` / `hudYOffset` | — | HUD 外观 |
-| `disableMenuBlur` | `true` | 关闭菜单背景模糊 |
+| `disableMenuBlur` | `true` | 关闭所有界面的背景模糊（本模组界面自身已不模糊） |
 | `quickAmount1/2/3` | `100 / 1000 / 10000` | 快捷金额档位 |
 
 > ⚠️ 默认配置是 `0.05% / 1440 分钟`（每天一次），复利年化约 **20%**，适合长期运营。

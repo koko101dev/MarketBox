@@ -231,7 +231,13 @@ public class ListingDialogScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+        // 界面自身不应用背景模糊：直接铺半透明底。
+        // 这样无需依赖「关闭菜单模糊」开关，也不会受其他模组的全局设置影响。
+        if (this.minecraft != null && this.minecraft.level != null) {
+            guiGraphics.fill(0, 0, this.width, this.height, 0xC0101010);
+        } else {
+            super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+        }
 
         guiGraphics.fill(left, top, left + W, top + H, 0xF0101010);
         guiGraphics.renderOutline(left, top, W, H, 0xFF666666);
