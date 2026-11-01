@@ -27,6 +27,8 @@ public final class ClientPacketHandlers {
                     ClientData.setIncomeExpenseData(payload.totalIncome(), payload.totalExpense());
                     ClientData.setPendingPayment(payload.pendingPayment());
                     ClientData.setMarketFeePercent(payload.marketFeePercent());
+                    ClientData.setTreasuryBalance(payload.treasuryBalance());
+                    ClientData.setFeeToTreasury(payload.feeToTreasury());
                     ClientData.setReturnedItems(payload.returnedItems());
                     ClientData.setTransactions(payload.transactions());
                 }));

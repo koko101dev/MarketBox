@@ -35,6 +35,9 @@ public final class MarketBoxCommand {
     /** 权限等级 2（与 OP 判定一致，但更严格：不依赖 isOp 标志） */
     private static final Predicate<CommandSourceStack> OP_ONLY = source -> source.hasPermission(2);
 
+    /** 权限等级 4：资金与破坏性操作（改余额、清空市场、金库拨款） */
+    private static final Predicate<CommandSourceStack> OWNER_ONLY = source -> source.hasPermission(4);
+
     /** 金额参数的补全建议，减少手敲 */
     private static final com.mojang.brigadier.suggestion.SuggestionProvider<CommandSourceStack> AMOUNT_HINTS =
             (context, builder) -> SharedSuggestionProvider.suggest(
@@ -59,7 +62,7 @@ public final class MarketBoxCommand {
                                         EntityArgument.getPlayer(context, "target")))))
 
                 .then(Commands.literal("set")
-                        .requires(OP_ONLY)
+                        .requires(OWNER_ONLY)
                         .then(Commands.argument("target", EntityArgument.player())
                                 .then(Commands.argument("amount", DoubleArgumentType.doubleArg(0))
                                         .suggests(AMOUNT_HINTS)
@@ -70,7 +73,7 @@ public final class MarketBoxCommand {
                                                 true)))))
 
                 .then(Commands.literal("add")
-                        .requires(OP_ONLY)
+                        .requires(OWNER_ONLY)
                         .then(Commands.argument("target", EntityArgument.player())
                                 .then(Commands.argument("amount", DoubleArgumentType.doubleArg(0))
                                         .suggests(AMOUNT_HINTS)
@@ -81,7 +84,7 @@ public final class MarketBoxCommand {
                                                 false)))))
 
                 .then(Commands.literal("reset")
-                        .requires(OP_ONLY)
+                        .requires(OWNER_ONLY)
                         .then(Commands.argument("target", EntityArgument.player())
                                 .executes(context -> resetBalance(
                                         context.getSource(),
@@ -90,6 +93,18 @@ public final class MarketBoxCommand {
                 .then(Commands.literal("reload")
                         .requires(OP_ONLY)
                         .executes(context -> reload(context.getSource())))
+
+                .then(Commands.literal("treasury")
+                        .executes(context -> showTreasury(context.getSource()))
+                        .then(Commands.literal("withdraw")
+                                .requires(OWNER_ONLY)
+                                .then(Commands.argument("target", EntityArgument.player())
+                                        .then(Commands.argument("amount", DoubleArgumentType.doubleArg(0.01))
+                                                .suggests(AMOUNT_HINTS)
+                                                .executes(context -> withdrawTreasury(
+                                                        context.getSource(),
+                                                        EntityArgument.getPlayer(context, "target"),
+                                                        DoubleArgumentType.getDouble(context, "amount")))))))
 
                 .then(Commands.literal("help")
                         .executes(context -> showHelp(context.getSource())))
@@ -100,6 +115,7 @@ public final class MarketBoxCommand {
                         .then(Commands.literal("list")
                                 .executes(context -> listMarket(context.getSource())))
                         .then(Commands.literal("clear")
+                                .requires(OWNER_ONLY)
                                 .executes(context -> clearMarket(context.getSource())))));
     }
 
@@ -121,9 +137,40 @@ public final class MarketBoxCommand {
     private static int showHelp(CommandSourceStack source) {
         source.sendSuccess(() -> Component.translatable("commands.marketbox.help.header"), false);
         for (String key : new String[]{"balance", "set", "add", "reset",
-                "market_list", "market_clear", "reload"}) {
+                "market_list", "market_clear", "treasury", "reload"}) {
             source.sendSuccess(() -> Component.translatable("commands.marketbox.help." + key), false);
         }
+        return 1;
+    }
+
+    /** 查看金库余额 */
+    private static int showTreasury(CommandSourceStack source) {
+        MarketManager manager = MarketManager.get(source.getServer().overworld());
+        String balance = MoneyUtils.formatValue(manager.getTreasuryBalance());
+        String mode = Config.isFeeToTreasury() ? "TREASURY" : "DESTROY";
+        source.sendSuccess(() -> Component.translatable("commands.marketbox.treasury.balance", balance, mode), false);
+        return 1;
+    }
+
+    /** 从金库拨款给指定在线玩家 */
+    private static int withdrawTreasury(CommandSourceStack source, ServerPlayer target, double amount) {
+        MarketManager manager = MarketManager.get(source.getServer().overworld());
+        double granted = manager.withdrawTreasury(amount);
+        if (granted <= 0) {
+            source.sendFailure(Component.translatable("commands.marketbox.treasury.insufficient"));
+            return 0;
+        }
+
+        PlayerBalance balance = PlayerBalanceAttachment.get(target);
+        balance.addBalance(granted, "gui.marketbox.transaction.treasury");
+        PlayerEvents.syncPlayerBalance(target);
+        PlayerEvents.persistPlayer(target);
+        ServerEvents.markLeaderboardDirty();
+
+        String formatted = MoneyUtils.formatValue(granted);
+        source.sendSuccess(() -> Component.translatable("commands.marketbox.treasury.withdraw_success",
+                formatted, target.getName().getString()), true);
+        target.sendSystemMessage(Component.translatable("commands.marketbox.treasury.received", formatted));
         return 1;
     }
 

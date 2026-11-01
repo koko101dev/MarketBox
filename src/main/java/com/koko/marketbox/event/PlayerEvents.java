@@ -128,6 +128,8 @@ public final class PlayerEvents {
                 balance.getTotalExpense(),
                 manager.getPendingPayment(player.getUUID()),
                 Config.getMarketFeePercent(),
+                manager.getTreasuryBalance(),
+                Config.isFeeToTreasury(),
                 returnedItems,
                 balance.getTransactions()
         ));

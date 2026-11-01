@@ -222,5 +222,15 @@
   "gui.marketbox.market.unit_price_label": "单价",
   "gui.marketbox.market.total_price": "共 %s 个 · 合计 %s",
   "gui.marketbox.market.card.quantity_total": "%s 个 = %s",
-  "gui.marketbox.market.card.quantity_single": "单个"
+  "gui.marketbox.market.card.quantity_single": "单个",
+  "commands.marketbox.treasury.balance": "市场金库：%s（手续费模式：%s）",
+  "commands.marketbox.treasury.insufficient": "金库余额不足",
+  "commands.marketbox.treasury.withdraw_success": "已从金库拨款 %s 给 %s",
+  "commands.marketbox.treasury.received": "你收到了市场金库拨款：%s",
+  "commands.marketbox.help.treasury": "/marketbox treasury [withdraw <玩家> <金额>] — 查看金库/拨款（拨款需等级 4）",
+  "gui.marketbox.transaction.treasury": "金库拨款",
+  "gui.marketbox.config.fee_mode": "手续费去向",
+  "gui.marketbox.config.treasury_balance": "金库余额",
+  "gui.marketbox.config.fee_mode.treasury": "金库",
+  "gui.marketbox.config.fee_mode.destroy": "销毁"
 }

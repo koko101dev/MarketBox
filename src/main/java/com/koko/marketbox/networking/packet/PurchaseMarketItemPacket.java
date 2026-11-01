@@ -99,6 +99,10 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
                 // 手续费从卖家实收中扣除并销毁，用于抑制通胀
                 double fee = cleanPrice * Config.getMarketFeePercent() / 100.0;
                 double sellerReceive = cleanPrice - fee;
+                // 按配置：手续费归入金库，或直接销毁（默认）
+                if (fee > 0 && Config.isFeeToTreasury()) {
+                    manager.addTreasury(fee);
+                }
                 sellerBalance.addBalance(sellerReceive, "gui.marketbox.transaction.market_sell_prefix:" + itemNameStr + detail);
                 PlayerEvents.syncPlayerBalance(seller);
 

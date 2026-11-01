@@ -37,6 +37,8 @@ public class MarketManager extends SavedData {
     private final List<MarketListing> listings = new CopyOnWriteArrayList<>();
     private final Map<UUID, List<ItemStack>> returnedItems = new ConcurrentHashMap<>();
     private final Map<UUID, Long> pendingPaymentsCents = new ConcurrentHashMap<>();
+    /** 市场金库存量（分）。手续费归入此处，由服主通过命令拨款 */
+    private long treasuryCents = 0;
 
     private static final SavedData.Factory<MarketManager> FACTORY =
             new SavedData.Factory<>(MarketManager::new, MarketManager::load, null);
@@ -148,6 +150,31 @@ public class MarketManager extends SavedData {
     }
 
     /** 查询待领取付款（不消费），用于界面角标 */
+    public double getTreasuryBalance() {
+        return treasuryCents / 100.0;
+    }
+
+    /** 手续费入账 */
+    public void addTreasury(double amount) {
+        long cents = Math.round(amount * 100);
+        if (cents <= 0) {
+            return;
+        }
+        treasuryCents += cents;
+        setDirty();
+    }
+
+    /** 从金库支出；余额不足返回 0 */
+    public double withdrawTreasury(double amount) {
+        long cents = Math.round(amount * 100);
+        if (cents <= 0 || cents > treasuryCents) {
+            return 0;
+        }
+        treasuryCents -= cents;
+        setDirty();
+        return cents / 100.0;
+    }
+
     public double getPendingPayment(UUID playerUUID) {
         Long cents = pendingPaymentsCents.get(playerUUID);
         return cents == null ? 0 : cents / 100.0;
@@ -199,6 +226,7 @@ public class MarketManager extends SavedData {
             paymentsTag.putLong(entry.getKey().toString(), entry.getValue());
         }
         tag.put("pendingPaymentsCents", paymentsTag);
+        tag.putLong("treasuryCents", treasuryCents);
         return tag;
     }
 
@@ -251,6 +279,10 @@ public class MarketManager extends SavedData {
                     MarketBox.LOGGER.warn("[MarketBox] 跳过格式异常的退货记录 key={}：{}", key, e.getClass().getSimpleName());
                 }
             }
+        }
+
+        if (tag.contains("treasuryCents")) {
+            manager.treasuryCents = tag.getLong("treasuryCents");
         }
 
         if (tag.contains("pendingPaymentsCents", Tag.TAG_COMPOUND)) {

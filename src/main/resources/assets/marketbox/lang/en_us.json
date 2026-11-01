@@ -222,5 +222,15 @@
   "gui.marketbox.market.unit_price_label": "Unit Price",
   "gui.marketbox.market.total_price": "%s items · total %s",
   "gui.marketbox.market.card.quantity_total": "%s pcs = %s",
-  "gui.marketbox.market.card.quantity_single": "single"
+  "gui.marketbox.market.card.quantity_single": "single",
+  "commands.marketbox.treasury.balance": "Market treasury: %s (fee mode: %s)",
+  "commands.marketbox.treasury.insufficient": "Insufficient treasury balance",
+  "commands.marketbox.treasury.withdraw_success": "Granted %s from treasury to %s",
+  "commands.marketbox.treasury.received": "You received a treasury grant: %s",
+  "commands.marketbox.help.treasury": "/marketbox treasury [withdraw <player> <amount>] — view treasury / grant (level 4)",
+  "gui.marketbox.transaction.treasury": "Treasury grant",
+  "gui.marketbox.config.fee_mode": "Fee Destination",
+  "gui.marketbox.config.treasury_balance": "Treasury Balance",
+  "gui.marketbox.config.fee_mode.treasury": "Treasury",
+  "gui.marketbox.config.fee_mode.destroy": "Destroyed"
 }

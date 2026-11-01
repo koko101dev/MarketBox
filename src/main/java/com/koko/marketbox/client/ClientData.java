@@ -20,6 +20,8 @@ public class ClientData {
     private static boolean admin = false;
     /** 市场成交手续费百分比（服务端同步） */
     private static double marketFeePercent = 0;
+    private static double treasuryBalance = 0;
+    private static boolean feeToTreasury = false;
     private static List<net.minecraft.world.item.ItemStack> returnedItems = new ArrayList<>();
     private static List<PlayerEntry> leaderboard = new ArrayList<>();
     private static List<MarketListing> marketListings = new ArrayList<>();
@@ -31,6 +33,22 @@ public class ClientData {
 
     public static void setAdmin(boolean value) {
         admin = value;
+    }
+
+    public static boolean isFeeToTreasury() {
+        return feeToTreasury;
+    }
+
+    public static void setFeeToTreasury(boolean value) {
+        feeToTreasury = value;
+    }
+
+    public static double getTreasuryBalance() {
+        return treasuryBalance;
+    }
+
+    public static void setTreasuryBalance(double value) {
+        treasuryBalance = value;
     }
 
     public static double getMarketFeePercent() {

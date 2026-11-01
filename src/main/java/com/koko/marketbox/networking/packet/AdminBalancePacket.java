@@ -62,7 +62,8 @@ public class AdminBalancePacket implements CustomPacketPayload {
                 return;
             }
             try {
-                if (admin == null || !admin.hasPermissions(2) || admin.getServer() == null) {
+                // 资金操作需要等级 4（服主级）
+                if (admin == null || !admin.hasPermissions(4) || admin.getServer() == null) {
                     return;
                 }
 

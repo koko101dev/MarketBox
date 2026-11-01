@@ -36,8 +36,15 @@ public final class Config {
     public static final class Common {
         public double interestRate = 0.19;
         public int interestIntervalSeconds = 1800;
-        /** 市场成交手续费百分比（0-100），从卖家实收中扣除并销毁 */
+        /** 市场成交手续费百分比（0-100），从卖家实收中扣除 */
         public double marketFeePercent = 2.0;
+        /**
+         * 手续费去向：
+         * DESTROY  = 直接销毁，回收货币（默认，最稳妥）
+         * TREASURY = 进入市场金库，由服主用命令拨款
+         * 只允许通过配置文件修改，游戏内仅只读展示，避免多管理员互相改成自己。
+         */
+        public String marketFeeMode = "DESTROY";
     }
 
     /** 客户端本地配置（HUD 相关） */
@@ -107,6 +114,11 @@ public final class Config {
     /** 更新利息参数并立即持久化，供命令与配置包调用 */
     public static double getMarketFeePercent() {
         return common.marketFeePercent;
+    }
+
+    /** 手续费是否进入金库（否则销毁） */
+    public static boolean isFeeToTreasury() {
+        return "TREASURY".equalsIgnoreCase(common.marketFeeMode);
     }
 
     /** 写入手续费并落盘；数值裁剪到 0-50，避免误配置抽干收益 */
