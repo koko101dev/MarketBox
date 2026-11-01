@@ -101,7 +101,7 @@
   "gui.marketbox.config.section.interest": "利息设置",
   "gui.marketbox.config.section.hud": "HUD 显示设置",
   "gui.marketbox.config.interest_rate": "利率 (%)",
-  "gui.marketbox.config.interest_interval": "利息周期 (秒)",
+  "gui.marketbox.config.interest_interval": "利息周期（分钟）",
   "gui.marketbox.config.show_hud": "显示总资产HUD",
   "gui.marketbox.config.show_market_price_tooltip": "显示市场价提示",
   "gui.marketbox.config.hud_position": "HUD 位置",

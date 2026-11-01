@@ -23,24 +23,24 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
             StreamCodec.ofMember(UpdateCommonConfigPacket::write, UpdateCommonConfigPacket::new);
 
     private final double interestRate;
-    private final int interestIntervalSeconds;
+    private final int interestIntervalMinutes;
     private final double marketFeePercent;
 
-    public UpdateCommonConfigPacket(double interestRate, int interestIntervalSeconds, double marketFeePercent) {
+    public UpdateCommonConfigPacket(double interestRate, int interestIntervalMinutes, double marketFeePercent) {
         this.interestRate = interestRate;
-        this.interestIntervalSeconds = interestIntervalSeconds;
+        this.interestIntervalMinutes = interestIntervalMinutes;
         this.marketFeePercent = marketFeePercent;
     }
 
     public UpdateCommonConfigPacket(RegistryFriendlyByteBuf buf) {
         this.interestRate = buf.readDouble();
-        this.interestIntervalSeconds = buf.readInt();
+        this.interestIntervalMinutes = buf.readInt();
         this.marketFeePercent = buf.readDouble();
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeDouble(interestRate);
-        buf.writeInt(interestIntervalSeconds);
+        buf.writeInt(interestIntervalMinutes);
         buf.writeDouble(marketFeePercent);
     }
 
@@ -67,7 +67,7 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
 
                 // 服务端再次裁剪，防止客户端伪造越界值
                 double safeRate = Math.max(0.0, Math.min(100.0, payload.interestRate));
-                int safeInterval = Math.max(1, payload.interestIntervalSeconds);
+                int safeInterval = Math.max(1, payload.interestIntervalMinutes);
                 double safeFee = Math.max(0.0, Math.min(50.0, payload.marketFeePercent));
 
                 // 审计：经济参数变更写入服务器日志，事后可追溯

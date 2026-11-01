@@ -36,7 +36,12 @@ public final class Config {
     public static final class Common {
         /** 默认 0.05%／期：0.19 会让货币一年膨胀上万倍，不适合长期运营 */
         public double interestRate = 0.05;
-        public int interestIntervalSeconds = 1800;
+        /**
+         * 结息周期，单位：分钟。
+         * 默认 1440 分钟 = 24 小时（真实时间），配合 0.05% 的利率年化约 18%。
+         * 早期版本用秒（1800 = 30 分钟），复利过猛，已改用分钟并把默认值调到一天。
+         */
+        public int interestIntervalMinutes = 1440;
         /** 市场成交手续费百分比（0-100），从卖家实收中扣除 */
         public double marketFeePercent = 2.0;
         /**
@@ -75,7 +80,7 @@ public final class Config {
     public static void load() {
         common = read(COMMON_PATH, Common.class, new Common());
         client = read(CLIENT_PATH, Client.class, new Client());
-        LOGGER.info("配置加载完成：利率={}%，周期={}秒", common.interestRate, common.interestIntervalSeconds);
+        LOGGER.info("配置加载完成：利率={}%，周期={}分钟", common.interestRate, common.interestIntervalMinutes);
     }
 
     private static <T> T read(Path path, Class<T> type, T fallback) {
@@ -108,8 +113,14 @@ public final class Config {
         return common.interestRate;
     }
 
+    /** 结息周期（秒）。配置以分钟存储，这里换算后供内部计算使用 */
     public static int getInterestIntervalSeconds() {
-        return common.interestIntervalSeconds;
+        return Math.max(60, common.interestIntervalMinutes * 60);
+    }
+
+    /** 结息周期（分钟），供界面与命令展示 */
+    public static int getInterestIntervalMinutes() {
+        return common.interestIntervalMinutes;
     }
 
     /** 更新利息参数并立即持久化，供命令与配置包调用 */
@@ -128,9 +139,9 @@ public final class Config {
         write(COMMON_PATH, common);
     }
 
-    public static void setInterestSettings(double rate, int intervalSeconds) {
+    public static void setInterestSettings(double rate, int intervalMinutes) {
         common.interestRate = rate;
-        common.interestIntervalSeconds = intervalSeconds;
+        common.interestIntervalMinutes = Math.max(1, intervalMinutes);
         write(COMMON_PATH, common);
     }
 

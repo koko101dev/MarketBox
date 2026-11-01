@@ -43,7 +43,7 @@ public class ConfigScreen extends Screen {
 
     // 临时值（未保存前只改内存）
     double tempInterestRate;
-    int tempInterestIntervalSeconds;
+    int tempInterestIntervalMinutes;
     boolean tempShowHud;
     boolean tempShowMarketPriceTooltip;
     boolean tempDisableMenuBlur;
@@ -79,7 +79,7 @@ public class ConfigScreen extends Screen {
 
     // 已保存的基线值，用于脏检测
     double savedInterestRate;
-    int savedInterestIntervalSeconds;
+    int savedInterestIntervalMinutes;
     boolean savedShowHud;
     boolean savedShowMarketPriceTooltip;
     boolean savedDisableMenuBlur;
@@ -104,7 +104,7 @@ public class ConfigScreen extends Screen {
 
     private void loadCurrentValues() {
         tempInterestRate = Config.getInterestRate();
-        tempInterestIntervalSeconds = Config.getInterestIntervalSeconds();
+        tempInterestIntervalMinutes = Config.getInterestIntervalMinutes();
         tempShowHud = Config.isShowHud();
         tempShowMarketPriceTooltip = Config.isShowMarketPriceTooltip();
         tempDisableMenuBlur = Config.isDisableMenuBlur();
@@ -119,7 +119,7 @@ public class ConfigScreen extends Screen {
         tempQuick3 = Config.getQuickAmount(3);
 
         savedInterestRate = tempInterestRate;
-        savedInterestIntervalSeconds = tempInterestIntervalSeconds;
+        savedInterestIntervalMinutes = tempInterestIntervalMinutes;
         savedShowHud = tempShowHud;
         savedShowMarketPriceTooltip = tempShowMarketPriceTooltip;
         savedDisableMenuBlur = tempDisableMenuBlur;
@@ -172,7 +172,7 @@ public class ConfigScreen extends Screen {
             interestRateBox = createEditBox(y, String.format("%.2f", tempInterestRate),
                     s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
             y += rowHeight;
-            interestIntervalBox = createEditBox(y, String.valueOf(tempInterestIntervalSeconds),
+            interestIntervalBox = createEditBox(y, String.valueOf(tempInterestIntervalMinutes),
                     s -> s.isEmpty() || s.matches("\\d+"));
             y += rowHeight;
         }

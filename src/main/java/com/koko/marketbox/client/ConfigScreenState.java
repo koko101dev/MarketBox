@@ -22,7 +22,7 @@ final class ConfigScreenState {
         Config.Client clientDefaults = new Config.Client();
 
         screen.tempInterestRate = commonDefaults.interestRate;
-        screen.tempInterestIntervalSeconds = commonDefaults.interestIntervalSeconds;
+        screen.tempInterestIntervalMinutes = commonDefaults.interestIntervalMinutes;
         screen.tempMarketFee = commonDefaults.marketFeePercent;
 
         screen.tempShowHud = clientDefaults.showHud;
@@ -61,7 +61,7 @@ final class ConfigScreenState {
         }
         try {
             if (screen.interestIntervalBox != null && !screen.interestIntervalBox.getValue().isEmpty()) {
-                if (Integer.parseInt(screen.interestIntervalBox.getValue()) != screen.savedInterestIntervalSeconds) {
+                if (Integer.parseInt(screen.interestIntervalBox.getValue()) != screen.savedInterestIntervalMinutes) {
                     return true;
                 }
             }
@@ -185,7 +185,7 @@ final class ConfigScreenState {
 
         // 更新基线，保存按钮回到禁用态
         screen.savedInterestRate = rate;
-        screen.savedInterestIntervalSeconds = interval;
+        screen.savedInterestIntervalMinutes = interval;
         screen.savedShowHud = screen.tempShowHud;
         screen.savedShowMarketPriceTooltip = screen.tempShowMarketPriceTooltip;
         screen.savedDisableMenuBlur = screen.tempDisableMenuBlur;

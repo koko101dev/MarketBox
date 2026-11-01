@@ -6,7 +6,7 @@
   "gui.marketbox.config.section.interest": "Interest Settings",
   "gui.marketbox.config.section.hud": "HUD Settings",
   "gui.marketbox.config.interest_rate": "Interest Rate (%)",
-  "gui.marketbox.config.interest_interval": "Interest Interval (s)",
+  "gui.marketbox.config.interest_interval": "Interest Interval (min)",
   "gui.marketbox.config.show_hud": "Show Total Wealth HUD",
   "gui.marketbox.config.show_market_price_tooltip": "Show Market Price Tooltip",
   "gui.marketbox.config.hud_position": "HUD Position",
