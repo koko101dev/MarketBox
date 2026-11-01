@@ -273,5 +273,6 @@
   "tooltip.marketbox.deal_price": "Last deal",
   "tooltip.marketbox.on_sale": "On sale",
   "gui.marketbox.market.fee_detail": "Fee %s%% · %s deducted",
-  "gui.marketbox.curve.day": "%s d"
+  "gui.marketbox.curve.day": "%s d",
+  "gui.marketbox.market.list_hint": "Click to select, × to delist"
 }

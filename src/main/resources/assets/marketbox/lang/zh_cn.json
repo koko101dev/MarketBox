@@ -273,5 +273,6 @@
   "tooltip.marketbox.deal_price": "最近成交",
   "tooltip.marketbox.on_sale": "在售",
   "gui.marketbox.market.fee_detail": "手续费 %s%% · 扣除 %s",
-  "gui.marketbox.curve.day": "%s 天"
+  "gui.marketbox.curve.day": "%s 天",
+  "gui.marketbox.market.list_hint": "单击选中，点 × 下架"
 }

@@ -8,18 +8,24 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 市场左栏的「我的挂单」列表。
  *
- * 替代原先的价格/数量/时长输入框：上架改由点击背包物品弹窗完成，
- * 左栏改为展示自己当前的挂单，点击任意一条即可下架。
+ * 交互：单击选中（高亮），行尾出现 × 按钮，点击 × 才真正下架。
+ * 避免误触——下架会让物品进入待领取，重新上架要重新填价格。
  */
 final class MyListingsPanel {
 
     private static final int ROW_HEIGHT = 28;
     private static final int HEADER_HEIGHT = 16;
     private static final int MAX_ROWS = 9;
+    /** 行尾 × 按钮的宽度 */
+    private static final int DELIST_BTN_WIDTH = 16;
+
+    /** 当前选中的挂单 id，跨帧保持 */
+    private static UUID selectedId = null;
 
     private MyListingsPanel() {
     }
@@ -55,7 +61,11 @@ final class MyListingsPanel {
         int top = listTop(screen);
         List<MarketListing> mine = mine();
 
-        // 标题
+        // 选中的挂单可能已被移除，及时清空
+        if (selectedId != null && mine.stream().noneMatch(l -> l.id().equals(selectedId))) {
+            selectedId = null;
+        }
+
         guiGraphics.drawCenteredString(font,
                 Component.translatable("gui.marketbox.market.my_listings", mine.size()),
                 screen.leftPos + screen.sidebarWidth / 2, screen.topPos + 66, 0xDDDDDD);
@@ -74,10 +84,14 @@ final class MyListingsPanel {
         for (int i = 0; i < shown; i++) {
             MarketListing listing = mine.get(i);
             int rowY = top + i * ROW_HEIGHT;
+            boolean selected = listing.id().equals(selectedId);
             boolean hovered = mouseX >= x && mouseX <= x + w && mouseY >= rowY && mouseY <= rowY + ROW_HEIGHT;
 
-            guiGraphics.fill(x, rowY, x + w, rowY + ROW_HEIGHT,
-                    hovered ? 0x44FFFFFF : (i % 2 == 0 ? 0x18FFFFFF : 0x0AFFFFFF));
+            int bg = selected ? 0x5533AA33 : (hovered ? 0x33FFFFFF : (i % 2 == 0 ? 0x18FFFFFF : 0x0AFFFFFF));
+            guiGraphics.fill(x, rowY, x + w, rowY + ROW_HEIGHT, bg);
+            if (selected) {
+                guiGraphics.renderOutline(x, rowY, w, ROW_HEIGHT, 0x88FFAA00);
+            }
 
             guiGraphics.renderItem(listing.item(), x + 2, rowY + 6);
 
@@ -87,12 +101,24 @@ final class MyListingsPanel {
             String price = MoneyUtils.formatValue(listing.price());
             guiGraphics.drawString(font, price, x + 22, rowY + 14, 0xFFFF55, false);
 
-            // 剩余时间
             long remainMs = listing.createdAt() + (long) listing.expiryMinutes() * 60_000L - System.currentTimeMillis();
             String remain = remainMs > 0
                     ? Component.translatable("gui.marketbox.market.remain_min", String.valueOf(remainMs / 60_000L)).getString()
                     : Component.translatable("gui.marketbox.market.remain_expired").getString();
-            guiGraphics.drawString(font, remain, x + w - font.width(remain) - 2, rowY + 14, 0x888888, false);
+            int remainX = x + w - font.width(remain) - (selected ? DELIST_BTN_WIDTH + 2 : 2);
+            guiGraphics.drawString(font, remain, remainX, rowY + 14, 0x888888, false);
+
+            // 选中后行尾出现 × 按钮
+            if (selected) {
+                int btnX = x + w - DELIST_BTN_WIDTH + 2;
+                boolean btnHovered = mouseX >= btnX && mouseX <= x + w
+                        && mouseY >= rowY && mouseY <= rowY + ROW_HEIGHT;
+                int btnColor = btnHovered ? 0xFF5555 : 0xAA5555;
+                if (btnHovered) {
+                    guiGraphics.fill(btnX - 2, rowY + 2, x + w - 1, rowY + ROW_HEIGHT - 2, 0x44FF5555);
+                }
+                guiGraphics.drawString(font, "×", btnX + 3, rowY + 9, btnColor, false);
+            }
         }
 
         if (mine.size() > MAX_ROWS) {
@@ -100,9 +126,12 @@ final class MyListingsPanel {
                     String.valueOf(mine.size() - MAX_ROWS)).getString();
             guiGraphics.drawString(font, more, x, top + MAX_ROWS * ROW_HEIGHT + 2, 0x777777, false);
         }
+
+        guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.list_hint").getString(),
+                x, top + shown * ROW_HEIGHT + 4, 0x666666, false);
     }
 
-    /** 点击任意一行即下架该挂单；返回 true 表示点击被消费 */
+    /** 单击选中；点中选中行的 × 才下架 */
     static boolean handleClick(MarketScreen screen, double mouseX, double mouseY) {
         List<MarketListing> mine = mine();
         int x = listLeft(screen);
@@ -112,10 +141,23 @@ final class MyListingsPanel {
 
         for (int i = 0; i < shown; i++) {
             int rowY = top + i * ROW_HEIGHT;
-            if (mouseX >= x && mouseX <= x + w && mouseY >= rowY && mouseY <= rowY + ROW_HEIGHT) {
-                ClientNetwork.send(new DelistMarketItemPacket(mine.get(i).id()));
+            if (mouseX < x || mouseX > x + w || mouseY < rowY || mouseY > rowY + ROW_HEIGHT) {
+                continue;
+            }
+
+            MarketListing listing = mine.get(i);
+            boolean isSelected = listing.id().equals(selectedId);
+
+            if (isSelected && mouseX >= x + w - DELIST_BTN_WIDTH) {
+                // 点中 × 按钮：真正下架
+                ClientNetwork.send(new DelistMarketItemPacket(listing.id()));
+                selectedId = null;
                 return true;
             }
+
+            // 其余位置：选中 / 取消选中
+            selectedId = isSelected ? null : listing.id();
+            return true;
         }
         return false;
     }
