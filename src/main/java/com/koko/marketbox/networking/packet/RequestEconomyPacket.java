@@ -17,8 +17,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 public class RequestEconomyPacket implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<RequestEconomyPacket> ID =
             new CustomPacketPayload.Type<>(MarketBox.id("request_economy"));
+    /**
+     * 空包编解码。
+     * 不能用 StreamCodec.unit：它会校验对象必须是同一个实例，
+     * 而我们每次发送都会 new 一个新请求对象，运行时会抛 IllegalStateException。
+     */
     public static final StreamCodec<RegistryFriendlyByteBuf, RequestEconomyPacket> CODEC =
-            StreamCodec.unit(new RequestEconomyPacket());
+            StreamCodec.of((buf, packet) -> { }, buf -> new RequestEconomyPacket());
 
     @Override
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
