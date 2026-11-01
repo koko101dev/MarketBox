@@ -27,8 +27,10 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
     private static final int PADDING = 10;
     /** 单行横向布局：勾选 / 图标 / 名称 / 数量 / 单价 / 小计 一行排完 */
     private static final int ROW_HEIGHT = 34;
-    /** 一屏能放的条数，超出部分不显示（按数量从多到少排） */
-    private static final int MAX_ROWS = 7;
+    /** 每行高度固定，最多能显示的行数随窗口高度变化 */
+    private int maxRows() {
+        return Math.max(3, (this.height - listTop - PADDING - 28) / ROW_HEIGHT);
+    }
     private static final int CHECKBOX_SIZE = 12;
 
     private final Screen parent;
@@ -38,6 +40,8 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
     private int contentWidth;
     private int listTop;
     private int expiryMinutes = 60;
+    /** 勾选的物品 ID 集合：界面重建后据此恢复勾选状态，避免填了一半全被清空 */
+    private final java.util.Set<String> selectedItems = new java.util.HashSet<>();
     private StyledButton expiryButton;
     /** 本地校验提示：未勾选、数量或价格无效时给出反馈 */
     private final Toast toast = new Toast();
@@ -142,8 +146,12 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
 
         merged.entrySet().stream()
                 .sorted((a, b) -> Integer.compare(b.getValue(), a.getValue()))
-                .limit(MAX_ROWS)
-                .forEach(e -> rows.add(new Row(e.getKey(), e.getValue())));
+                .limit(maxRows())
+                .forEach(e -> {
+                    Row row = new Row(e.getKey(), e.getValue());
+                    row.selected = selectedItems.contains(e.getKey().getItem().toString());
+                    rows.add(row);
+                });
     }
 
     /** 为每一行创建数量与单价输入框 */
@@ -268,9 +276,15 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
             int index = (int) ((mouseY - listTop) / ROW_HEIGHT);
             if (index >= 0 && index < rows.size()) {
                 // 只有点最左侧的勾选框才切换，避免点输入框时误触
-                if (mouseX <= x + 4 + CHECKBOX_SIZE + 2) {
+                if (mouseX <= x + 8 + CHECKBOX_SIZE) {
                     Row row = rows.get(index);
                     row.selected = !row.selected;
+                    String key = row.stack.getItem().toString();
+                    if (row.selected) {
+                        selectedItems.add(key);
+                    } else {
+                        selectedItems.remove(key);
+                    }
                     return true;
                 }
             }
@@ -286,29 +300,37 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
         }
 
         List<BulkListMarketItemPacket.Entry> entries = new ArrayList<>();
-        int skipped = 0;
-        for (Row row : rows) {
+        int invalidIndex = -1;
+        for (int i = 0; i < rows.size(); i++) {
+            Row row = rows.get(i);
             if (!row.selected) {
                 continue;
+            }
+            // 空输入按 0 处理并提示，避免用户清空后误以「全部数量 + 单价 1」提交
+            if (row.qtyBox.getValue().trim().isEmpty() || row.priceBox.getValue().trim().isEmpty()) {
+                invalidIndex = i;
+                break;
             }
             int qty = row.quantity();
             double price = row.price();
             if (qty <= 0 || price <= 0) {
-                skipped++;
-                continue;
+                invalidIndex = i;
+                break;
             }
             ItemStack stack = row.stack.copy();
             stack.setCount(qty);
-            entries.add(new BulkListMarketItemPacket.Entry(stack, price, qty));
+            // price 为挂单总价：单条上架也是 price*quantity 后提交
+            // 传单价会让买家以 1/N 的价格买走整组物品
+            entries.add(new BulkListMarketItemPacket.Entry(stack, price * qty, qty));
         }
 
         if (entries.isEmpty()) {
             toast.show(Component.translatable("gui.marketbox.market.bulk_invalid_input"), true);
             return;
         }
-        if (skipped > 0) {
-            // 有跳过项时提示一下，避免用户以为全部提交了
-            toast.show(Component.translatable("gui.marketbox.market.bulk_skipped", skipped), true);
+        if (invalidIndex >= 0) {
+            // 直接指出哪一行有问题，而不是笼统说「有 N 项无效」
+            toast.show(Component.translatable("gui.marketbox.market.bulk_row_invalid", invalidIndex + 1), true);
             return;
         }
         ClientNetwork.send(new BulkListMarketItemPacket(entries, expiryMinutes));
