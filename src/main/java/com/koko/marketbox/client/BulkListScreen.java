@@ -109,8 +109,9 @@ public class BulkListScreen extends Screen {
 
         this.addRenderableWidget(new StyledButton(this.width - PADDING - 90, bottomY, 90, 20,
                 Component.translatable("gui.marketbox.market.bulk_submit"), b -> submit()));
+        // 叫「返回」而不是「完成」：这个按钮只关窗口，不做提交
         this.addRenderableWidget(new StyledButton(this.width - PADDING - 90 - 64, bottomY, 60, 20,
-                Component.translatable("gui.done"), b -> this.onClose()));
+                Component.translatable("gui.marketbox.market.bulk_back"), b -> this.onClose()));
     }
 
     private Component expiryLabel() {

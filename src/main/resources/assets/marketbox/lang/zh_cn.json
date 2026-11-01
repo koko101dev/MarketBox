@@ -306,5 +306,6 @@
   "gui.marketbox.market.bulk_price": "单价",
   "gui.marketbox.market.bulk_summary": "已选 %s 件，合计 %s",
   "gui.marketbox.market.bulk_done": "已上架 %s 件",
-  "gui.marketbox.market.bulk_all_failed": "上架失败，请检查数量与价格是否有效"
+  "gui.marketbox.market.bulk_all_failed": "上架失败，请检查数量与价格是否有效",
+  "gui.marketbox.market.bulk_back": "返回"
 }

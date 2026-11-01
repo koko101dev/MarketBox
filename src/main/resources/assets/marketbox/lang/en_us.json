@@ -306,5 +306,6 @@
   "gui.marketbox.market.bulk_price": "Price",
   "gui.marketbox.market.bulk_summary": "%s selected, total %s",
   "gui.marketbox.market.bulk_done": "Listed %s item(s)",
-  "gui.marketbox.market.bulk_all_failed": "Nothing was listed, check quantity and price"
+  "gui.marketbox.market.bulk_all_failed": "Nothing was listed, check quantity and price",
+  "gui.marketbox.market.bulk_back": "Back"
 }
