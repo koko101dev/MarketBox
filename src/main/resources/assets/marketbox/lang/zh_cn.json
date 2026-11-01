@@ -249,5 +249,19 @@
   "gui.marketbox.market.limit_label": "每人限购 %s 个",
   "gui.marketbox.market.remaining": "剩余 %s 个",
   "gui.marketbox.market.no_limit_hint": "不限购",
-  "gui.marketbox.market.limit_label_short": "每人限购"
+  "gui.marketbox.market.limit_label_short": "每人限购",
+  "gui.marketbox.nav.economy": "经济",
+  "gui.marketbox.economy.refresh": "刷新",
+  "gui.marketbox.economy.section_holdings": "货币存量",
+  "gui.marketbox.economy.section_session": "本次会话",
+  "gui.marketbox.economy.section_market": "市场",
+  "gui.marketbox.economy.online_total": "在线玩家总资产",
+  "gui.marketbox.economy.treasury": "市场金库",
+  "gui.marketbox.economy.interest": "利息发放",
+  "gui.marketbox.economy.admin": "管理员发放",
+  "gui.marketbox.economy.fee_destroyed": "手续费销毁",
+  "gui.marketbox.economy.net": "净增货币",
+  "gui.marketbox.economy.listings": "挂单总数",
+  "gui.marketbox.economy.hint_inflation": "净增为正说明货币在膨胀，可考虑降低利率或提高手续费",
+  "gui.marketbox.economy.hint_stable": "货币供应稳定"
 }

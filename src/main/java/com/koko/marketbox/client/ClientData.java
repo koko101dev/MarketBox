@@ -22,6 +22,14 @@ public class ClientData {
     private static double marketFeePercent = 0;
     private static double treasuryBalance = 0;
     private static boolean feeToTreasury = false;
+    // 经济概览（打开经济页时向服务端请求）
+    private static double economyOnlineTotal;
+    private static int economyOnlineCount;
+    private static double economyInterest;
+    private static double economyAdmin;
+    private static double economyFeeDestroyed;
+    private static double economyFeeToTreasury;
+    private static int economyListingCount;
     private static List<net.minecraft.world.item.ItemStack> returnedItems = new ArrayList<>();
     private static List<PlayerEntry> leaderboard = new ArrayList<>();
     private static List<MarketListing> marketListings = new ArrayList<>();
@@ -33,6 +41,46 @@ public class ClientData {
 
     public static void setAdmin(boolean value) {
         admin = value;
+    }
+
+    public static void setEconomy(double onlineTotal, int onlineCount, double interest,
+                                  double admin, double feeDestroyed, double feeToTreasury,
+                                  int listingCount) {
+        economyOnlineTotal = onlineTotal;
+        economyOnlineCount = onlineCount;
+        economyInterest = interest;
+        economyAdmin = admin;
+        economyFeeDestroyed = feeDestroyed;
+        economyFeeToTreasury = feeToTreasury;
+        economyListingCount = listingCount;
+    }
+
+    public static double getEconomyOnlineTotal() {
+        return economyOnlineTotal;
+    }
+
+    public static int getEconomyOnlineCount() {
+        return economyOnlineCount;
+    }
+
+    public static double getEconomyInterest() {
+        return economyInterest;
+    }
+
+    public static double getEconomyAdmin() {
+        return economyAdmin;
+    }
+
+    public static double getEconomyFeeDestroyed() {
+        return economyFeeDestroyed;
+    }
+
+    public static double getEconomyFeeToTreasury() {
+        return economyFeeToTreasury;
+    }
+
+    public static int getEconomyListingCount() {
+        return economyListingCount;
     }
 
     public static boolean isFeeToTreasury() {

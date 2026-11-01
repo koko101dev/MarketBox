@@ -249,5 +249,19 @@
   "gui.marketbox.market.limit_label": "Limit %s per player",
   "gui.marketbox.market.remaining": "%s remaining",
   "gui.marketbox.market.no_limit_hint": "No limit",
-  "gui.marketbox.market.limit_label_short": "Limit/player"
+  "gui.marketbox.market.limit_label_short": "Limit/player",
+  "gui.marketbox.nav.economy": "Economy",
+  "gui.marketbox.economy.refresh": "Refresh",
+  "gui.marketbox.economy.section_holdings": "Money Supply",
+  "gui.marketbox.economy.section_session": "This Session",
+  "gui.marketbox.economy.section_market": "Market",
+  "gui.marketbox.economy.online_total": "Online players total",
+  "gui.marketbox.economy.treasury": "Market treasury",
+  "gui.marketbox.economy.interest": "Interest issued",
+  "gui.marketbox.economy.admin": "Admin issued",
+  "gui.marketbox.economy.fee_destroyed": "Fees destroyed",
+  "gui.marketbox.economy.net": "Net money change",
+  "gui.marketbox.economy.listings": "Total listings",
+  "gui.marketbox.economy.hint_inflation": "Positive net means inflation — consider lowering the rate or raising fees",
+  "gui.marketbox.economy.hint_stable": "Money supply is stable"
 }

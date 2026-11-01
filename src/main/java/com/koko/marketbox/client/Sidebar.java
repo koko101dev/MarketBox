@@ -13,7 +13,7 @@ final class Sidebar {
 
     /** 当前所在页面，用于高亮 */
     enum Page {
-        BANK, TRANSFER, MARKET, STATS, RANKING, SETTINGS
+        BANK, TRANSFER, MARKET, STATS, RANKING, ECONOMY, SETTINGS
     }
 
     private Sidebar() {
@@ -31,7 +31,7 @@ final class Sidebar {
         int btnWidth = navWidth - 12;
         int x = 6;
         int y = 52;
-        int step = 24;
+        int step = 22;
 
         return java.util.List.of(
                 nav(host, x, y, btnWidth, "bank", current == Page.BANK,
@@ -44,14 +44,16 @@ final class Sidebar {
                         () -> open(host, new StatsScreen(host))),
                 nav(host, x, y + step * 4, btnWidth, "ranking", current == Page.RANKING,
                         () -> open(host, new RankingScreen(host))),
-                nav(host, x, y + step * 5, btnWidth, "settings", current == Page.SETTINGS,
+                nav(host, x, y + step * 5, btnWidth, "economy", current == Page.ECONOMY,
+                        () -> open(host, new EconomyScreen(host))),
+                nav(host, x, y + step * 6, btnWidth, "settings", current == Page.SETTINGS,
                         () -> open(host, new ConfigScreen(host)))
         );
     }
 
     private static StyledButton nav(Screen host, int x, int y, int width, String key,
                                     boolean highlighted, Runnable action) {
-        return new StyledButton(x, y, width, 22,
+        return new StyledButton(x, y, width, 20,
                 Component.translatable("gui.marketbox.nav." + key),
                 b -> action.run(), false, highlighted);
     }

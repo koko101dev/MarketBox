@@ -4,6 +4,8 @@ import com.koko.marketbox.networking.packet.ActionFeedbackPacket;
 import com.koko.marketbox.networking.packet.ClaimReturnedItemsPacket;
 import com.koko.marketbox.networking.packet.DelistMarketItemPacket;
 import com.koko.marketbox.networking.packet.AdminBalancePacket;
+import com.koko.marketbox.networking.packet.RequestEconomyPacket;
+import com.koko.marketbox.networking.packet.SyncEconomyPacket;
 import com.koko.marketbox.networking.packet.DepositMoneyPacket;
 import com.koko.marketbox.networking.packet.ListMarketItemPacket;
 import com.koko.marketbox.networking.packet.PurchaseMarketItemPacket;
@@ -33,6 +35,9 @@ public final class ModMessages {
 
     public static void register() {
         // ---- 客户端 -> 服务端 ----
+        PayloadTypeRegistry.playC2S().register(RequestEconomyPacket.ID, RequestEconomyPacket.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(RequestEconomyPacket.ID, RequestEconomyPacket::handle);
+
         PayloadTypeRegistry.playC2S().register(AdminBalancePacket.ID, AdminBalancePacket.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(AdminBalancePacket.ID, AdminBalancePacket::handle);
 
@@ -65,6 +70,7 @@ public final class ModMessages {
         PayloadTypeRegistry.playS2C().register(SyncLeaderboardPacket.ID, SyncLeaderboardPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SyncMarketListingsPacket.ID, SyncMarketListingsPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SyncAdminStatusPacket.ID, SyncAdminStatusPacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(SyncEconomyPacket.ID, SyncEconomyPacket.CODEC);
 
         PayloadTypeRegistry.playS2C().register(MarketListingAddedPacket.ID, MarketListingAddedPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(MarketListingRemovedPacket.ID, MarketListingRemovedPacket.CODEC);

@@ -4,6 +4,7 @@ import com.koko.marketbox.networking.packet.ActionFeedbackPacket;
 import com.koko.marketbox.networking.packet.SyncLeaderboardPacket;
 import com.koko.marketbox.networking.packet.MarketListingAddedPacket;
 import com.koko.marketbox.networking.packet.SyncAdminStatusPacket;
+import com.koko.marketbox.networking.packet.SyncEconomyPacket;
 import com.koko.marketbox.networking.packet.MarketListingRemovedPacket;
 import com.koko.marketbox.networking.packet.SyncMarketListingsPacket;
 import com.koko.marketbox.networking.packet.SyncPlayerBalancePacket;
@@ -42,6 +43,13 @@ public final class ClientPacketHandlers {
 
         ClientPlayNetworking.registerGlobalReceiver(SyncAdminStatusPacket.ID, (payload, context) ->
                 context.client().execute(() -> ClientData.setAdmin(payload.admin())));
+
+        ClientPlayNetworking.registerGlobalReceiver(SyncEconomyPacket.ID, (payload, context) ->
+                context.client().execute(() -> ClientData.setEconomy(
+                        payload.onlineTotal(), payload.onlineCount(),
+                        payload.interestIssued(), payload.adminIssued(),
+                        payload.feeDestroyed(), payload.feeToTreasury(),
+                        payload.listingCount())));
 
         ClientPlayNetworking.registerGlobalReceiver(MarketListingAddedPacket.ID, (payload, context) ->
                 context.client().execute(() -> ClientData.addMarketListing(payload.listing())));
