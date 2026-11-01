@@ -77,91 +77,49 @@ final class MarketBoxScreenRenderer {
         
         drawValueWithScaling(screen, guiGraphics, Component.translatable("gui.marketbox.next_interest"), countdownText, startX, contentY, maxWidth, 0x55FFFF);
 
-        // 5. 收益曲线：纯展示，用复利公式让玩家直观看到利率的长期效果
-        renderInterestCurve(screen, guiGraphics, startX, contentY + 24, maxWidth);
+        // 5. 收益预估：直接给出金额，比一条永远向上的曲线更有用
+        renderEarningsForecast(screen, guiGraphics, startX, contentY + 26, maxWidth);
     }
 
     /**
-     * 14 天复利增长曲线。
+     * 收益预估：按当前利率算出 14 天后的余额，直接显示金额。
      *
-     * 用 Bresenham 连接采样点而不是逐列画矩形：逐列填充在斜率小时
-     * 会断成一段一段的虚线，看起来像锯齿。这里每 8px 采一个点再连线，线条连续。
-     * 同时补上横向网格与时间轴标签，让增长幅度可读。
+     * 原先这里画的是复利曲线，但利率固定时它永远是一条单调上升的曲线，
+     * 玩家看完仍然不知道"能赚多少"。改成数字更直接。
      */
-    private static void renderInterestCurve(MarketBoxScreen screen, GuiGraphics guiGraphics,
-                                            int plotX, int titleY, int plotW) {
-        if (plotW < 100) {
-            return;
-        }
+    private static void renderEarningsForecast(MarketBoxScreen screen, GuiGraphics guiGraphics,
+                                               int x, int y, int width) {
         double rate = ClientData.getInterestRate() / 100.0;
-        if (!(rate > 0) || Double.isInfinite(rate)) {
+        double balance = ClientData.getPlayerBalance();
+        if (!(rate > 0) || balance <= 0) {
             return;
         }
 
         int interval = Math.max(60, ClientData.getInterestIntervalSeconds());
         int periodsPerDay = Math.max(1, Math.min(288, 86400 / interval));
-        final int days = 14;
-
-        double maxGain = 0;
-        for (int d = 0; d <= days; d++) {
-            double g = (Math.pow(1 + rate, (double) periodsPerDay * d) - 1) * 100;
-            if (Double.isFinite(g)) {
-                maxGain = Math.max(maxGain, g);
-            }
+        double future = balance * Math.pow(1 + rate, (double) periodsPerDay * 14);
+        if (!Double.isFinite(future)) {
+            return;
         }
-        if (!(maxGain > 0)) {
+        double gain = future - balance;
+        if (gain <= 0) {
             return;
         }
 
         var font = net.minecraft.client.Minecraft.getInstance().font;
-        int labelHeight = 12;
-        int plotTop = titleY + 12;
-        int available = screen.topPos + screen.guiHeight - MarketBoxScreen.PADDING - 8 - plotTop - labelHeight;
-        int plotH = Math.min(104, available);
-        if (plotH < 40) {
-            return;
-        }
-        int plotBottom = plotTop + plotH;
 
-        guiGraphics.drawString(font, Component.translatable("gui.marketbox.interest_curve", String.valueOf(days)),
-                plotX, titleY, 0xAAAAAA, false);
+        String title = Component.translatable("gui.marketbox.forecast.title").getString();
+        guiGraphics.drawString(font, title, x, y, 0xAAAAAA, false);
 
-        // 背景与边框
-        guiGraphics.fill(plotX, plotTop, plotX + plotW, plotBottom, 0x18000000);
-        guiGraphics.renderOutline(plotX, plotTop, plotW, plotH, 0x33FFFFFF);
+        String futureText = MoneyUtils.formatValue(future);
+        guiGraphics.drawString(font, futureText, x + 2, y + 14, 0xFFFFFF, false);
 
-        // 面积填充：很淡，只用来暗示"累计收益"的量
-        int prevPy = plotBottom;
-        for (int px = 0; px < plotW; px++) {
-            double day = (double) px / (plotW - 1) * days;
-            double gain = (Math.pow(1 + rate, periodsPerDay * day) - 1) * 100;
-            double ratio = Double.isFinite(gain) ? Math.max(0.0, Math.min(1.0, gain / maxGain)) : 1.0;
-            int py = plotBottom - (int) (ratio * (plotH - 3));
-
-            guiGraphics.fill(plotX + px, py, plotX + px + 1, plotBottom, 0x1855FF55);
-            // 曲线本体：每列都画，且从上一列高度连过来，线宽 3px，消除台阶感
-            int from = Math.min(prevPy, py);
-            int to = Math.max(prevPy, py) + 3;
-            guiGraphics.fill(plotX + px, from, plotX + px + 1, to, 0xFF55DD55);
-            prevPy = py;
-        }
-
-        // 右上角终点值，带半透明底避免与曲线粘连
-        String maxLabel = String.format("+%.1f%%", maxGain);
-        int labelW = font.width(maxLabel);
-        int labelX = plotX + plotW - labelW - 6;
-        guiGraphics.fill(labelX - 3, plotTop + 3, labelX + labelW + 3, plotTop + 14, 0x88000000);
-        guiGraphics.drawString(font, maxLabel, labelX, plotTop + 5, 0x66FF66, false);
-
-        // X 轴时间标签
-        String d0 = Component.translatable("gui.marketbox.curve.day", "0").getString();
-        String d7 = Component.translatable("gui.marketbox.curve.day", "7").getString();
-        String d14 = Component.translatable("gui.marketbox.curve.day", String.valueOf(days)).getString();
-        int labelY = plotBottom + 4;
-        guiGraphics.drawString(font, d0, plotX + 1, labelY, 0x777777, false);
-        guiGraphics.drawString(font, d7, plotX + plotW / 2 - font.width(d7) / 2, labelY, 0x777777, false);
-        guiGraphics.drawString(font, d14, plotX + plotW - font.width(d14) - 1, labelY, 0x777777, false);
+        String gainText = Component.translatable("gui.marketbox.forecast.gain",
+                MoneyUtils.formatValue(gain)).getString();
+        guiGraphics.drawString(font, gainText, x + 2, y + 30, 0x55FF55, false);
     }
+
+
 
 
 

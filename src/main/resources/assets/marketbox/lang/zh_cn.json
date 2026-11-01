@@ -167,7 +167,6 @@
   "gui.marketbox.transfer.error.no_target": "请先在左侧选择收款人",
   "gui.marketbox.config.section.market": "市场设置",
   "gui.marketbox.config.market_fee": "成交手续费（%）",
-  "gui.marketbox.interest_curve": "收益曲线（%s 天）",
   "gui.marketbox.config.section.admin": "管理员操作",
   "gui.marketbox.admin.row0": "目标玩家",
   "gui.marketbox.admin.row1": "金额",
@@ -270,12 +269,13 @@
   "gui.marketbox.config.need_owner": "经济参数只能由服主（权限等级 4）修改",
   "tooltip.marketbox.deal_price": "最近成交",
   "tooltip.marketbox.on_sale": "在售",
-  "gui.marketbox.curve.day": "%s 天",
   "gui.marketbox.market.list_hint": "单击选中，点 × 下架",
   "gui.marketbox.market.price_too_high": "超出单笔上限（100 万）",
   "gui.marketbox.economy.fee_mode": "手续费去向",
   "gui.marketbox.economy.fee_to_treasury": "手续费入金库",
   "gui.marketbox.market.preview_sell": "以 %s/个 出售 %s 个 %s",
   "gui.marketbox.market.preview_money_fee": "买家付 %s，你实收 %s（手续费 %s）",
-  "gui.marketbox.market.preview_money": "买家付 %s"
+  "gui.marketbox.market.preview_money": "买家付 %s",
+  "gui.marketbox.forecast.title": "按当前利率，14 天后预计余额",
+  "gui.marketbox.forecast.gain": "利息约 +%s"
 }
