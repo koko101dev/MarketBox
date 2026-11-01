@@ -197,5 +197,16 @@
   "commands.marketbox.help.market_clear": "/marketbox market clear — clear listings and refund (admin)",
   "commands.marketbox.help.reload": "/marketbox reload — reload config files (admin)",
   "gui.marketbox.market.fee_hint": "Sale fee %s%%",
-  "gui.marketbox.market.net_income": "You receive %s"
+  "gui.marketbox.market.net_income": "You receive %s",
+  "gui.marketbox.market.list_dialog_title": "List Item",
+  "gui.marketbox.market.qty_label": "Quantity",
+  "gui.marketbox.market.qty_all": "All",
+  "gui.marketbox.market.owned_count": "%s in inventory",
+  "gui.marketbox.market.follow_lowest": "Match lowest",
+  "gui.marketbox.market.market_lowest": "Lowest %s each · %s listings",
+  "gui.marketbox.market.no_listing_yet": "No similar listings, price it yourself",
+  "gui.marketbox.market.expiry_label": "Duration",
+  "gui.marketbox.market.expiry_value": "%s min",
+  "gui.marketbox.market.cancel": "Cancel",
+  "gui.marketbox.market.confirm_list": "List"
 }

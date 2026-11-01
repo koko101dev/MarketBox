@@ -175,6 +175,22 @@ public class MarketScreen extends Screen {
     }
 
 
+    /** 统计背包中与该物品完全相同的总数 */
+    private int countInInventory(ItemStack target) {
+        var player = Minecraft.getInstance().player;
+        if (player == null) {
+            return target.getCount();
+        }
+        int total = 0;
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if (!stack.isEmpty() && ItemStack.isSameItemSameComponents(stack, target)) {
+                total += stack.getCount();
+            }
+        }
+        return Math.max(1, total);
+    }
+
     public void showError(Component message) {
         showFeedback(message, true);
     }
@@ -327,8 +343,12 @@ public class MarketScreen extends Screen {
                                     showError(Component.translatable("gui.marketbox.market.error.cannot_list_currency"));
                                     Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.VILLAGER_NO, 1.0F));
                                 } else {
+                                    // 点击背包物品直接打开上架弹窗
                                     this.selectedItem = stack.copy();
                                     this.isSelectingItem = false;
+                                    Minecraft.getInstance().setScreen(
+                                            new ListingDialogScreen(this, stack.copy(), countInInventory(stack)));
+                                    return true;
                                 }
                             }
                             return true;

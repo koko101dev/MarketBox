@@ -197,5 +197,16 @@
   "commands.marketbox.help.market_clear": "/marketbox market clear — 清空挂单并退还物品（管理员）",
   "commands.marketbox.help.reload": "/marketbox reload — 重新载入配置文件（管理员）",
   "gui.marketbox.market.fee_hint": "成交手续费 %s%%",
-  "gui.marketbox.market.net_income": "预计实收 %s"
+  "gui.marketbox.market.net_income": "预计实收 %s",
+  "gui.marketbox.market.list_dialog_title": "上架物品",
+  "gui.marketbox.market.qty_label": "数量",
+  "gui.marketbox.market.qty_all": "全部",
+  "gui.marketbox.market.owned_count": "背包共 %s 个",
+  "gui.marketbox.market.follow_lowest": "跟随最低",
+  "gui.marketbox.market.market_lowest": "市场最低 %s /个 · %s 条挂单",
+  "gui.marketbox.market.no_listing_yet": "暂无同类挂单，可自行定价",
+  "gui.marketbox.market.expiry_label": "时长",
+  "gui.marketbox.market.expiry_value": "%s 分钟",
+  "gui.marketbox.market.cancel": "取消",
+  "gui.marketbox.market.confirm_list": "上架"
 }
