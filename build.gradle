@@ -20,6 +20,12 @@ loom {
             vmArg "-Dfabric-api.gametest.report-file=${project.buildDir}/junit.xml"
             runDir "build/gameTest"
         }
+        // 开发调试：./gradlew runClient -PquickPlayWorld="存档名" 可直接进入世界
+        client {
+            if (project.hasProperty('quickPlayWorld')) {
+                programArgs "--quickPlaySingleplayer", project.property('quickPlayWorld').toString()
+            }
+        }
     }
 }
 

@@ -78,7 +78,9 @@ public class MarketBoxScreen extends Screen {
         int buttonWidth = leftSectionWidth - PADDING * 2;
         int buttonHeight = 18;
         int buttonX = leftPos + PADDING;
-        int buttonYStart = topPos + guiHeight - (buttonHeight * 2 + 4 + PADDING); 
+        // 预留 PADDING*2：原先只减一次 PADDING，480 高的屏幕上「取出」按钮
+        // 会落到屏幕外（实测底部 488 > 480），点不到也看不见
+        int buttonYStart = topPos + guiHeight - (buttonHeight * 2 + 4 + PADDING * 2); 
 
         // 存入 / 取出：未进入输入模式时是两个按钮；
         // 进入后该区域变为「输入框 + 快捷金额行」，不额外占用版面
@@ -313,7 +315,9 @@ public class MarketBoxScreen extends Screen {
             // 重新计算背景位置，确保覆盖整个输入区域
             int buttonHeight = 18;
             // 与 init 中的 buttonYStart 保持一致：输入框固定占据第一个按钮的位置
-            int buttonYStart = topPos + guiHeight - (buttonHeight * 2 + 4 + PADDING);
+            // 预留 PADDING*2：原先只减一次 PADDING，480 高的屏幕上「取出」按钮
+        // 会落到屏幕外（实测底部 488 > 480），点不到也看不见
+        int buttonYStart = topPos + guiHeight - (buttonHeight * 2 + 4 + PADDING * 2);
             int x, y;
 
             // 存入与取出共用同一位置，下方一行是快捷金额按钮
