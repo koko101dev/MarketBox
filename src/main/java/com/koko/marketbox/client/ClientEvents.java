@@ -29,50 +29,58 @@ public final class ClientEvents {
             }
 
             MarketStats stats = marketStats(stack);
-            if (stats != null) {
+            double dealPrice = ClientData.getDealPrice(stack);
+
+            if (dealPrice > 0 || stats != null) {
                 lines.add(Component.empty());
-                String text = stats.count() == 1
-                        ? MoneyUtils.formatValue(stats.lowest())
-                        : MoneyUtils.formatValue(stats.lowest()) + " ~ " + MoneyUtils.formatValue(stats.highest());
-                lines.add(Component.translatable("tooltip.marketbox.market_price")
-                        .append(Component.literal(": " + text))
-                        .withStyle(ChatFormatting.GOLD));
-                lines.add(Component.translatable("tooltip.marketbox.listing_count",
-                                String.valueOf(stats.count()))
-                        .withStyle(ChatFormatting.DARK_GRAY));
-                return;
             }
 
-            // 没有挂单就不显示：没人卖的东西，标价也没有意义
+            // 最近成交价最能反映真实价值
+            if (dealPrice > 0) {
+                lines.add(Component.translatable("tooltip.marketbox.deal_price")
+                        .append(Component.literal(": " + MoneyUtils.formatValue(dealPrice)))
+                        .withStyle(ChatFormatting.GOLD));
+            }
+
+            // 当前在售价（中位数，单条离谱挂单不影响）
+            if (stats != null) {
+                lines.add(Component.translatable("tooltip.marketbox.on_sale")
+                        .append(Component.literal(": " + MoneyUtils.formatValue(stats.median())
+                                + "（" + stats.count() + "）"))
+                        .withStyle(ChatFormatting.GRAY));
+            }
 
         });
     }
 
-    /** 市场上该物品的价格区间（按单价计算，与整单数量无关） */
+    /**
+     * 市场上该物品的典型价格（按单价计算，与整单数量无关）。
+     * 用中位数而非最低价：单条离谱挂单（1 块钱砸盘或 99999 钓鱼）不会污染显示。
+     */
     private static MarketStats marketStats(ItemStack stack) {
         List<MarketListing> listings = ClientData.getMarketListings();
-        double lowest = -1;
-        double highest = -1;
-        int count = 0;
+        List<Double> prices = new java.util.ArrayList<>();
 
         for (MarketListing listing : listings) {
             if (!ItemStack.isSameItemSameComponents(listing.item(), stack)) {
                 continue;
             }
             int stackCount = Math.max(1, listing.item().getCount());
-            double unitPrice = listing.price() / stackCount;
-            if (lowest < 0 || unitPrice < lowest) {
-                lowest = unitPrice;
-            }
-            if (unitPrice > highest) {
-                highest = unitPrice;
-            }
-            count++;
+            prices.add(listing.price() / stackCount);
+        }
+        if (prices.isEmpty()) {
+            return null;
         }
 
-        return count > 0 ? new MarketStats(lowest, highest, count) : null;
+        java.util.Collections.sort(prices);
+        int size = prices.size();
+        double median = size % 2 == 1
+                ? prices.get(size / 2)
+                : (prices.get(size / 2 - 1) + prices.get(size / 2)) / 2;
+
+        return new MarketStats(median, prices.get(0), prices.get(size - 1), size);
     }
 
-    private record MarketStats(double lowest, double highest, int count) {
+    private record MarketStats(double median, double lowest, double highest, int count) {
     }
 }

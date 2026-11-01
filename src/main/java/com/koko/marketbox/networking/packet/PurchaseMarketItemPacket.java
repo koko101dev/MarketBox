@@ -161,6 +161,13 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
                 buyer.containerMenu.broadcastChanges();
 
                 manager.addPurchase(listing.id(), buyer.getUUID(), want);
+                manager.recordDeal(listing.item(), unitPrice);
+                // 成交价只同步给参与双方，避免每次交易都全服广播
+                SyncDealPricesPacket dealUpdate = new SyncDealPricesPacket(manager.getDealPrices());
+                ModMessages.sendToPlayer(buyer, dealUpdate);
+                if (seller != null) {
+                    ModMessages.sendToPlayer(seller, dealUpdate);
+                }
 
                 // 更新挂单：买完则移除，否则替换为剩余数量
                 int remaining = available - want;

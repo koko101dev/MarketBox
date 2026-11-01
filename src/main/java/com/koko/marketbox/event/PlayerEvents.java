@@ -9,6 +9,7 @@ import com.koko.marketbox.market.MarketManager;
 import com.koko.marketbox.networking.ModMessages;
 import com.koko.marketbox.networking.packet.SyncLeaderboardPacket;
 import com.koko.marketbox.networking.packet.SyncAdminStatusPacket;
+import com.koko.marketbox.networking.packet.SyncDealPricesPacket;
 import com.koko.marketbox.networking.packet.SyncMarketListingsPacket;
 import com.koko.marketbox.networking.packet.SyncPlayerBalancePacket;
 import com.koko.marketbox.util.MoneyUtils;
@@ -77,6 +78,7 @@ public final class PlayerEvents {
         ServerEvents.markLeaderboardDirty();
 
         sendFullMarketSync(player, manager);
+        ModMessages.sendToPlayer(player, new SyncDealPricesPacket(manager.getDealPrices()));
         // 玩家加入时同步最新价格表
     }
 

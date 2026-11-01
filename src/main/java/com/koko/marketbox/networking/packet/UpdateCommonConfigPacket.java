@@ -4,6 +4,7 @@ import com.koko.marketbox.Config;
 import com.koko.marketbox.MarketBox;
 import com.koko.marketbox.event.PlayerEvents;
 import com.koko.marketbox.event.ServerEvents;
+import com.koko.marketbox.networking.ModMessages;
 import com.koko.marketbox.networking.PacketRateLimiter;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -52,7 +53,12 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
         ServerPlayer player = context.player();
         context.server().execute(() -> {
             try {
-                if (player == null || !player.hasPermissions(2) || player.getServer() == null) {
+                if (player == null || !player.hasPermissions(4) || player.getServer() == null) {
+                    // 经济参数影响全服，普通管理员不应能改
+                    if (player != null) {
+                        ModMessages.sendToPlayer(player,
+                                new ActionFeedbackPacket("gui.marketbox.config.need_owner"));
+                    }
                     return;
                 }
                 if (!PacketRateLimiter.allow(player)) {
@@ -63,6 +69,13 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
                 double safeRate = Math.max(0.0, Math.min(100.0, payload.interestRate));
                 int safeInterval = Math.max(1, payload.interestIntervalSeconds);
                 double safeFee = Math.max(0.0, Math.min(50.0, payload.marketFeePercent));
+
+                // 审计：经济参数变更写入服务器日志，事后可追溯
+                MarketBox.LOGGER.info("[Audit] {} 修改经济配置：利率 {} -> {}, 周期 {} -> {} 秒, 手续费 {} -> {}%",
+                        player.getName().getString(),
+                        Config.getInterestRate(), safeRate,
+                        Config.getInterestIntervalSeconds(), safeInterval,
+                        Config.getMarketFeePercent(), safeFee);
 
                 Config.setInterestSettings(safeRate, safeInterval);
                 Config.setMarketFeePercent(safeFee);

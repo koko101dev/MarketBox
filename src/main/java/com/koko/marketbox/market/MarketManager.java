@@ -37,6 +37,8 @@ public class MarketManager extends SavedData {
     private final List<MarketListing> listings = new CopyOnWriteArrayList<>();
     private final Map<UUID, List<ItemStack>> returnedItems = new ConcurrentHashMap<>();
     private final Map<UUID, Long> pendingPaymentsCents = new ConcurrentHashMap<>();
+    /** 最近成交单价：物品 ID -> 单价。比挂单价更能反映真实价值 */
+    private final Map<String, Double> dealPrices = new ConcurrentHashMap<>();
     /** 每个挂单下各玩家已购买的数量：listingId -> (playerId -> 数量) */
     private final Map<UUID, Map<UUID, Integer>> purchases = new ConcurrentHashMap<>();
     /** 市场金库存量（分）。手续费归入此处，由服主通过命令拨款 */
@@ -67,7 +69,10 @@ public class MarketManager extends SavedData {
     }
 
     public void removeListing(UUID id) {
-        listings.removeIf(listing -> listing.id().equals(id));
+        if (listings.removeIf(listing -> listing.id().equals(id))) {
+            // 挂单消失时连带清掉购买记录，否则 Map 会随挂单流转无限增长
+            purchases.remove(id);
+        }
         setDirty();
     }
 
@@ -87,6 +92,7 @@ public class MarketManager extends SavedData {
 
         for (MarketListing listing : toRemove) {
             if (listings.remove(listing)) {
+                purchases.remove(listing.id());
                 addReturnedItem(listing.sellerUUID(), listing.item());
                 notifiedSellers.add(listing.sellerUUID());
                 changed = true;
@@ -186,6 +192,30 @@ public class MarketManager extends SavedData {
         }
     }
 
+    /** 物品的成交价键：只按物品 ID，避免自定义名导致记录爆炸 */
+    public static String priceKey(net.minecraft.world.item.ItemStack stack) {
+        return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+    }
+
+    /** 记录一次成交的单价 */
+    public void recordDeal(net.minecraft.world.item.ItemStack stack, double unitPrice) {
+        if (unitPrice <= 0) {
+            return;
+        }
+        dealPrices.put(priceKey(stack), unitPrice);
+        setDirty();
+    }
+
+    public double getDealPrice(net.minecraft.world.item.ItemStack stack) {
+        Double value = dealPrices.get(priceKey(stack));
+        return value == null ? -1 : value;
+    }
+
+    /** 全部成交价，供客户端同步 */
+    public Map<String, Double> getDealPrices() {
+        return dealPrices;
+    }
+
     public double getTreasuryBalance() {
         return treasuryCents / 100.0;
     }
@@ -271,6 +301,10 @@ public class MarketManager extends SavedData {
             purchasesTag.put(listingId.toString(), inner);
         });
         tag.put("purchases", purchasesTag);
+
+        CompoundTag dealsTag = new CompoundTag();
+        dealPrices.forEach(dealsTag::putDouble);
+        tag.put("dealPrices", dealsTag);
         return tag;
     }
 
@@ -322,6 +356,16 @@ public class MarketManager extends SavedData {
                     }
                 } catch (Exception e) {
                     MarketBox.LOGGER.warn("[MarketBox] 跳过格式异常的退货记录 key={}：{}", key, e.getClass().getSimpleName());
+                }
+            }
+        }
+
+        if (tag.contains("dealPrices", Tag.TAG_COMPOUND)) {
+            CompoundTag dealsTag = tag.getCompound("dealPrices");
+            for (String key : dealsTag.getAllKeys()) {
+                try {
+                    manager.dealPrices.put(key, dealsTag.getDouble(key));
+                } catch (Exception ignored) {
                 }
             }
         }

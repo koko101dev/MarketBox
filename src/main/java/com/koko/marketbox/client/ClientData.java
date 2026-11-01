@@ -30,6 +30,8 @@ public class ClientData {
     private static double economyFeeDestroyed;
     private static double economyFeeToTreasury;
     private static int economyListingCount;
+    /** 物品 ID -> 最近成交单价 */
+    private static java.util.Map<String, Double> dealPrices = new java.util.HashMap<>();
     private static List<net.minecraft.world.item.ItemStack> returnedItems = new ArrayList<>();
     private static List<PlayerEntry> leaderboard = new ArrayList<>();
     private static List<MarketListing> marketListings = new ArrayList<>();
@@ -41,6 +43,17 @@ public class ClientData {
 
     public static void setAdmin(boolean value) {
         admin = value;
+    }
+
+    public static void setDealPrices(java.util.Map<String, Double> prices) {
+        dealPrices = prices == null ? new java.util.HashMap<>() : prices;
+    }
+
+    public static double getDealPrice(net.minecraft.world.item.ItemStack stack) {
+        String key = net.minecraft.core.registries.BuiltInRegistries.ITEM
+                .getKey(stack.getItem()).toString();
+        Double value = dealPrices.get(key);
+        return value == null ? -1 : value;
     }
 
     public static void setEconomy(double onlineTotal, int onlineCount, double interest,

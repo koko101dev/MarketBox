@@ -268,5 +268,8 @@
   "gui.marketbox.economy.admin_hint": "Owner only (permission level 4). Grants are announced server-wide.",
   "gui.marketbox.economy.withdraw": "Grant",
   "gui.marketbox.economy.goto_settings": "Settings",
-  "commands.marketbox.treasury.broadcast": "[Market] Admin granted %s from treasury to %s"
+  "commands.marketbox.treasury.broadcast": "[Market] Admin granted %s from treasury to %s",
+  "gui.marketbox.config.need_owner": "Only the owner (permission level 4) can change economy settings",
+  "tooltip.marketbox.deal_price": "Last deal",
+  "tooltip.marketbox.on_sale": "On sale"
 }
