@@ -17,19 +17,26 @@ final class ConfigScreenState {
 
     /** 恢复默认值；放在这里是为了让 ConfigScreen 保持在 500 行以内 */
     static void resetToDefaults(ConfigScreen screen) {
-        screen.tempInterestRate = 0.19;
-        screen.tempInterestIntervalSeconds = 1800;
-        screen.tempShowHud = true;
-        screen.tempShowMarketPriceTooltip = true;
-        screen.tempDisableMenuBlur = true;
-        screen.tempHudPosition = Config.HudPosition.TOP_LEFT;
-        screen.tempHudTextStyle = Config.HudTextStyle.NONE;
-        screen.tempHudScale = 1.0;
-        screen.tempHudXOffset = 0;
-        screen.tempHudYOffset = 0;
-        screen.tempQuick1 = 100;
-        screen.tempQuick2 = 1000;
-        screen.tempQuick3 = 10000;
+        // 直接取 Config 里的字段默认值，避免默认值在两处重复定义导致不一致
+        Config.Common commonDefaults = new Config.Common();
+        Config.Client clientDefaults = new Config.Client();
+
+        screen.tempInterestRate = commonDefaults.interestRate;
+        screen.tempInterestIntervalSeconds = commonDefaults.interestIntervalSeconds;
+        screen.tempMarketFee = commonDefaults.marketFeePercent;
+
+        screen.tempShowHud = clientDefaults.showHud;
+        screen.tempShowMarketPriceTooltip = clientDefaults.showMarketPriceTooltip;
+        screen.tempDisableMenuBlur = clientDefaults.disableMenuBlur;
+        screen.tempHudPosition = clientDefaults.hudPosition;
+        screen.tempHudTextStyle = clientDefaults.hudTextStyle;
+        screen.tempHudScale = clientDefaults.hudScale;
+        screen.tempHudXOffset = clientDefaults.hudXOffset;
+        screen.tempHudYOffset = clientDefaults.hudYOffset;
+
+        screen.tempQuick1 = clientDefaults.quickAmount1;
+        screen.tempQuick2 = clientDefaults.quickAmount2;
+        screen.tempQuick3 = clientDefaults.quickAmount3;
 
         screen.refreshWidgets();
         screen.showStatus(Component.translatable("gui.marketbox.config.reset_done"), false);
