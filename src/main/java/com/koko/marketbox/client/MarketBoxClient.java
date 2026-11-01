@@ -42,7 +42,7 @@ public class MarketBoxClient implements ClientModInitializer {
                 Minecraft.getInstance().options.menuBackgroundBlurriness().set(0);
             }
         } catch (Exception e) {
-            com.koko.marketbox.MarketBox.LOGGER.error("应用菜单背景模糊配置失败：{}", e.getClass().getSimpleName());
+            com.koko.marketbox.MarketBox.LOGGER.error("应用菜单背景模糊配置失败", e);
         }
     }
 
