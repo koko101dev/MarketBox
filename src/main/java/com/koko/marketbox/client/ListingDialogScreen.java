@@ -272,27 +272,30 @@ public class ListingDialogScreen extends Screen {
             double unitPrice = Double.parseDouble(priceBox.getValue());
             if (unitPrice > 0) {
                 double total = unitPrice * quantity;
-                guiGraphics.drawString(font,
-                        Component.translatable("gui.marketbox.market.total_price",
-                                String.valueOf(quantity), MoneyUtils.formatValue(total)).getString(),
-                        left + PAD, top + 158, 0xFFFF55, false);
 
                 if (total > MAX_TOTAL_PRICE) {
-                    // 与服务端同一个上限，提前告知而不是等提交后被拒
                     guiGraphics.drawString(font,
                             Component.translatable("gui.marketbox.market.price_too_high").getString(),
-                            left + PAD, top + 170, 0xFF5555, false);
-                } else if (feePercent > 0) {
-                    double feeAmount = total * feePercent / 100.0;
-                    guiGraphics.drawString(font,
-                            Component.translatable("gui.marketbox.market.fee_detail",
-                                    String.format("%.1f", feePercent), MoneyUtils.formatValue(feeAmount)).getString(),
-                            left + PAD, top + 170, 0xCC8844, false);
+                            left + PAD, top + 158, 0xFF5555, false);
+                } else {
+                    // 用一句完整描述代替分散的数字，先说卖什么、怎么卖
+                    String itemName = font.plainSubstrByWidth(item.getHoverName().getString(), W - PAD * 2 - 60);
+                    String sellLine = Component.translatable("gui.marketbox.market.preview_sell",
+                            MoneyUtils.formatValue(unitPrice),
+                            String.valueOf(quantity),
+                            itemName).getString();
+                    guiGraphics.drawString(font, sellLine, left + PAD, top + 158, 0xFFFF55, false);
 
-                    guiGraphics.drawString(font,
-                            Component.translatable("gui.marketbox.market.net_income",
-                                    MoneyUtils.formatValue(total - feeAmount)).getString(),
-                            left + PAD, top + 182, 0x66AA66, false);
+                    // 再说谁付多少、自己实收多少
+                    double feeAmount = total * feePercent / 100.0;
+                    String moneyLine = feePercent > 0
+                            ? Component.translatable("gui.marketbox.market.preview_money_fee",
+                                    MoneyUtils.formatValue(total),
+                                    MoneyUtils.formatValue(total - feeAmount),
+                                    MoneyUtils.formatValue(feeAmount)).getString()
+                            : Component.translatable("gui.marketbox.market.preview_money",
+                                    MoneyUtils.formatValue(total)).getString();
+                    guiGraphics.drawString(font, moneyLine, left + PAD, top + 172, 0x66AA66, false);
                 }
             }
         } catch (NumberFormatException ignored) {

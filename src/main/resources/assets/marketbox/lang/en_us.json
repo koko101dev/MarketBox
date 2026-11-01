@@ -277,5 +277,8 @@
   "gui.marketbox.market.list_hint": "Click to select, × to delist",
   "gui.marketbox.market.price_too_high": "Exceeds limit (1M)",
   "gui.marketbox.economy.fee_mode": "Fee destination",
-  "gui.marketbox.economy.fee_to_treasury": "Fees to treasury"
+  "gui.marketbox.economy.fee_to_treasury": "Fees to treasury",
+  "gui.marketbox.market.preview_sell": "Selling %s %s at %s each",
+  "gui.marketbox.market.preview_money_fee": "Buyer pays %s, you receive %s (fee %s)",
+  "gui.marketbox.market.preview_money": "Buyer pays %s"
 }

@@ -277,5 +277,8 @@
   "gui.marketbox.market.list_hint": "单击选中，点 × 下架",
   "gui.marketbox.market.price_too_high": "超出单笔上限（100 万）",
   "gui.marketbox.economy.fee_mode": "手续费去向",
-  "gui.marketbox.economy.fee_to_treasury": "手续费入金库"
+  "gui.marketbox.economy.fee_to_treasury": "手续费入金库",
+  "gui.marketbox.market.preview_sell": "以 %s/个 出售 %s 个 %s",
+  "gui.marketbox.market.preview_money_fee": "买家付 %s，你实收 %s（手续费 %s）",
+  "gui.marketbox.market.preview_money": "买家付 %s"
 }
