@@ -25,7 +25,8 @@ import java.util.Map;
 public class BulkListScreen extends Screen {
 
     private static final int PADDING = 10;
-    private static final int ROW_HEIGHT = 40;
+    /** 行高 44：名称一行 + 输入框一行 + 标签一行，40 高时标签会压到下一行 */
+    private static final int ROW_HEIGHT = 44;
     /** 一屏能放的条数，超出部分不显示（按数量从多到少排） */
     private static final int MAX_ROWS = 7;
     private static final int CHECKBOX_SIZE = 12;
@@ -150,14 +151,14 @@ public class BulkListScreen extends Screen {
             Row row = rows.get(i);
             int rowY = listTop + i * ROW_HEIGHT;
 
-            EditBox qty = new EditBox(this.font, x + 68, rowY + 19, 44, 14, Component.empty());
+            EditBox qty = new EditBox(this.font, x + 68, rowY + 18, 46, 15, Component.empty());
             qty.setMaxLength(6);
             qty.setFilter(s -> s.isEmpty() || s.matches("\\d{0,6}"));
             qty.setValue(String.valueOf(row.available));
             row.qtyBox = qty;
             this.addRenderableWidget(qty);
 
-            EditBox price = new EditBox(this.font, x + 152, rowY + 19, 60, 14, Component.empty());
+            EditBox price = new EditBox(this.font, x + 152, rowY + 18, 62, 15, Component.empty());
             price.setMaxLength(12);
             price.setFilter(s -> s.isEmpty() || s.matches("\\d{0,9}(\\.\\d{0,2})?"));
             price.setValue("1.00");
@@ -218,8 +219,9 @@ public class BulkListScreen extends Screen {
             guiGraphics.fill(boxX, boxY, boxX + CHECKBOX_SIZE, boxY + CHECKBOX_SIZE, 0xFF333333);
             guiGraphics.renderOutline(boxX, boxY, CHECKBOX_SIZE, CHECKBOX_SIZE, 0xFF888888);
             if (row.selected) {
-                guiGraphics.fill(boxX + 3, boxY + 3, boxX + CHECKBOX_SIZE - 3, boxY + CHECKBOX_SIZE - 3,
-                        0xFF55FF55);
+                // 画一个勾，比整块填绿更像复选框
+                guiGraphics.fill(boxX + 2, boxY + 6, boxX + 5, boxY + 9, 0xFF55FF55);
+                guiGraphics.fill(boxX + 4, boxY + 7, boxX + 9, boxY + 4, 0xFF55FF55);
             }
 
             guiGraphics.renderItem(row.stack, x + 22, rowY + 5);
