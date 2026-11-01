@@ -79,6 +79,41 @@ final class MarketBoxScreenRenderer {
 
         // 5. 收益预估：直接给出金额，比一条永远向上的曲线更有用
         renderEarningsForecast(screen, guiGraphics, startX, contentY + 26, maxWidth);
+
+        // 6. 最近几次结息：让玩家看到利息实际到账的节奏
+        renderRecentInterest(guiGraphics, startX, contentY + 88, maxWidth);
+    }
+
+
+    /**
+     * 最近几次结息记录。
+     * 数据来自玩家流水里 reason 为 interest 的条目，最多显示 5 条。
+     */
+    private static void renderRecentInterest(GuiGraphics guiGraphics, int x, int y, int width) {
+        var font = net.minecraft.client.Minecraft.getInstance().font;
+        var history = ClientData.getTransactions().stream()
+                .filter(t -> "gui.marketbox.transaction.interest".equals(t.reason()))
+                .limit(5)
+                .toList();
+        if (history.isEmpty()) {
+            return;
+        }
+
+        guiGraphics.drawString(font,
+                Component.translatable("gui.marketbox.recent_interest"), x, y, 0xAAAAAA, false);
+
+        int rowY = y + 12;
+        for (var record : history) {
+            var dt = java.time.Instant.ofEpochMilli(record.timestamp())
+                    .atZone(java.time.ZoneId.systemDefault());
+            String time = String.format("%02d-%02d %02d:%02d",
+                    dt.getMonthValue(), dt.getDayOfMonth(), dt.getHour(), dt.getMinute());
+            String amount = "+" + MoneyUtils.formatValue(record.amount());
+
+            guiGraphics.drawString(font, time, x + 2, rowY, 0x777777, false);
+            guiGraphics.drawString(font, amount, x + width - font.width(amount), rowY, 0x55FF55, false);
+            rowY += 10;
+        }
     }
 
     /**

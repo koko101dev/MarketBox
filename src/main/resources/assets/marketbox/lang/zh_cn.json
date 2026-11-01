@@ -48,7 +48,7 @@
   "gui.marketbox.market.error.not_found": "该商品已不存在或已被买走",
   "gui.marketbox.transfer.success": "您成功向 %s 转账了 %s",
   "gui.marketbox.transfer.received": "%s 向您转账了 %s",
-  "gui.marketbox.error.player_not_found": "找不到该玩家或玩家已下线",
+  "gui.marketbox.error.player_not_found": "找不到该玩家",
   "gui.marketbox.error.self_transfer": "不能给自己转账",
   "gui.marketbox.error.transfer_failed": "转账失败: %s",
   "gui.marketbox.wallet_total": "当前可存入金额",
@@ -278,5 +278,10 @@
   "gui.marketbox.market.preview_money": "买家付 %s",
   "gui.marketbox.forecast.title": "按当前利率（真实时间）",
   "gui.marketbox.forecast.per_day": "每天约赚 +%s",
-  "gui.marketbox.forecast.future": "14 天后余额 %s"
+  "gui.marketbox.forecast.future": "14 天后余额 %s",
+  "gui.marketbox.recent_interest": "最近结息",
+  "gui.marketbox.rank.total": "总资产",
+  "gui.marketbox.rank.deposit": "存款",
+  "gui.marketbox.rank.income": "总收入",
+  "gui.marketbox.rank.expense": "总支出"
 }
