@@ -169,9 +169,8 @@ public class ListingDialogScreen extends Screen {
             // 没有同类挂单时留空，让玩家自行定价
             return;
         }
-        // 比最低单价再低 1%，抢在队列前面成交
-        double total = lowest * 0.99 * quantity;
-        priceBox.setValue(String.format("%.2f", Math.max(0.01, total)));
+        // 填的是单价：比市场最低再低 1%，抢在队列前面成交
+        priceBox.setValue(String.format("%.2f", Math.max(0.01, lowest * 0.99)));
     }
 
     private Component expiryLabel() {
@@ -189,16 +188,18 @@ public class ListingDialogScreen extends Screen {
     }
 
     private void submit() {
-        double price;
+        double unitPrice;
         try {
-            price = Double.parseDouble(priceBox.getValue());
+            // 输入框里是单价，服务端存的是整单总价
+            unitPrice = Double.parseDouble(priceBox.getValue());
         } catch (NumberFormatException e) {
             return;
         }
-        if (price <= 0) {
+        if (unitPrice <= 0) {
             return;
         }
-        ClientNetwork.send(new ListMarketItemPacket(item, price, quantity, expiryMinutes));
+        double total = unitPrice * quantity;
+        ClientNetwork.send(new ListMarketItemPacket(item, total, quantity, expiryMinutes));
         close();
     }
 
@@ -232,7 +233,7 @@ public class ListingDialogScreen extends Screen {
         guiGraphics.drawString(font, qtyText, left + W - PAD - font.width(qtyText), top + 52, 0x55FF55, false);
 
         // 价格
-        guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.price_label"),
+        guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.unit_price_label"),
                 left + PAD, top + 114, 0xAAAAAA, false);
 
         double lowest = lowestUnitPrice();
@@ -245,15 +246,22 @@ public class ListingDialogScreen extends Screen {
         }
         guiGraphics.drawString(font, marketLine, left + PAD, top + 148, 0x888888, false);
 
-        // 预计实收
+        // 合计与预计实收：单价 × 数量，再扣手续费
         double feePercent = ClientData.getMarketFeePercent();
         try {
-            double price = Double.parseDouble(priceBox.getValue());
-            if (price > 0 && feePercent > 0) {
-                double netAmount = price * (1 - feePercent / 100.0);
-                String netText = Component.translatable("gui.marketbox.market.net_income",
-                        MoneyUtils.formatValue(netAmount)).getString();
-                guiGraphics.drawString(font, netText, left + PAD, top + 162, 0x66AA66, false);
+            double unitPrice = Double.parseDouble(priceBox.getValue());
+            if (unitPrice > 0) {
+                double total = unitPrice * quantity;
+                String totalText = Component.translatable("gui.marketbox.market.total_price",
+                        String.valueOf(quantity), MoneyUtils.formatValue(total)).getString();
+                guiGraphics.drawString(font, totalText, left + PAD, top + 160, 0xFFFF55, false);
+
+                if (feePercent > 0) {
+                    double netAmount = total * (1 - feePercent / 100.0);
+                    String netText = Component.translatable("gui.marketbox.market.net_income",
+                            MoneyUtils.formatValue(netAmount)).getString();
+                    guiGraphics.drawString(font, netText, left + PAD, top + 172, 0x66AA66, false);
+                }
             }
         } catch (NumberFormatException ignored) {
         }

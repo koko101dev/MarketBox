@@ -209,12 +209,20 @@ final class MarketScreenRenderer {
             screen.activeTooltip = Component.literal(name);
         }
 
-        // Line 2: Price
-        String priceText = MoneyUtils.formatValue(listing.price());
-        guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, Component.translatable("gui.marketbox.market.card.price", priceText), 0, lineSpacing, 0xFFFF55, false);
-        
-        // Line 3: Quantity
-        guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, Component.translatable("gui.marketbox.market.card.quantity", listing.item().getCount()), 0, lineSpacing * 2, 0xAAAAAA, false);
+        // Line 2: 单价（便于横向比较不同数量的挂单）
+        int stackCount = Math.max(1, listing.item().getCount());
+        double unitPrice = listing.price() / stackCount;
+        guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font,
+                Component.translatable("gui.marketbox.market.card.price", MoneyUtils.formatValue(unitPrice)),
+                0, lineSpacing, 0xFFFF55, false);
+
+        // Line 3: 数量与整单总价
+        String quantityLine = stackCount > 1
+                ? Component.translatable("gui.marketbox.market.card.quantity_total",
+                        String.valueOf(stackCount), MoneyUtils.formatValue(listing.price())).getString()
+                : Component.translatable("gui.marketbox.market.card.quantity_single").getString();
+        guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font,
+                quantityLine, 0, lineSpacing * 2, 0xAAAAAA, false);
         
         // Line 4: Seller
         String seller = listing.sellerName();

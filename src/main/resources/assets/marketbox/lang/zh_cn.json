@@ -23,7 +23,7 @@
   "gui.marketbox.market.list_success": "物品已成功上架",
   "gui.marketbox.market.item_not_found": "商品数量不足",
   "gui.marketbox.market.card.item_name": "名称：%s",
-  "gui.marketbox.market.card.price": "售卖价：%s",
+  "gui.marketbox.market.card.price": "%s/个",
   "gui.marketbox.market.card.quantity": "数量：%d",
   "gui.marketbox.market.card.seller": "出售者：%s",
   "gui.marketbox.market.card.countdown": "下架倒计时：%s",
@@ -218,5 +218,9 @@
   "gui.marketbox.market.list_item_button": "+ 上架物品",
   "gui.marketbox.market.empty_hint": "暂时没有挂单",
   "gui.marketbox.market.empty_hint_sub": "点击左侧「+ 上架物品」开始出售",
-  "tooltip.marketbox.listing_count": "%s 条挂单"
+  "tooltip.marketbox.listing_count": "%s 条挂单",
+  "gui.marketbox.market.unit_price_label": "单价",
+  "gui.marketbox.market.total_price": "共 %s 个 · 合计 %s",
+  "gui.marketbox.market.card.quantity_total": "%s 个 = %s",
+  "gui.marketbox.market.card.quantity_single": "单个"
 }

@@ -55,7 +55,7 @@
   "gui.marketbox.market.list_success": "Item listed successfully",
   "gui.marketbox.market.item_not_found": "Item not found in inventory",
   "gui.marketbox.market.card.item_name": "Item: %s",
-  "gui.marketbox.market.card.price": "Price: %s",
+  "gui.marketbox.market.card.price": "%s each",
   "gui.marketbox.market.card.quantity": "Qty: %d",
   "gui.marketbox.market.card.seller": "Seller: %s",
   "gui.marketbox.market.card.countdown": "Expiry: %s",
@@ -218,5 +218,9 @@
   "gui.marketbox.market.list_item_button": "+ List an Item",
   "gui.marketbox.market.empty_hint": "No listings yet",
   "gui.marketbox.market.empty_hint_sub": "Click \"+ List an Item\" on the left to start selling",
-  "tooltip.marketbox.listing_count": "%s listings"
+  "tooltip.marketbox.listing_count": "%s listings",
+  "gui.marketbox.market.unit_price_label": "Unit Price",
+  "gui.marketbox.market.total_price": "%s items · total %s",
+  "gui.marketbox.market.card.quantity_total": "%s pcs = %s",
+  "gui.marketbox.market.card.quantity_single": "single"
 }
