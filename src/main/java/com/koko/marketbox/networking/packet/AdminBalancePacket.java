@@ -76,9 +76,9 @@ public class AdminBalancePacket implements CustomPacketPayload {
                 PlayerBalance balance = PlayerBalanceAttachment.get(target);
                 double amount = Math.max(0, Math.min(1_000_000_000.0, payload.amount));
                 switch (payload.action) {
-                    case ACTION_SET -> balance.setBalance(amount);
+                    case ACTION_SET -> balance.setBalanceAdmin(amount);
                     case ACTION_ADD -> balance.addBalance(amount, "gui.marketbox.transaction.admin");
-                    case ACTION_RESET -> balance.setBalance(0);
+                    case ACTION_RESET -> balance.setBalanceAdmin(0);
                     default -> {
                         return;
                     }

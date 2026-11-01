@@ -33,6 +33,16 @@ public class PlayerBalance {
         setBalanceCents(Math.round(balance * 100));
     }
 
+    /**
+     * 直接改写余额，不计入总收入/总支出。
+     * 供管理员操作使用：否则「设成 100 万」会被记成玩家赚了 100 万，统计失真。
+     */
+    public void setBalanceAdmin(double balance) {
+        balanceCents.set(Math.round(balance * 100));
+        addTransaction(new Transaction(System.currentTimeMillis(), balance,
+                "gui.marketbox.transaction.admin_set"));
+    }
+
     public void setBalanceCents(long cents) {
         long old = balanceCents.getAndSet(cents);
         if (cents > old) {
