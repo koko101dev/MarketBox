@@ -62,7 +62,7 @@ jar {
 // ---- 版本迭代与产物清理 ----
 
 /**
- * 递增补丁版本号（4.6.9-AP -> 4.6.10-AP），直接改 gradle.properties 中的一行，保留文件其余格式。
+ * 递增补丁版本号（4.7.3 -> 4.7.4），直接改 gradle.properties 中的一行，保留文件其余格式。
  * 用法：./gradlew bumpVersion
  */
 tasks.register('bumpVersion') {
@@ -76,6 +76,46 @@ tasks.register('bumpVersion') {
         def next = "${matcher.group(1)}.${matcher.group(2)}.${matcher.group(3).toInteger() + 1}${matcher.group(4)}"
         propsFile.text = text.replaceFirst(/(?m)^mod_version=.*$/, "mod_version=${next}".toString())
         println "[MarketBox] 版本号：${matcher.group(0).replace('mod_version=', '')} -> ${next}"
+    }
+}
+
+/**
+ * 递增次版本号（4.7.3 -> 4.8.0）。
+ * 用于新增功能模块，向后兼容。
+ * 用法：./gradlew bumpMinor
+ */
+tasks.register('bumpMinor') {
+    doLast {
+        def propsFile = file('gradle.properties')
+        def text = propsFile.text
+        def matcher = text =~ /(?m)^mod_version=(\d+)\.(\d+)\.(\d+).*$/
+        if (!matcher.find()) {
+            throw new GradleException("gradle.properties 中未找到可解析的 mod_version")
+        }
+        def next = "${matcher.group(1)}.${matcher.group(2).toInteger() + 1}.0"
+        def prev = matcher.group(0).replace('mod_version=', '')
+        propsFile.text = text.replaceFirst(/(?m)^mod_version=.*$/, "mod_version=${next}".toString())
+        println "[MarketBox] 版本号：${prev} -> ${next}（次版本，新增功能）"
+    }
+}
+
+/**
+ * 递增主版本号（4.7.3 -> 5.0.0）。
+ * 用于不向后兼容的大改：存档格式变更、经济模型重做、接口重构等。
+ * 用法：./gradlew bumpMajor
+ */
+tasks.register('bumpMajor') {
+    doLast {
+        def propsFile = file('gradle.properties')
+        def text = propsFile.text
+        def matcher = text =~ /(?m)^mod_version=(\d+)\.(\d+)\.(\d+).*$/
+        if (!matcher.find()) {
+            throw new GradleException("gradle.properties 中未找到可解析的 mod_version")
+        }
+        def next = "${matcher.group(1).toInteger() + 1}.0.0"
+        def prev = matcher.group(0).replace('mod_version=', '')
+        propsFile.text = text.replaceFirst(/(?m)^mod_version=.*$/, "mod_version=${next}".toString())
+        println "[MarketBox] 版本号：${prev} -> ${next}（主版本，不兼容改动）"
     }
 }
 
