@@ -81,59 +81,73 @@ final class MarketBoxScreenRenderer {
         renderInterestCurve(screen, guiGraphics, startX, contentY + 24, maxWidth);
     }
 
-    /** 14 天复利增长曲线（面积图）；利率为 0 时不绘制 */
+    /**
+     * 14 天复利增长曲线（面积图）。
+     * 对极端配置做保护：限制绘图高度、裁剪归一化比例到 [0,1]、过滤 Infinity，
+     * 避免利率或结息周期异常时曲线溢出绘制区域。
+     */
     private static void renderInterestCurve(MarketBoxScreen screen, GuiGraphics guiGraphics,
                                             int plotX, int titleY, int plotW) {
+        if (plotW < 60) {
+            return;
+        }
         double rate = ClientData.getInterestRate() / 100.0;
-        if (rate <= 0 || plotW < 80) {
+        if (!(rate > 0) || Double.isInfinite(rate)) {
             return;
         }
 
-        int plotTop = titleY + 12;
-        int plotBottom = screen.topPos + screen.guiHeight - MarketBoxScreen.PADDING - 6;
-        int plotH = plotBottom - plotTop;
-        if (plotH < 30) {
-            return;
-        }
-
-        int interval = Math.max(1, ClientData.getInterestIntervalSeconds());
-        int periodsPerDay = Math.max(1, 86400 / interval);
+        int interval = Math.max(60, ClientData.getInterestIntervalSeconds());
+        // 每天结息次数上限 288（每 5 分钟一次），避免异常配置导致指数爆炸
+        int periodsPerDay = Math.max(1, Math.min(288, 86400 / interval));
         final int days = 14;
 
-        // 末尾累计收益（百分比），用于纵向归一化
-        double maxGain = (Math.pow(1 + rate, (double) periodsPerDay * days) - 1) * 100;
-        if (maxGain <= 0) {
+        double maxGain = 0;
+        for (int d = 0; d <= days; d++) {
+            double g = (Math.pow(1 + rate, (double) periodsPerDay * d) - 1) * 100;
+            if (Double.isFinite(g)) {
+                maxGain = Math.max(maxGain, g);
+            }
+        }
+        if (!(maxGain > 0)) {
             return;
         }
 
         var font = net.minecraft.client.Minecraft.getInstance().font;
+        int plotTop = titleY + 10;
+        int available = screen.topPos + screen.guiHeight - MarketBoxScreen.PADDING - 8 - plotTop;
+        int plotH = Math.min(120, available);
+        if (plotH < 28) {
+            return;
+        }
+
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.interest_curve", String.valueOf(days)),
                 plotX, titleY, 0xAAAAAA, false);
 
         guiGraphics.fill(plotX, plotTop, plotX + plotW, plotTop + plotH, 0x22000000);
         guiGraphics.renderOutline(plotX, plotTop, plotW, plotH, 0x44FFFFFF);
 
-        // 面积填充
+        // 中位参考线
+        int midY = plotTop + plotH / 2;
+        guiGraphics.fill(plotX + 1, midY, plotX + plotW - 1, midY + 1, 0x22FFFFFF);
+
+        int prevPy = plotTop + plotH;
         for (int px = 0; px < plotW; px++) {
-            double day = (double) px / (plotW - 1) * days;
-            double gain = (Math.pow(1 + rate, periodsPerDay * day) - 1) * 100;
-            int py = plotTop + plotH - (int) (gain / maxGain * (plotH - 2));
+            double day = (double) px / Math.max(1, plotW - 1) * days;
+            double g = (Math.pow(1 + rate, periodsPerDay * day) - 1) * 100;
+            double ratio = Double.isFinite(g) ? Math.max(0.0, Math.min(1.0, g / maxGain)) : 1.0;
+            int py = plotTop + plotH - (int) (ratio * (plotH - 2));
+
             guiGraphics.fill(plotX + px, py, plotX + px + 1, plotTop + plotH, 0x3355FF55);
-        }
-        // 曲线顶部
-        int prevY = plotTop + plotH;
-        for (int px = 0; px < plotW; px++) {
-            double day = (double) px / (plotW - 1) * days;
-            double gain = (Math.pow(1 + rate, periodsPerDay * day) - 1) * 100;
-            int py = plotTop + plotH - (int) (gain / maxGain * (plotH - 2));
-            int from = Math.min(prevY, py);
-            int to = Math.max(prevY, py);
+
+            int from = Math.min(prevPy, py);
+            int to = Math.max(prevPy, py);
             guiGraphics.fill(plotX + px, from, plotX + px + 1, to + 1, 0xFF55FF55);
-            prevY = py;
+            prevPy = py;
         }
 
         String endLabel = String.format("+%.1f%%", maxGain);
         guiGraphics.drawString(font, endLabel, plotX + plotW - font.width(endLabel) - 3, plotTop + 3, 0x55FF55, false);
+        guiGraphics.drawString(font, "0%", plotX + 3, plotTop + plotH - 10, 0x888888, false);
     }
 
 

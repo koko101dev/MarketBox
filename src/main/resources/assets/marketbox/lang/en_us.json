@@ -178,5 +178,8 @@
   "gui.marketbox.admin.set_done": "Set balance for %s",
   "gui.marketbox.admin.add_done": "Added balance for %s",
   "gui.marketbox.admin.reset_done": "Reset balance for %s",
-  "gui.marketbox.admin.error.offline": "Target player is offline"
+  "gui.marketbox.admin.error.offline": "Target player is offline",
+  "gui.marketbox.player_select.title": "Select Player",
+  "gui.marketbox.player_select.search": "Search by name...",
+  "gui.marketbox.player_select.empty": "No matching players"
 }

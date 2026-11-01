@@ -48,16 +48,13 @@ final class AdminPanel {
                       int controlX, int controlWidth, Consumer<AbstractWidget> addWidget) {
         int centerY = startY + rowHeight / 2 - controlHeight / 2;
 
-        // 第 1 行：目标玩家，点击循环切换
+        // 第 1 行：目标玩家，点击打开带搜索的玩家列表
         PlayerEntry target = currentTarget();
         String name = target != null ? target.name() : "—";
         addWidget.accept(new StyledButton(controlX, centerY, controlWidth, controlHeight,
-                Component.literal("◀ " + name + " ▶"), b -> {
-            List<PlayerEntry> list = ClientData.getLeaderboard();
-            if (!list.isEmpty()) {
-                targetIndex = (targetIndex + 1) % list.size();
-                screen.refreshWidgets();
-            }
+                Component.literal(name), b -> {
+            var minecraft = net.minecraft.client.Minecraft.getInstance();
+            minecraft.setScreen(new PlayerSelectScreen(screen, AdminPanel::setTarget));
         }));
 
         // 第 2 行：金额
@@ -78,6 +75,20 @@ final class AdminPanel {
                 Component.translatable("gui.marketbox.admin.add"), b -> send(AdminBalancePacket.ACTION_ADD)));
         addWidget.accept(new StyledButton(controlX + (btnW + gap) * 2, btnY, btnW, controlHeight,
                 Component.translatable("gui.marketbox.admin.reset"), b -> send(AdminBalancePacket.ACTION_RESET)));
+    }
+
+    /** 玩家选择器回调：记录选中的目标 */
+    static void setTarget(PlayerEntry entry) {
+        if (entry == null) {
+            return;
+        }
+        List<PlayerEntry> list = ClientData.getLeaderboard();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).uuid().equals(entry.uuid())) {
+                targetIndex = i;
+                return;
+            }
+        }
     }
 
     private static void send(int action) {

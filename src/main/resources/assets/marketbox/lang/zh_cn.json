@@ -178,5 +178,8 @@
   "gui.marketbox.admin.set_done": "已设置 %s 的余额",
   "gui.marketbox.admin.add_done": "已为 %s 增加余额",
   "gui.marketbox.admin.reset_done": "已清零 %s 的余额",
-  "gui.marketbox.admin.error.offline": "目标玩家不在线"
+  "gui.marketbox.admin.error.offline": "目标玩家不在线",
+  "gui.marketbox.player_select.title": "选择玩家",
+  "gui.marketbox.player_select.search": "搜索玩家名…",
+  "gui.marketbox.player_select.empty": "没有匹配的玩家"
 }
