@@ -350,6 +350,10 @@ public class ConfigScreen extends Screen {
         guiGraphics.fill(leftPos, topPos, leftPos + guiWidth, topPos + guiHeight, 0xDD101010);
         guiGraphics.renderOutline(leftPos, topPos, guiWidth, guiHeight, 0xFF555555);
 
+        // 内容区裁剪：滚动出去的行不能画到下方按钮栏上
+        int contentBottom = topPos + guiHeight - BOTTOM_BAR_HEIGHT;
+        guiGraphics.enableScissor(leftPos, topPos, leftPos + guiWidth, contentBottom);
+
         int y = topPos + PADDING - scrollOffset;
 
         boolean admin = ClientData.isAdmin();
@@ -424,6 +428,12 @@ public class ConfigScreen extends Screen {
                 y += rowHeight;
             }
         }
+
+        guiGraphics.disableScissor();
+
+        // 底部按钮栏：实底 + 顶部分隔线，避免被内容透视
+        guiGraphics.fill(leftPos, contentBottom, leftPos + guiWidth, topPos + guiHeight, 0xF0101010);
+        guiGraphics.fill(leftPos, contentBottom, leftPos + guiWidth, contentBottom + 1, 0xFF3A3A3A);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
