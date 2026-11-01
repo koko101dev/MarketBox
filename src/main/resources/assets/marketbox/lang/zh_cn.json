@@ -187,5 +187,13 @@
   "commands.marketbox.market.list": "当前市场共有 %s 条挂单",
   "commands.marketbox.market.empty": "市场当前没有任何挂单",
   "commands.marketbox.market.cleared": "已清空 %s 条挂单，物品已退还给卖家",
-  "commands.marketbox.market.cleared_notice": "你的挂单已被管理员清空，物品已放入待领取"
+  "commands.marketbox.market.cleared_notice": "你的挂单已被管理员清空，物品已放入待领取",
+  "commands.marketbox.help.header": "———— MarketBox 命令 ————",
+  "commands.marketbox.help.balance": "/marketbox balance [玩家] — 查询余额（查他人需管理员）",
+  "commands.marketbox.help.set": "/marketbox set <玩家> <金额> — 设置余额（管理员）",
+  "commands.marketbox.help.add": "/marketbox add <玩家> <金额> — 增加余额（管理员）",
+  "commands.marketbox.help.reset": "/marketbox reset <玩家> — 清零余额与统计（管理员）",
+  "commands.marketbox.help.market_list": "/marketbox market list — 查看挂单数量（管理员）",
+  "commands.marketbox.help.market_clear": "/marketbox market clear — 清空挂单并退还物品（管理员）",
+  "commands.marketbox.help.reload": "/marketbox reload — 重新载入配置文件（管理员）"
 }

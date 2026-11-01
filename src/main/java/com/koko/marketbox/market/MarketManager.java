@@ -1,5 +1,7 @@
 package com.koko.marketbox.market;
 
+import com.koko.marketbox.MarketBox;
+
 import com.koko.marketbox.event.PlayerEvents;
 import com.koko.marketbox.networking.ModMessages;
 import net.minecraft.core.HolderLookup;
@@ -200,41 +202,65 @@ public class MarketManager extends SavedData {
         return tag;
     }
 
+    /**
+     * 从存档读取。
+     * 每条记录独立 try-catch：单条数据损坏只跳过该条并记日志，
+     * 不能让一条坏数据导致整个市场数据（乃至世界）加载失败。
+     */
     public static MarketManager load(CompoundTag tag, HolderLookup.Provider registries) {
         MarketManager manager = new MarketManager();
 
         if (tag.contains("listings", Tag.TAG_LIST)) {
             ListTag listTag = tag.getList("listings", Tag.TAG_COMPOUND);
             for (int i = 0; i < listTag.size(); i++) {
-                CompoundTag listingTag = listTag.getCompound(i);
-                manager.listings.add(new MarketListing(
-                        listingTag.getUUID("id"),
-                        readItem(listingTag.get("item"), registries),
-                        listingTag.getDouble("price"),
-                        listingTag.getUUID("sellerUUID"),
-                        listingTag.getString("sellerName"),
-                        listingTag.getLong("createdAt"),
-                        listingTag.contains("expiryMinutes") ? listingTag.getInt("expiryMinutes") : 60
-                ));
+                try {
+                    CompoundTag listingTag = listTag.getCompound(i);
+                    manager.listings.add(new MarketListing(
+                            listingTag.getUUID("id"),
+                            readItem(listingTag.get("item"), registries),
+                            listingTag.getDouble("price"),
+                            listingTag.getUUID("sellerUUID"),
+                            listingTag.getString("sellerName"),
+                            listingTag.getLong("createdAt"),
+                            listingTag.contains("expiryMinutes") ? listingTag.getInt("expiryMinutes") : 60
+                    ));
+                } catch (Exception e) {
+                    MarketBox.LOGGER.warn("[MarketBox] 跳过第 {} 条无法解析的挂单：{}", i, e.getClass().getSimpleName());
+                }
             }
         }
 
         if (tag.contains("returnedItems", Tag.TAG_COMPOUND)) {
             CompoundTag returnedTag = tag.getCompound("returnedItems");
             for (String key : returnedTag.getAllKeys()) {
-                ListTag itemTags = returnedTag.getList(key, Tag.TAG_COMPOUND);
-                List<ItemStack> list = new ArrayList<>();
-                for (int i = 0; i < itemTags.size(); i++) {
-                    list.add(readItem(itemTags.get(i), registries));
+                try {
+                    UUID ownerId = UUID.fromString(key);
+                    ListTag itemTags = returnedTag.getList(key, Tag.TAG_COMPOUND);
+                    List<ItemStack> list = new ArrayList<>();
+                    for (int i = 0; i < itemTags.size(); i++) {
+                        try {
+                            list.add(readItem(itemTags.get(i), registries));
+                        } catch (Exception e) {
+                            MarketBox.LOGGER.warn("[MarketBox] 跳过一件无法解析的退货物品：{}", e.getClass().getSimpleName());
+                        }
+                    }
+                    if (!list.isEmpty()) {
+                        manager.returnedItems.put(ownerId, list);
+                    }
+                } catch (Exception e) {
+                    MarketBox.LOGGER.warn("[MarketBox] 跳过格式异常的退货记录 key={}：{}", key, e.getClass().getSimpleName());
                 }
-                manager.returnedItems.put(UUID.fromString(key), list);
             }
         }
 
         if (tag.contains("pendingPaymentsCents", Tag.TAG_COMPOUND)) {
             CompoundTag paymentsTag = tag.getCompound("pendingPaymentsCents");
             for (String key : paymentsTag.getAllKeys()) {
-                manager.pendingPaymentsCents.put(UUID.fromString(key), paymentsTag.getLong(key));
+                try {
+                    manager.pendingPaymentsCents.put(UUID.fromString(key), paymentsTag.getLong(key));
+                } catch (Exception e) {
+                    MarketBox.LOGGER.warn("[MarketBox] 跳过格式异常的待领取记录 key={}", key);
+                }
             }
         }
         return manager;

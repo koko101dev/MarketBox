@@ -3,7 +3,7 @@
   "id": "${mod_id}",
   "version": "${version}",
   "name": "MarketBox",
-  "description": "A server-side economy mod: earn interest on deposits, trade items on a live marketplace, and track your wealth with statistics and leaderboards.",
+  "description": "A server-side economy mod: bank interest, player marketplace, transfers and wealth ranking. AI-generated (DeepSeek V4.1 Flash) — provided as-is, back up your world first.",
   "authors": [
     "koko101"
   ],

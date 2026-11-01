@@ -187,5 +187,13 @@
   "commands.marketbox.market.list": "Listings on market: %s",
   "commands.marketbox.market.empty": "The market has no listings",
   "commands.marketbox.market.cleared": "Cleared %s listings, items returned to sellers",
-  "commands.marketbox.market.cleared_notice": "Your listing was cleared by an admin, items are in pending claims"
+  "commands.marketbox.market.cleared_notice": "Your listing was cleared by an admin, items are in pending claims",
+  "commands.marketbox.help.header": "———— MarketBox Commands ————",
+  "commands.marketbox.help.balance": "/marketbox balance [player] — query balance (others require admin)",
+  "commands.marketbox.help.set": "/marketbox set <player> <amount> — set balance (admin)",
+  "commands.marketbox.help.add": "/marketbox add <player> <amount> — add balance (admin)",
+  "commands.marketbox.help.reset": "/marketbox reset <player> — reset balance and stats (admin)",
+  "commands.marketbox.help.market_list": "/marketbox market list — count listings (admin)",
+  "commands.marketbox.help.market_clear": "/marketbox market clear — clear listings and refund (admin)",
+  "commands.marketbox.help.reload": "/marketbox reload — reload config files (admin)"
 }

@@ -93,6 +93,9 @@ public final class MarketBoxCommand {
                         .requires(OP_ONLY)
                         .executes(context -> reload(context.getSource())))
 
+                .then(Commands.literal("help")
+                        .executes(context -> showHelp(context.getSource())))
+
                 // 市场管理
                 .then(Commands.literal("market")
                         .requires(OP_ONLY)
@@ -112,6 +115,16 @@ public final class MarketBoxCommand {
         } else {
             source.sendSuccess(() -> Component.translatable("commands.marketbox.balance.other",
                     who.getName().getString(), amount), false);
+        }
+        return 1;
+    }
+
+    /** 输出中文命令说明表 */
+    private static int showHelp(CommandSourceStack source) {
+        source.sendSuccess(() -> Component.translatable("commands.marketbox.help.header"), false);
+        for (String key : new String[]{"balance", "set", "add", "reset",
+                "market_list", "market_clear", "reload"}) {
+            source.sendSuccess(() -> Component.translatable("commands.marketbox.help." + key), false);
         }
         return 1;
     }

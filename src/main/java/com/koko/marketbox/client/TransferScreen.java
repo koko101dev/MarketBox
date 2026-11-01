@@ -37,6 +37,8 @@ public class TransferScreen extends Screen {
     private int contentHeight;
 
     private int scrollOffset = 0;
+    private String query = "";
+    private EditBox searchBox;
     private PlayerEntry selected;
     private EditBox amountInput;
     private StyledButton confirmButton;
@@ -61,6 +63,18 @@ public class TransferScreen extends Screen {
         this.contentHeight = this.height;
 
         Sidebar.buttons(this, Sidebar.Page.TRANSFER).forEach(this::addRenderableWidget);
+
+        // 玩家列表搜索：人多时按名字快速定位
+        int listW = (int) (contentWidth * 0.52f);
+        this.searchBox = new EditBox(this.font, contentLeft + PADDING, 40, listW - PADDING, 14,
+                Component.translatable("gui.marketbox.player_select.search"));
+        this.searchBox.setMaxLength(32);
+        this.searchBox.setHint(Component.translatable("gui.marketbox.player_select.search"));
+        this.searchBox.setResponder(text -> {
+            this.query = text == null ? "" : text;
+            this.scrollOffset = 0;
+        });
+        this.addRenderableWidget(this.searchBox);
 
         int panelX = panelLeft();
         int panelWidth = panelWidth();
@@ -98,7 +112,7 @@ public class TransferScreen extends Screen {
     }
 
     private int listTop() {
-        return 84;
+        return 60;
     }
 
     private int listHeight() {
@@ -118,10 +132,17 @@ public class TransferScreen extends Screen {
         List<PlayerEntry> all = ClientData.getLeaderboard();
         UUID self = this.minecraft != null && this.minecraft.player != null
                 ? this.minecraft.player.getUUID() : null;
-        if (self == null) {
-            return all;
+        List<PlayerEntry> result = self == null
+                ? List.copyOf(all)
+                : all.stream().filter(e -> !self.equals(e.uuid())).toList();
+
+        if (query == null || query.isBlank()) {
+            return result;
         }
-        return all.stream().filter(e -> !self.equals(e.uuid())).toList();
+        String q = query.toLowerCase(java.util.Locale.ROOT);
+        return result.stream()
+                .filter(e -> e.name() != null && e.name().toLowerCase(java.util.Locale.ROOT).contains(q))
+                .toList();
     }
 
     private void applyQuickAmount(double preset) {
@@ -187,9 +208,9 @@ public class TransferScreen extends Screen {
 
         // 左：玩家列表
         int listW = (int) (contentWidth * 0.52f);
-        guiGraphics.drawString(mc.font, Component.translatable("gui.marketbox.rank.player"), x, 32, 0x888888, false);
+        guiGraphics.drawString(mc.font, Component.translatable("gui.marketbox.rank.player"), x, 30, 0x888888, false);
         String wealthHeader = Component.translatable("gui.marketbox.rank.wealth").getString();
-        guiGraphics.drawString(mc.font, wealthHeader, x + listW - mc.font.width(wealthHeader), 32, 0x888888, false);
+        guiGraphics.drawString(mc.font, wealthHeader, x + listW - mc.font.width(wealthHeader), 30, 0x888888, false);
 
         List<PlayerEntry> entries = candidates();
         int top = listTop();
