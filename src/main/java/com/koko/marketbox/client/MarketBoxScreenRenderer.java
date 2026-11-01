@@ -76,6 +76,64 @@ final class MarketBoxScreenRenderer {
         }
         
         drawValueWithScaling(screen, guiGraphics, Component.translatable("gui.marketbox.next_interest"), countdownText, startX, contentY, maxWidth, 0x55FFFF);
+
+        // 5. 收益曲线：纯展示，用复利公式让玩家直观看到利率的长期效果
+        renderInterestCurve(screen, guiGraphics, startX, contentY + 24, maxWidth);
+    }
+
+    /** 14 天复利增长曲线（面积图）；利率为 0 时不绘制 */
+    private static void renderInterestCurve(MarketBoxScreen screen, GuiGraphics guiGraphics,
+                                            int plotX, int titleY, int plotW) {
+        double rate = ClientData.getInterestRate() / 100.0;
+        if (rate <= 0 || plotW < 80) {
+            return;
+        }
+
+        int plotTop = titleY + 12;
+        int plotBottom = screen.topPos + screen.guiHeight - MarketBoxScreen.PADDING - 6;
+        int plotH = plotBottom - plotTop;
+        if (plotH < 30) {
+            return;
+        }
+
+        int interval = Math.max(1, ClientData.getInterestIntervalSeconds());
+        int periodsPerDay = Math.max(1, 86400 / interval);
+        final int days = 14;
+
+        // 末尾累计收益（百分比），用于纵向归一化
+        double maxGain = (Math.pow(1 + rate, (double) periodsPerDay * days) - 1) * 100;
+        if (maxGain <= 0) {
+            return;
+        }
+
+        var font = net.minecraft.client.Minecraft.getInstance().font;
+        guiGraphics.drawString(font, Component.translatable("gui.marketbox.interest_curve", String.valueOf(days)),
+                plotX, titleY, 0xAAAAAA, false);
+
+        guiGraphics.fill(plotX, plotTop, plotX + plotW, plotTop + plotH, 0x22000000);
+        guiGraphics.renderOutline(plotX, plotTop, plotW, plotH, 0x44FFFFFF);
+
+        // 面积填充
+        for (int px = 0; px < plotW; px++) {
+            double day = (double) px / (plotW - 1) * days;
+            double gain = (Math.pow(1 + rate, periodsPerDay * day) - 1) * 100;
+            int py = plotTop + plotH - (int) (gain / maxGain * (plotH - 2));
+            guiGraphics.fill(plotX + px, py, plotX + px + 1, plotTop + plotH, 0x3355FF55);
+        }
+        // 曲线顶部
+        int prevY = plotTop + plotH;
+        for (int px = 0; px < plotW; px++) {
+            double day = (double) px / (plotW - 1) * days;
+            double gain = (Math.pow(1 + rate, periodsPerDay * day) - 1) * 100;
+            int py = plotTop + plotH - (int) (gain / maxGain * (plotH - 2));
+            int from = Math.min(prevY, py);
+            int to = Math.max(prevY, py);
+            guiGraphics.fill(plotX + px, from, plotX + px + 1, to + 1, 0xFF55FF55);
+            prevY = py;
+        }
+
+        String endLabel = String.format("+%.1f%%", maxGain);
+        guiGraphics.drawString(font, endLabel, plotX + plotW - font.width(endLabel) - 3, plotTop + 3, 0x55FF55, false);
     }
 
 

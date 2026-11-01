@@ -8,6 +8,7 @@ import com.koko.marketbox.market.MarketListing;
 import com.koko.marketbox.market.MarketManager;
 import com.koko.marketbox.networking.ModMessages;
 import com.koko.marketbox.networking.packet.SyncLeaderboardPacket;
+import com.koko.marketbox.networking.packet.SyncAdminStatusPacket;
 import com.koko.marketbox.networking.packet.SyncMarketListingsPacket;
 import com.koko.marketbox.networking.packet.SyncPlayerBalancePacket;
 import com.koko.marketbox.networking.packet.SyncPricesPacket;
@@ -55,6 +56,9 @@ public final class PlayerEvents {
         // 诊断用：确认玩家加入时从存档中恢复到了多少余额
         com.koko.marketbox.MarketBox.LOGGER.info("[MarketBox] {} 登录，读取余额={} 分",
                 player.getName().getString(), PlayerBalanceAttachment.get(player).getBalanceCents());
+
+        // 同步管理员权限，客户端据此决定设置界面显示哪些项
+        ModMessages.sendToPlayer(player, new SyncAdminStatusPacket(player.hasPermissions(2)));
 
         checkAndApplyInterest(player);
 
@@ -125,6 +129,7 @@ public final class PlayerEvents {
                 balance.getTotalIncome(),
                 balance.getTotalExpense(),
                 manager.getPendingPayment(player.getUUID()),
+                Config.getMarketFeePercent(),
                 returnedItems,
                 balance.getTransactions()
         ));

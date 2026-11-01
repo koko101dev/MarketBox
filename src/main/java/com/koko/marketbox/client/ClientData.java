@@ -16,10 +16,30 @@ public class ClientData {
     private static double totalIncome;
     private static double totalExpense;
     private static double pendingPayment;
+    /** 当前玩家是否为管理员 */
+    private static boolean admin = false;
+    /** 市场成交手续费百分比（服务端同步） */
+    private static double marketFeePercent = 0;
     private static List<net.minecraft.world.item.ItemStack> returnedItems = new ArrayList<>();
     private static List<PlayerEntry> leaderboard = new ArrayList<>();
     private static List<MarketListing> marketListings = new ArrayList<>();
     private static List<PlayerBalance.Transaction> transactions = new ArrayList<>();
+
+    public static boolean isAdmin() {
+        return admin;
+    }
+
+    public static void setAdmin(boolean value) {
+        admin = value;
+    }
+
+    public static double getMarketFeePercent() {
+        return marketFeePercent;
+    }
+
+    public static void setMarketFeePercent(double value) {
+        marketFeePercent = value;
+    }
 
     public static void setPendingPayment(double value) {
         pendingPayment = value;

@@ -84,6 +84,14 @@ final class ConfigScreenState {
             }
         } catch (NumberFormatException ignored) {
         }
+        // 手续费
+        try {
+            if (screen.feeBox != null && !screen.feeBox.getValue().isEmpty()) {
+                if (Math.abs(Double.parseDouble(screen.feeBox.getValue()) - screen.savedMarketFee) > 0.001) return true;
+            }
+        } catch (NumberFormatException ignored) {
+        }
+
         // 快捷金额
         try {
             if (screen.quick1Box != null && !screen.quick1Box.getValue().isEmpty()) {
@@ -139,7 +147,7 @@ final class ConfigScreenState {
         boolean inGame = Minecraft.getInstance().getConnection() != null;
         if (inGame) {
             try {
-                ClientNetwork.send(new UpdateCommonConfigPacket(rate, interval));
+                ClientNetwork.send(new UpdateCommonConfigPacket(rate, interval, parseOrDefault(screen.feeBox, screen.savedMarketFee)));
             } catch (Exception e) {
                 MarketBox.LOGGER.error("同步配置到服务端失败：{}", e.getClass().getSimpleName());
                 screen.showStatus(Component.translatable("gui.marketbox.config.error.network"), true);
@@ -179,6 +187,7 @@ final class ConfigScreenState {
         screen.savedHudScale = scale;
         screen.savedHudXOffset = xOffset;
         screen.savedHudYOffset = yOffset;
+        screen.savedMarketFee = parseOrDefault(screen.feeBox, screen.savedMarketFee);
         screen.savedQuick1 = parseOrDefault(screen.quick1Box, screen.savedQuick1);
         screen.savedQuick2 = parseOrDefault(screen.quick2Box, screen.savedQuick2);
         screen.savedQuick3 = parseOrDefault(screen.quick3Box, screen.savedQuick3);

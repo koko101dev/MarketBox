@@ -1,5 +1,6 @@
 package com.koko.marketbox.networking.packet;
 
+import com.koko.marketbox.Config;
 import com.koko.marketbox.MarketBox;
 import com.koko.marketbox.capabilities.PlayerBalance;
 import com.koko.marketbox.capabilities.PlayerBalanceAttachment;
@@ -91,16 +92,19 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
             ServerPlayer seller = buyer.getServer().getPlayerList().getPlayer(listing.sellerUUID());
             if (seller != null) {
                 PlayerBalance sellerBalance = PlayerBalanceAttachment.get(seller);
-                sellerBalance.addBalance(cleanPrice, "gui.marketbox.transaction.market_sell_prefix:" + itemNameStr + detail);
+                // 手续费从卖家实收中扣除并销毁，用于抑制通胀
+                double fee = cleanPrice * Config.getMarketFeePercent() / 100.0;
+                double sellerReceive = cleanPrice - fee;
+                sellerBalance.addBalance(sellerReceive, "gui.marketbox.transaction.market_sell_prefix:" + itemNameStr + detail);
                 PlayerEvents.syncPlayerBalance(seller);
 
                 Component itemName = listing.item().getHoverName();
                 Component quantity = Component.literal(String.valueOf(listing.item().getCount())).withStyle(ChatFormatting.AQUA);
-                Component formattedPrice = Component.literal(String.format("%.2f", cleanPrice)).withStyle(ChatFormatting.YELLOW);
+                Component formattedPrice = Component.literal(String.format("%.2f", sellerReceive)).withStyle(ChatFormatting.YELLOW);
                 seller.sendSystemMessage(Component.translatable("gui.marketbox.market.sold_notification",
                         itemName, quantity, formattedPrice));
             } else {
-                manager.addPendingPayment(listing.sellerUUID(), cleanPrice);
+                manager.addPendingPayment(listing.sellerUUID(), cleanPrice * (1 - Config.getMarketFeePercent() / 100.0));
             }
 
             manager.removeListing(payload.listingId);

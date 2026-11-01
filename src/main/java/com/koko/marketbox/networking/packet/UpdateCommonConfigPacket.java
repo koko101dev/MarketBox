@@ -22,20 +22,24 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
 
     private final double interestRate;
     private final int interestIntervalSeconds;
+    private final double marketFeePercent;
 
-    public UpdateCommonConfigPacket(double interestRate, int interestIntervalSeconds) {
+    public UpdateCommonConfigPacket(double interestRate, int interestIntervalSeconds, double marketFeePercent) {
         this.interestRate = interestRate;
         this.interestIntervalSeconds = interestIntervalSeconds;
+        this.marketFeePercent = marketFeePercent;
     }
 
     public UpdateCommonConfigPacket(RegistryFriendlyByteBuf buf) {
         this.interestRate = buf.readDouble();
         this.interestIntervalSeconds = buf.readInt();
+        this.marketFeePercent = buf.readDouble();
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeDouble(interestRate);
         buf.writeInt(interestIntervalSeconds);
+        buf.writeDouble(marketFeePercent);
     }
 
     @Override
@@ -54,8 +58,10 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
                 // 服务端再次裁剪，防止客户端伪造越界值
                 double safeRate = Math.max(0.0, Math.min(100.0, payload.interestRate));
                 int safeInterval = Math.max(1, payload.interestIntervalSeconds);
+                double safeFee = Math.max(0.0, Math.min(50.0, payload.marketFeePercent));
 
                 Config.setInterestSettings(safeRate, safeInterval);
+                Config.setMarketFeePercent(safeFee);
 
                 for (ServerPlayer p : player.getServer().getPlayerList().getPlayers()) {
                     try {

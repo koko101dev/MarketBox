@@ -52,6 +52,7 @@ public class ConfigScreen extends Screen {
     double tempHudScale;
     int tempHudXOffset;
     int tempHudYOffset;
+    double tempMarketFee;
     double tempQuick1;
     double tempQuick2;
     double tempQuick3;
@@ -63,6 +64,7 @@ public class ConfigScreen extends Screen {
     EditBox hudScaleBox;
     EditBox hudXOffsetBox;
     EditBox hudYOffsetBox;
+    EditBox feeBox;
     EditBox quick1Box;
     EditBox quick2Box;
     EditBox quick3Box;
@@ -86,6 +88,7 @@ public class ConfigScreen extends Screen {
     double savedHudScale;
     int savedHudXOffset;
     int savedHudYOffset;
+    double savedMarketFee;
     double savedQuick1;
     double savedQuick2;
     double savedQuick3;
@@ -110,6 +113,7 @@ public class ConfigScreen extends Screen {
         tempHudScale = Config.getHudScale();
         tempHudXOffset = Config.getHudXOffset();
         tempHudYOffset = Config.getHudYOffset();
+        tempMarketFee = ClientData.getMarketFeePercent();
         tempQuick1 = Config.getQuickAmount(1);
         tempQuick2 = Config.getQuickAmount(2);
         tempQuick3 = Config.getQuickAmount(3);
@@ -124,6 +128,7 @@ public class ConfigScreen extends Screen {
         savedHudScale = tempHudScale;
         savedHudXOffset = tempHudXOffset;
         savedHudYOffset = tempHudYOffset;
+        savedMarketFee = tempMarketFee;
         savedQuick1 = tempQuick1;
         savedQuick2 = tempQuick2;
         savedQuick3 = tempQuick3;
@@ -141,8 +146,10 @@ public class ConfigScreen extends Screen {
         this.contentWidth = Math.min(this.guiWidth, 620);
         this.contentLeft = this.leftPos + (this.guiWidth - this.contentWidth) / 2;
 
-        // 利息 2 行 + HUD 9 行 + 银行设置 3 行；区块标题由 sectionCount 单独计算
-        int contentRows = 2 + 9 + 3;
+        // 金钱相关项仅管理员可见：利息 2 行 + 手续费 1 行为管理区块，其余所有人可见
+        boolean admin = ClientData.isAdmin();
+        int contentRows = admin ? (2 + 9 + 1 + 3 + AdminPanel.rowCount()) : (9 + 3);
+        int sectionCount = admin ? 5 : 2;
 
         // 面板铺满整屏；底部按钮栏固定在底部，中间内容区可滚动
         this.guiHeight = this.height;
@@ -150,7 +157,7 @@ public class ConfigScreen extends Screen {
         this.rowHeight = ROW_HEIGHT;
         this.controlHeight = CONTROL_HEIGHT;
 
-        int contentHeight = PADDING * 2 + 2 * SECTION_HEADER_HEIGHT + contentRows * rowHeight;
+        int contentHeight = PADDING * 2 + sectionCount * SECTION_HEADER_HEIGHT + contentRows * rowHeight;
         int visibleHeight = this.guiHeight - BOTTOM_BAR_HEIGHT;
         this.maxScroll = Math.max(0, contentHeight - visibleHeight);
         this.scrollOffset = Math.max(0, Math.min(this.scrollOffset, this.maxScroll));
@@ -159,14 +166,16 @@ public class ConfigScreen extends Screen {
         // 内容起点包含滚动偏移，滚动时通过 rebuildWidgets 重排控件
         int y = topPos + PADDING - scrollOffset;
 
-        // === 利息设置 ===
-        y += SECTION_HEADER_HEIGHT;
-        interestRateBox = createEditBox(y, String.format("%.2f", tempInterestRate),
-                s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
-        y += rowHeight;
-        interestIntervalBox = createEditBox(y, String.valueOf(tempInterestIntervalSeconds),
-                s -> s.isEmpty() || s.matches("\\d+"));
-        y += rowHeight;
+        // === 利息设置（仅管理员）===
+        if (admin) {
+            y += SECTION_HEADER_HEIGHT;
+            interestRateBox = createEditBox(y, String.format("%.2f", tempInterestRate),
+                    s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
+            y += rowHeight;
+            interestIntervalBox = createEditBox(y, String.valueOf(tempInterestIntervalSeconds),
+                    s -> s.isEmpty() || s.matches("\\d+"));
+            y += rowHeight;
+        }
 
         // === HUD 设置 ===
         y += SECTION_HEADER_HEIGHT;
@@ -192,6 +201,14 @@ public class ConfigScreen extends Screen {
         addKeyBindRow(y);
         y += rowHeight;
 
+        // === 市场设置（仅管理员）===
+        if (admin) {
+            y += SECTION_HEADER_HEIGHT;
+            feeBox = createEditBox(y, String.format("%.2f", tempMarketFee),
+                    s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
+            y += rowHeight;
+        }
+
         // === 银行设置：快捷金额三档（第四个按钮固定为「全部」）===
         y += SECTION_HEADER_HEIGHT;
         quick1Box = createEditBox(y, formatAmount(tempQuick1), s -> s.isEmpty() || s.matches("\\d+"));
@@ -199,6 +216,16 @@ public class ConfigScreen extends Screen {
         quick2Box = createEditBox(y, formatAmount(tempQuick2), s -> s.isEmpty() || s.matches("\\d+"));
         y += rowHeight;
         quick3Box = createEditBox(y, formatAmount(tempQuick3), s -> s.isEmpty() || s.matches("\\d+"));
+        y += rowHeight;
+
+        // === 管理员操作（仅管理员）：等价于 /marketbox set|add|reset ===
+        if (admin) {
+            y += SECTION_HEADER_HEIGHT;
+            AdminPanel.build(this, y, rowHeight, controlHeight,
+                    contentLeft + contentWidth - PADDING - CONTROL_WIDTH, CONTROL_WIDTH,
+                    w -> this.addRenderableWidget(w));
+            y += rowHeight * AdminPanel.rowCount();
+        }
 
         // === 底部按钮 ===
         int btnY = topPos + guiHeight - BOTTOM_BAR_HEIGHT + 10;
@@ -325,15 +352,18 @@ public class ConfigScreen extends Screen {
 
         int y = topPos + PADDING - scrollOffset;
 
-        ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.section.interest"), y);
-        y += SECTION_HEADER_HEIGHT;
-        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.interest_rate"), y);
-        y += rowHeight;
-        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.interest_interval"), y);
-        y += rowHeight;
+        boolean admin = ClientData.isAdmin();
+        if (admin) {
+            ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.section.interest"), y);
+            y += SECTION_HEADER_HEIGHT;
+            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.interest_rate"), y);
+            y += rowHeight;
+            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.interest_interval"), y);
+            y += rowHeight;
+        }
 
         ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
                 Component.translatable("gui.marketbox.config.section.hud"), y);
@@ -366,6 +396,15 @@ public class ConfigScreen extends Screen {
                 Component.translatable("gui.marketbox.config.keybind"), y);
         y += rowHeight;
 
+        if (admin) {
+            ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.section.market"), y);
+            y += SECTION_HEADER_HEIGHT;
+            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.market_fee"), y);
+            y += rowHeight;
+        }
+
         ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
                 Component.translatable("gui.marketbox.config.section.bank"), y);
         y += SECTION_HEADER_HEIGHT;
@@ -373,6 +412,17 @@ public class ConfigScreen extends Screen {
             ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
                     Component.translatable("gui.marketbox.config.quick_amount", String.valueOf(i)), y);
             y += rowHeight;
+        }
+
+        if (admin) {
+            ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.section.admin"), y);
+            y += SECTION_HEADER_HEIGHT;
+            for (int i = 0; i < AdminPanel.rowCount(); i++) {
+                ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                        Component.translatable("gui.marketbox.admin.row" + i), y);
+                y += rowHeight;
+            }
         }
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);

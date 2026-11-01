@@ -36,6 +36,8 @@ public final class Config {
     public static final class Common {
         public double interestRate = 0.19;
         public int interestIntervalSeconds = 1800;
+        /** 市场成交手续费百分比（0-100），从卖家实收中扣除并销毁 */
+        public double marketFeePercent = 2.0;
     }
 
     /** 客户端本地配置（HUD 相关） */
@@ -103,6 +105,16 @@ public final class Config {
     }
 
     /** 更新利息参数并立即持久化，供命令与配置包调用 */
+    public static double getMarketFeePercent() {
+        return common.marketFeePercent;
+    }
+
+    /** 写入手续费并落盘；数值裁剪到 0-50，避免误配置抽干收益 */
+    public static void setMarketFeePercent(double percent) {
+        common.marketFeePercent = Math.max(0, Math.min(50, percent));
+        write(COMMON_PATH, common);
+    }
+
     public static void setInterestSettings(double rate, int intervalSeconds) {
         common.interestRate = rate;
         common.interestIntervalSeconds = intervalSeconds;

@@ -29,12 +29,14 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
     private final double totalExpense;
     /** 待领取的挂单收益（如卖家不在线时的分账） */
     private final double pendingPayment;
+    /** 市场成交手续费百分比，随配置一起下发 */
+    private final double marketFeePercent;
     private final List<ItemStack> returnedItems;
     private final List<PlayerBalance.Transaction> transactions;
 
     public SyncPlayerBalancePacket(double balance, double totalInterest, long lastInterestTime,
                                    double interestRate, int intervalSeconds, double totalIncome,
-                                   double totalExpense, double pendingPayment,
+                                   double totalExpense, double pendingPayment, double marketFeePercent,
                                    List<ItemStack> returnedItems,
                                    List<PlayerBalance.Transaction> transactions) {
         this.balance = balance;
@@ -45,6 +47,7 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         this.totalIncome = totalIncome;
         this.totalExpense = totalExpense;
         this.pendingPayment = pendingPayment;
+        this.marketFeePercent = marketFeePercent;
         this.returnedItems = returnedItems;
         this.transactions = transactions;
     }
@@ -58,6 +61,7 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         this.totalIncome = buf.readDouble();
         this.totalExpense = buf.readDouble();
         this.pendingPayment = buf.readDouble();
+        this.marketFeePercent = buf.readDouble();
 
         int returnedSize = buf.readVarInt();
         this.returnedItems = new ArrayList<>(returnedSize);
@@ -81,6 +85,7 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         buf.writeDouble(totalIncome);
         buf.writeDouble(totalExpense);
         buf.writeDouble(pendingPayment);
+        buf.writeDouble(marketFeePercent);
 
         buf.writeVarInt(returnedItems.size());
         for (ItemStack stack : returnedItems) {
@@ -126,6 +131,10 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
 
     public double totalExpense() {
         return totalExpense;
+    }
+
+    public double marketFeePercent() {
+        return marketFeePercent;
     }
 
     public double pendingPayment() {

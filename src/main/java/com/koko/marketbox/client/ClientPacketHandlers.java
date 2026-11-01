@@ -3,6 +3,7 @@ package com.koko.marketbox.client;
 import com.koko.marketbox.networking.packet.ActionFeedbackPacket;
 import com.koko.marketbox.networking.packet.SyncLeaderboardPacket;
 import com.koko.marketbox.networking.packet.MarketListingAddedPacket;
+import com.koko.marketbox.networking.packet.SyncAdminStatusPacket;
 import com.koko.marketbox.networking.packet.MarketListingRemovedPacket;
 import com.koko.marketbox.networking.packet.SyncMarketListingsPacket;
 import com.koko.marketbox.networking.packet.SyncPlayerBalancePacket;
@@ -27,6 +28,7 @@ public final class ClientPacketHandlers {
                             payload.interestRate(), payload.intervalSeconds());
                     ClientData.setIncomeExpenseData(payload.totalIncome(), payload.totalExpense());
                     ClientData.setPendingPayment(payload.pendingPayment());
+                    ClientData.setMarketFeePercent(payload.marketFeePercent());
                     ClientData.setReturnedItems(payload.returnedItems());
                     ClientData.setTransactions(payload.transactions());
                 }));
@@ -37,6 +39,9 @@ public final class ClientPacketHandlers {
         ClientPlayNetworking.registerGlobalReceiver(SyncMarketListingsPacket.ID, (payload, context) ->
                 context.client().execute(() ->
                         ClientData.acceptListingChunk(payload.page(), payload.totalPages(), payload.listings())));
+
+        ClientPlayNetworking.registerGlobalReceiver(SyncAdminStatusPacket.ID, (payload, context) ->
+                context.client().execute(() -> ClientData.setAdmin(payload.admin())));
 
         ClientPlayNetworking.registerGlobalReceiver(MarketListingAddedPacket.ID, (payload, context) ->
                 context.client().execute(() -> ClientData.addMarketListing(payload.listing())));

@@ -164,5 +164,19 @@
   "gui.marketbox.transfer.my_balance": "我的余额",
   "gui.marketbox.transfer.target": "收款人",
   "gui.marketbox.transfer.no_target": "未选择",
-  "gui.marketbox.transfer.error.no_target": "请先在左侧选择收款人"
+  "gui.marketbox.transfer.error.no_target": "请先在左侧选择收款人",
+  "gui.marketbox.config.section.market": "市场设置",
+  "gui.marketbox.config.market_fee": "成交手续费（%）",
+  "gui.marketbox.interest_curve": "收益曲线（%s 天）",
+  "gui.marketbox.config.section.admin": "管理员操作",
+  "gui.marketbox.admin.row0": "目标玩家",
+  "gui.marketbox.admin.row1": "金额",
+  "gui.marketbox.admin.row2": "操作",
+  "gui.marketbox.admin.set": "设置",
+  "gui.marketbox.admin.add": "增加",
+  "gui.marketbox.admin.reset": "清零",
+  "gui.marketbox.admin.set_done": "已设置 %s 的余额",
+  "gui.marketbox.admin.add_done": "已为 %s 增加余额",
+  "gui.marketbox.admin.reset_done": "已清零 %s 的余额",
+  "gui.marketbox.admin.error.offline": "目标玩家不在线"
 }
