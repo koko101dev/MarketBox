@@ -9,6 +9,20 @@ base {
     archivesName = "MarketBox"
 }
 
+loom {
+    // GameTest 运行配置：无头启动服务端跑测试，不需要显卡，CI 可用
+    // 用法：./gradlew runGameTest
+    runs {
+        gameTest {
+            server()
+            name = "Game Test"
+            vmArg "-Dfabric-api.gametest"
+            vmArg "-Dfabric-api.gametest.report-file=${project.buildDir}/junit.xml"
+            runDir "build/gameTest"
+        }
+    }
+}
+
 repositories {
     mavenCentral()
     // Mod Menu 的发布仓库（仅编译期取 API）
