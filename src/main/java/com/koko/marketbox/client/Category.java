@@ -62,15 +62,22 @@ enum Category {
         return Component.translatable("gui.marketbox.market.category." + id);
     }
     
+    /** 「其他」判定结果的缓存：同种物品只跑一遍全分类扫描 */
+    private static final java.util.Map<net.minecraft.world.item.Item, Boolean> OTHERS_CACHE =
+            new java.util.concurrent.ConcurrentHashMap<>();
+
     public boolean matches(ItemStack stack) {
         if (this == ALL) return true;
         if (this == OTHERS) {
-            for (Category c : values()) {
-                if (c != ALL && c != OTHERS && c.filter.test(stack)) {
-                    return false;
+            return OTHERS_CACHE.computeIfAbsent(stack.getItem(), item -> {
+                ItemStack probe = new ItemStack(item);
+                for (Category c : values()) {
+                    if (c != ALL && c != OTHERS && c.filter.test(probe)) {
+                        return false;
+                    }
                 }
-            }
-            return true;
+                return true;
+            });
         }
         return filter.test(stack);
     }

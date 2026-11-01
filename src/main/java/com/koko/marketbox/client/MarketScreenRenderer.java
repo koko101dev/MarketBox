@@ -145,12 +145,12 @@ final class MarketScreenRenderer {
         
         // Scrollbar
         if (contentHeight > viewHeight) {
-            int sbWidth = 2;
-            int sbX = screen.leftPos + screen.guiWidth - screen.PADDING + 2;
+            int sbWidth = 4;
+            int sbX = screen.leftPos + screen.guiWidth - screen.PADDING - sbWidth + 2;
             int sbHeight = (int)((float)viewHeight / contentHeight * viewHeight);
             int sbY = startY + (int)(screen.scrollOffset / (contentHeight - viewHeight) * (viewHeight - sbHeight));
-            guiGraphics.fill(sbX, startY, sbX + sbWidth, startY + viewHeight, 0x22FFFFFF);
-            guiGraphics.fill(sbX, sbY, sbX + sbWidth, sbY + sbHeight, 0xAAFFFFFF);
+            guiGraphics.fill(sbX, startY, sbX + sbWidth, startY + viewHeight, 0x44FFFFFF);
+            guiGraphics.fill(sbX, sbY, sbX + sbWidth, sbY + sbHeight, 0xFFCCCCCC);
         }
     }
 

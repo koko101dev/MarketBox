@@ -204,8 +204,12 @@ public class EconomyScreen extends Screen {
     /** 一行「标签 …… 值」 */
     private int row(GuiGraphics guiGraphics, net.minecraft.client.gui.Font font,
                     int x, int w, int y, String key, String value, int valueColor) {
-        guiGraphics.drawString(font, Component.translatable(key), x + 6, y, 0xAAAAAA, false);
-        guiGraphics.drawString(font, value, x + w - font.width(value), y, valueColor, false);
+        // 数值右对齐后，标签可用宽度只剩中间这段，超出就截断，避免两者叠在一起
+        int valueWidth = font.width(value);
+        int labelMax = Math.max(20, w - valueWidth - 14);
+        String label = font.plainSubstrByWidth(Component.translatable(key).getString(), labelMax);
+        guiGraphics.drawString(font, label, x + 6, y, 0xAAAAAA, false);
+        guiGraphics.drawString(font, value, x + w - valueWidth, y, valueColor, false);
         return y + 14;
     }
 

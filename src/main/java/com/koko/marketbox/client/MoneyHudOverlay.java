@@ -12,7 +12,8 @@ import net.minecraft.network.chat.Component;
  * HUD 叠加层：在屏幕上显示总资产（余额 + 背包现金）。
  */
 public final class MoneyHudOverlay {
-    private static final int PADDING = 0;
+    /** 距屏幕边缘的留白：贴边会和 F3 调试信息、其他模组 HUD 挤在一起 */
+    private static final int PADDING = 4;
     private static final int INNER_PADDING = 4;
 
     /** 总资产缓存：背包遍历每帧执行开销较大，250ms 刷新一次足够 */

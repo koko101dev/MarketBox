@@ -139,6 +139,9 @@ public class ClientData {
     /** 分块全量同步的临时缓冲 */
     private static final java.util.Map<Integer, List<MarketListing>> listingChunks = new java.util.HashMap<>();
     private static int expectedChunkCount = 0;
+    /** 上次收到分块的时间：长时间收不齐说明连接中断，丢弃半成品 */
+    private static long lastChunkAt = 0;
+    private static final long CHUNK_TIMEOUT_MS = 10_000;
 
     public static void setMarketListings(List<MarketListing> listings) {
         marketListings = new java.util.ArrayList<>(listings);

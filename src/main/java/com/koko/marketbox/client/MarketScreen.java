@@ -42,7 +42,7 @@ public class MarketScreen extends Screen {
     float scrollOffset = 0;
     float returnedItemsScrollOffset = 0;
     static final int CARD_WIDTH = 72;
-    static final int CARD_HEIGHT = 105;
+    static final int CARD_HEIGHT = 112;
 
     /** 顶部操作提示条 */
     final Toast toast = new Toast();

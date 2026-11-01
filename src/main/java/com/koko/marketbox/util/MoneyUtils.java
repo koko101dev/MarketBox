@@ -76,13 +76,27 @@ public class MoneyUtils {
         if (player == null) return 0;
         
         double total = 0;
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            ItemStack stack = player.getInventory().getItem(i);
+        var inventory = player.getInventory();
+        // 主背包：getContainerSize() 返回 41，但 36 之后的索引取不到盔甲/副手，
+        // 因此副手单独遍历，避免放在副手的货币不计入总资产
+        for (int i = 0; i < 36; i++) {
+            ItemStack stack = inventory.getItem(i);
             if (stack.isEmpty()) continue;
 
             for (Map.Entry<Double, net.minecraft.world.item.Item> entry : DENOMINATIONS.entrySet()) {
                 if (stack.is(entry.getValue())) {
                     total += entry.getKey() * stack.getCount();
+                    break;
+                }
+            }
+        }
+
+        // 副手
+        for (var hand : inventory.offhand) {
+            if (hand.isEmpty()) continue;
+            for (Map.Entry<Double, net.minecraft.world.item.Item> entry : DENOMINATIONS.entrySet()) {
+                if (hand.is(entry.getValue())) {
+                    total += entry.getKey() * hand.getCount();
                     break;
                 }
             }
