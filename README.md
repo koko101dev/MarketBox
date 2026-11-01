@@ -4,6 +4,8 @@
 
 > Minecraft 1.21.1 · Fabric · Java 21
 
+[GitHub](https://github.com/chen-0917/MarketBox) · [问题反馈](https://github.com/chen-0917/MarketBox/issues) · [最新版本](https://github.com/chen-0917/MarketBox/releases)
+
 ---
 
 ## 特性
