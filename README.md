@@ -180,6 +180,14 @@
 
 也欢迎直接 Fork 自己修——代码全部开源。
 
+## 第三方资源
+
+货币物品的部分贴图来自 **Utopia Custom**（作者：Limit 小火柴、OrzMiku，**MIT** 许可），
+本项目仅复用贴图，未使用其代码。
+
+原项目仓库当前已不可访问，但 MIT 授权不可撤销，本项目按许可要求保留了完整版权声明。
+清单与许可原文见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
 ## 许可
 
 [MIT](LICENSE) © 2026 koko101
@@ -209,5 +217,7 @@ If you are worried about crashes, save corruption, or issues after removing the 
 **Commands**: run `/marketbox help` in game.
 
 **Config**: `config/marketbox-common.json` (server, synced) and `config/marketbox-client.json` (client).
+
+**Third-party assets**: currency item textures are from **Utopia Custom** by Limit 小火柴 and OrzMiku, used under the **MIT** license. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details and the full license text.
 
 Licensed under [MIT](LICENSE) — free to modify and redistribute. If you republish a modified version, please credit the original repository and keep the LICENSE file.
