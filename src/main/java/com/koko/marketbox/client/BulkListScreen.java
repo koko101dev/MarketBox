@@ -232,13 +232,14 @@ public class BulkListScreen extends Screen {
             if (row.selected) {
                 String sub = MoneyUtils.formatValue(row.subtotal());
                 guiGraphics.drawString(font, sub,
-                        x + w - font.width(sub) - 4, rowY + 8, 0xFFFF55, false);
+                        x + w - font.width(sub) - 6, rowY + 8, 0xFFFF55, false);
             }
 
+            // 标签与输入框左缘对齐：数量框在 x+68、单价框在 x+152
             guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.bulk_qty"),
-                    x + 66, rowY + 33, 0x666666, false);
+                    x + 69, rowY + 34, 0x666666, false);
             guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.bulk_price"),
-                    x + 118, rowY + 33, 0x666666, false);
+                    x + 153, rowY + 34, 0x666666, false);
         }
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
