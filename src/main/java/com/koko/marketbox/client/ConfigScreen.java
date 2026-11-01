@@ -369,7 +369,8 @@ public class ConfigScreen extends Screen {
 
         // 内容区裁剪：滚动出去的行不能画到下方按钮栏上
         int contentBottom = topPos + guiHeight - BOTTOM_BAR_HEIGHT;
-        guiGraphics.enableScissor(leftPos, topPos, leftPos + guiWidth, contentBottom);
+        // 左边界从 0 开始：侧边栏按钮位于 x=6~79，若从 leftPos 裁剪会被整块切掉
+        guiGraphics.enableScissor(0, topPos, leftPos + guiWidth, contentBottom);
 
         int y = topPos + PADDING - scrollOffset;
 
