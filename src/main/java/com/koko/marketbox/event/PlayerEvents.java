@@ -140,7 +140,9 @@ public final class PlayerEvents {
                 manager.getTreasuryBalance(),
                 Config.isFeeToTreasury(),
                 returnedItems,
-                balance.getTransactions()
+                balance.getTransactions(),
+                balance.getIncomeByCategory(),
+                balance.getExpenseByCategory()
         ));
     }
 

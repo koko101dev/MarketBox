@@ -283,5 +283,16 @@
   "gui.marketbox.rank.total": "总资产",
   "gui.marketbox.rank.deposit": "存款",
   "gui.marketbox.rank.income": "总收入",
-  "gui.marketbox.rank.expense": "总支出"
+  "gui.marketbox.rank.expense": "总支出",
+  "gui.marketbox.stats.income_breakdown": "收入来源",
+  "gui.marketbox.stats.expense_breakdown": "支出构成",
+  "gui.marketbox.stats.cat.interest": "利息",
+  "gui.marketbox.stats.cat.market_sell": "卖货",
+  "gui.marketbox.stats.cat.market_buy": "买货",
+  "gui.marketbox.stats.cat.market_result": "交易",
+  "gui.marketbox.stats.cat.transfer_in": "收款",
+  "gui.marketbox.stats.cat.transfer_out": "转账",
+  "gui.marketbox.stats.cat.admin": "管理",
+  "gui.marketbox.stats.cat.treasury": "金库",
+  "gui.marketbox.stats.cat.other": "其他"
 }

@@ -33,6 +33,8 @@ public final class ClientPacketHandlers {
                     ClientData.setFeeToTreasury(payload.feeToTreasury());
                     ClientData.setReturnedItems(payload.returnedItems());
                     ClientData.setTransactions(payload.transactions());
+
+                    ClientData.setCategoryTotals(payload.incomeByCategory(), payload.expenseByCategory());
                 }));
 
         ClientPlayNetworking.registerGlobalReceiver(SyncLeaderboardPacket.ID, (payload, context) ->

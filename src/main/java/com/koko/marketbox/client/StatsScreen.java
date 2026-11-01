@@ -43,8 +43,34 @@ public class StatsScreen extends Screen {
     }
 
     /** 列表可滚动区域（顶部概览占固定高度） */
+    /** 画一行「标签 + 前三类构成」，没有数据时不占位 */
+    private int drawCategoryLine(GuiGraphics guiGraphics, Minecraft mc, int x, int w, int y,
+                                 String labelKey, java.util.Map<String, Long> data) {
+        if (data == null || data.isEmpty()) {
+            return y;
+        }
+        var top = data.entrySet().stream()
+                .filter(e -> e.getValue() > 0)
+                .sorted((a, b) -> Long.compare(b.getValue(), a.getValue()))
+                .limit(3)
+                .toList();
+        if (top.isEmpty()) {
+            return y;
+        }
+
+        StringBuilder sb = new StringBuilder(Component.translatable(labelKey).getString()).append("  ");
+        for (var entry : top) {
+            sb.append(Component.translatable("gui.marketbox.stats.cat." + entry.getKey()).getString())
+                    .append(" ")
+                    .append(MoneyUtils.formatValue(entry.getValue() / 100.0))
+                    .append("   ");
+        }
+        guiGraphics.drawString(mc.font, sb.toString(), x, y, 0x888888, false);
+        return y + 12;
+    }
+
     private int listTop() {
-        return 110;
+        return 138;
     }
 
     private int listHeight() {
@@ -103,8 +129,15 @@ public class StatsScreen extends Screen {
                     x, barY + 1, 0x666666, false);
         }
 
+        // 收支拆分：按用途列出主要来源，最多三项
+        int catY = 90;
+        catY = drawCategoryLine(guiGraphics, mc, x, w, catY,
+                "gui.marketbox.stats.income_breakdown", ClientData.getIncomeByCategory());
+        drawCategoryLine(guiGraphics, mc, x, w, catY,
+                "gui.marketbox.stats.expense_breakdown", ClientData.getExpenseByCategory());
+
         // 流水表头
-        int headerY = 96;
+        int headerY = 124;
         guiGraphics.drawString(mc.font, Component.translatable("gui.marketbox.stats.time"), x, headerY, 0x888888, false);
         guiGraphics.drawString(mc.font, Component.translatable("gui.marketbox.stats.detail"), x + 76, headerY, 0x888888, false);
         String amountHeader = Component.translatable("gui.marketbox.stats.amount").getString();

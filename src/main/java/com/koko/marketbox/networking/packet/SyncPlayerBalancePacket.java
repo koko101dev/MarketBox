@@ -36,12 +36,17 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
     private final boolean feeToTreasury;
     private final List<ItemStack> returnedItems;
     private final List<PlayerBalance.Transaction> transactions;
+    /** 分类累计收入/支出（分），供统计页拆分展示 */
+    private final java.util.Map<String, Long> incomeByCategory;
+    private final java.util.Map<String, Long> expenseByCategory;
 
     public SyncPlayerBalancePacket(double balance, double totalInterest, long lastInterestTime,
                                    double interestRate, int intervalSeconds, double totalIncome,
                                    double totalExpense, double pendingPayment, double marketFeePercent, double treasuryBalance, boolean feeToTreasury,
                                    List<ItemStack> returnedItems,
-                                   List<PlayerBalance.Transaction> transactions) {
+                                   List<PlayerBalance.Transaction> transactions,
+                                   java.util.Map<String, Long> incomeByCategory,
+                                   java.util.Map<String, Long> expenseByCategory) {
         this.balance = balance;
         this.totalInterest = totalInterest;
         this.lastInterestTime = lastInterestTime;
@@ -55,6 +60,8 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         this.feeToTreasury = feeToTreasury;
         this.returnedItems = returnedItems;
         this.transactions = transactions;
+        this.incomeByCategory = incomeByCategory;
+        this.expenseByCategory = expenseByCategory;
     }
 
     public SyncPlayerBalancePacket(RegistryFriendlyByteBuf buf) {
@@ -81,6 +88,26 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         for (int i = 0; i < transSize; i++) {
             this.transactions.add(new PlayerBalance.Transaction(buf.readLong(), buf.readDouble(), buf.readUtf()));
         }
+
+        this.incomeByCategory = readLongMap(buf);
+        this.expenseByCategory = readLongMap(buf);
+    }
+
+    private static java.util.Map<String, Long> readLongMap(RegistryFriendlyByteBuf buf) {
+        int size = buf.readVarInt();
+        java.util.Map<String, Long> map = new java.util.HashMap<>(size);
+        for (int i = 0; i < size; i++) {
+            map.put(buf.readUtf(), buf.readLong());
+        }
+        return map;
+    }
+
+    private static void writeLongMap(RegistryFriendlyByteBuf buf, java.util.Map<String, Long> map) {
+        buf.writeVarInt(map.size());
+        map.forEach((k, v) -> {
+            buf.writeUtf(k);
+            buf.writeLong(v);
+        });
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
@@ -107,6 +134,9 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
             buf.writeDouble(t.amount());
             buf.writeUtf(t.reason());
         }
+
+        writeLongMap(buf, incomeByCategory);
+        writeLongMap(buf, expenseByCategory);
     }
 
     @Override
@@ -160,6 +190,14 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
 
     public List<ItemStack> returnedItems() {
         return returnedItems;
+    }
+
+    public java.util.Map<String, Long> incomeByCategory() {
+        return incomeByCategory;
+    }
+
+    public java.util.Map<String, Long> expenseByCategory() {
+        return expenseByCategory;
     }
 
     public List<PlayerBalance.Transaction> transactions() {

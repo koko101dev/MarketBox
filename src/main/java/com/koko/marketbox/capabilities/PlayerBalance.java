@@ -18,6 +18,10 @@ public class PlayerBalance {
     private final AtomicLong totalIncomeCents = new AtomicLong(0);
     private final AtomicLong totalExpenseCents = new AtomicLong(0);
     
+    /** 按用途分类的累计收入/支出（分），供统计页拆分展示 */
+    private final java.util.Map<String, Long> incomeByCategory = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.Map<String, Long> expenseByCategory = new java.util.concurrent.ConcurrentHashMap<>();
+
     private final List<Transaction> transactions = new java.util.concurrent.CopyOnWriteArrayList<>();
     private static final int MAX_TRANSACTIONS = 50;
 
@@ -52,9 +56,33 @@ public class PlayerBalance {
         }
     }
 
+    /** 从流水原因里提取用途分类，用于统计页的收支拆分 */
+    public static String categoryOf(String reason) {
+        if (reason == null) {
+            return "other";
+        }
+        if (reason.startsWith("gui.marketbox.transaction.interest")) return "interest";
+        if (reason.startsWith("gui.marketbox.transaction.market_sell")) return "market_sell";
+        if (reason.startsWith("gui.marketbox.transaction.market_buy")) return "market_buy";
+        if (reason.startsWith("gui.marketbox.transaction.market_result")) return "market_result";
+        if (reason.startsWith("gui.marketbox.transaction.transfer_from")) return "transfer_in";
+        if (reason.startsWith("gui.marketbox.transaction.transfer_to")) return "transfer_out";
+        if (reason.startsWith("gui.marketbox.transaction.admin")) return "admin";
+        if (reason.startsWith("gui.marketbox.transaction.treasury")) return "treasury";
+        return "other";
+    }
+
     public void addBalance(double amount, String reason) {
         long cents = Math.round(amount * 100);
         if (cents == 0) return;
+
+        // 分类累计：与总额分开统计，便于在统计页拆分来源
+        String category = categoryOf(reason);
+        if (cents > 0) {
+            incomeByCategory.merge(category, cents, Long::sum);
+        } else {
+            expenseByCategory.merge(category, -cents, Long::sum);
+        }
         
         if (cents > 0) {
             long currentCents = balanceCents.get();
@@ -160,6 +188,8 @@ public class PlayerBalance {
             list.add(tTag);
         }
         nbt.put("transactions", list);
+        nbt.put("incomeByCategory", writeLongMap(incomeByCategory));
+        nbt.put("expenseByCategory", writeLongMap(expenseByCategory));
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -174,6 +204,11 @@ public class PlayerBalance {
         totalIncomeCents.set(nbt.getLong("totalIncomeCents"));
         totalExpenseCents.set(nbt.getLong("totalExpenseCents"));
         
+        incomeByCategory.clear();
+        expenseByCategory.clear();
+        readLongMap(nbt.getCompound("incomeByCategory"), incomeByCategory);
+        readLongMap(nbt.getCompound("expenseByCategory"), expenseByCategory);
+
         transactions.clear();
         if (nbt.contains("transactions", Tag.TAG_LIST)) {
             ListTag list = nbt.getList("transactions", Tag.TAG_COMPOUND);
@@ -247,6 +282,28 @@ public class PlayerBalance {
             }
         }
         return 0;
+    }
+
+    private static CompoundTag writeLongMap(java.util.Map<String, Long> map) {
+        CompoundTag tag = new CompoundTag();
+        map.forEach(tag::putLong);
+        return tag;
+    }
+
+    private static void readLongMap(CompoundTag tag, java.util.Map<String, Long> target) {
+        for (String key : tag.getAllKeys()) {
+            target.put(key, tag.getLong(key));
+        }
+    }
+
+    /** 分类收入（分），key 见 {@link #categoryOf} */
+    public java.util.Map<String, Long> getIncomeByCategory() {
+        return new java.util.HashMap<>(incomeByCategory);
+    }
+
+    /** 分类支出（分） */
+    public java.util.Map<String, Long> getExpenseByCategory() {
+        return new java.util.HashMap<>(expenseByCategory);
     }
 
     /** 从 NBT 构造实例，供 Fabric Attachment 反序列化使用 */

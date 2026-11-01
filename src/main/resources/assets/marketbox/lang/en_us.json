@@ -283,5 +283,16 @@
   "gui.marketbox.rank.total": "Net worth",
   "gui.marketbox.rank.deposit": "Deposits",
   "gui.marketbox.rank.income": "Income",
-  "gui.marketbox.rank.expense": "Spending"
+  "gui.marketbox.rank.expense": "Spending",
+  "gui.marketbox.stats.income_breakdown": "Income from",
+  "gui.marketbox.stats.expense_breakdown": "Spending on",
+  "gui.marketbox.stats.cat.interest": "interest",
+  "gui.marketbox.stats.cat.market_sell": "sales",
+  "gui.marketbox.stats.cat.market_buy": "purchases",
+  "gui.marketbox.stats.cat.market_result": "trades",
+  "gui.marketbox.stats.cat.transfer_in": "received",
+  "gui.marketbox.stats.cat.transfer_out": "sent",
+  "gui.marketbox.stats.cat.admin": "admin",
+  "gui.marketbox.stats.cat.treasury": "treasury",
+  "gui.marketbox.stats.cat.other": "other"
 }

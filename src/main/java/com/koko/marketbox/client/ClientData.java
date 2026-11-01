@@ -36,6 +36,8 @@ public class ClientData {
     private static List<PlayerEntry> leaderboard = new ArrayList<>();
     private static List<MarketListing> marketListings = new ArrayList<>();
     private static List<PlayerBalance.Transaction> transactions = new ArrayList<>();
+    private static java.util.Map<String, Long> incomeByCategory = new java.util.HashMap<>();
+    private static java.util.Map<String, Long> expenseByCategory = new java.util.HashMap<>();
 
     public static boolean isAdmin() {
         return admin;
@@ -249,6 +251,20 @@ public class ClientData {
 
     public static List<PlayerEntry> getLeaderboard() {
         return leaderboard;
+    }
+
+    public static void setCategoryTotals(java.util.Map<String, Long> income,
+                                         java.util.Map<String, Long> expense) {
+        incomeByCategory = income == null ? new java.util.HashMap<>() : income;
+        expenseByCategory = expense == null ? new java.util.HashMap<>() : expense;
+    }
+
+    public static java.util.Map<String, Long> getIncomeByCategory() {
+        return incomeByCategory;
+    }
+
+    public static java.util.Map<String, Long> getExpenseByCategory() {
+        return expenseByCategory;
     }
 
     public static void setTransactions(List<PlayerBalance.Transaction> transactions) {
