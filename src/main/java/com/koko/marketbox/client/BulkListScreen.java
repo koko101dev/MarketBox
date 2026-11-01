@@ -221,11 +221,9 @@ public class BulkListScreen extends Screen {
             guiGraphics.fill(boxX, boxY, boxX + CHECKBOX_SIZE, boxY + CHECKBOX_SIZE, 0xFF2A2A2A);
             guiGraphics.renderOutline(boxX, boxY, CHECKBOX_SIZE, CHECKBOX_SIZE, 0xFF888888);
             if (row.selected) {
-                // 由左下向右上逐级抬高的小方块，拼出一个勾
-                guiGraphics.fill(boxX + 2, boxY + 5, boxX + 4, boxY + 10, 0xFF55FF55);
-                guiGraphics.fill(boxX + 4, boxY + 7, boxX + 6, boxY + 9, 0xFF55FF55);
-                guiGraphics.fill(boxX + 6, boxY + 5, boxX + 8, boxY + 7, 0xFF55FF55);
-                guiGraphics.fill(boxX + 8, boxY + 2, boxX + 11, boxY + 5, 0xFF55FF55);
+                // 选中时整格填满，只保留 2px 边框
+                guiGraphics.fill(boxX + 2, boxY + 2,
+                        boxX + CHECKBOX_SIZE - 2, boxY + CHECKBOX_SIZE - 2, 0xFF55FF55);
             }
 
             guiGraphics.renderItem(row.stack, x + 30, rowY + 9);
