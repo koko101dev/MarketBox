@@ -174,7 +174,7 @@ public class EconomyScreen extends Screen {
         }
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        toast.render(guiGraphics, this.width);
+        toast.render(guiGraphics, this.width, this.height);
     }
 
     /** 区块标题，返回新的 y */

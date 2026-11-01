@@ -327,7 +327,7 @@ public class MarketBoxScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         // 操作提示条：置于最上层，避免被组件遮挡
-        toast.render(guiGraphics, this.width);
+        toast.render(guiGraphics, this.width, this.height);
 
 
     }

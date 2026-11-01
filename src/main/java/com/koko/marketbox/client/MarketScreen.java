@@ -225,7 +225,7 @@ public class MarketScreen extends Screen {
         }
         
         // 操作提示条
-        toast.render(guiGraphics, this.width);
+        toast.render(guiGraphics, this.width, this.height);
 
         // Render tooltip if active
         if (activeTooltip != null) {

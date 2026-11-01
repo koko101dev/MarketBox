@@ -146,7 +146,7 @@ public class PlayerSelectScreen extends Screen {
         }
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        toast.render(guiGraphics, this.width);
+        toast.render(guiGraphics, this.width, this.height);
     }
 
     @Override

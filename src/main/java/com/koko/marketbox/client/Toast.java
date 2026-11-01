@@ -6,14 +6,15 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 /**
- * 屏幕顶部的操作提示条。
+ * 屏幕底部的操作提示条。
  * 带底板、左侧色条与状态图标，成功为绿色、失败为红色，停留后淡出。
  * 统一替代各界面原先「纯文字贴在按钮上方」的实现。
  */
 final class Toast {
     private static final long HOLD_MS = 2200;
     private static final long FADE_MS = 600;
-    private static final int TOP = 8;
+    /** 距屏幕底部的留白 */
+    private static final int BOTTOM_MARGIN = 28;
 
     private Component message;
     private boolean error;
@@ -29,8 +30,8 @@ final class Toast {
         this.message = null;
     }
 
-    /** 在屏幕顶部居中绘制；无内容时不画任何东西 */
-    void render(GuiGraphics guiGraphics, int screenWidth) {
+    /** 在屏幕底部居中绘制；无内容时不画任何东西 */
+    void render(GuiGraphics guiGraphics, int screenWidth, int screenHeight) {
         if (message == null) {
             return;
         }
@@ -58,7 +59,7 @@ final class Toast {
         int boxWidth = padX * 2 + iconWidth + gap + textWidth;
         int boxHeight = font.lineHeight + padY * 2;
         int x = (screenWidth - boxWidth) / 2;
-        int y = TOP;
+        int y = screenHeight - boxHeight - BOTTOM_MARGIN;
 
         int accent = (alpha << 24) | (error ? 0xFF5555 : 0x55FF55);
 

@@ -277,7 +277,7 @@ public class TransferScreen extends Screen {
             guiGraphics.fill(contentLeft + listW + 3, barY, contentLeft + listW + 6, barY + barH, 0xFFAAAAAA);
         }
 
-        toast.render(guiGraphics, this.width);
+        toast.render(guiGraphics, this.width, this.height);
     }
 
     /** 供网络反馈统一调用 */
