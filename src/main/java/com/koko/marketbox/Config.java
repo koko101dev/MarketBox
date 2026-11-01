@@ -58,7 +58,11 @@ public final class Config {
         public boolean showHud = true;
         public boolean showMarketPriceTooltip = true;
         /** 是否关闭 1.20.2+ 的菜单背景模糊，保证界面可读性 */
-        public boolean disableMenuBlur = true;
+        /**
+         * 是否把全局菜单模糊度也设为 0。
+         * 默认 false：本模组界面自身已跳过模糊，无需干预其他模组与原版界面。
+         */
+        public boolean disableMenuBlur = false;
         /** 银行页快捷金额按钮的前三个档位（第四个固定为「全部」） */
         public double quickAmount1 = 100;
         public double quickAmount2 = 1000;

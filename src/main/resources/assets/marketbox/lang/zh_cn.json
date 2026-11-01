@@ -130,7 +130,7 @@
   "gui.marketbox.config.error.scale_max": "最大 %s",
   "gui.marketbox.config.error.network": "网络未就绪，无法同步到服务器",
   "gui.marketbox.config.error.save_failed": "保存失败，请查看日志",
-  "gui.marketbox.config.disable_menu_blur": "关闭所有界面背景模糊",
+  "gui.marketbox.config.disable_menu_blur": "关闭所有界面背景模糊（本模组界面已不受影响）",
   "gui.marketbox.nav.title": "MarketBox",
   "gui.marketbox.nav.bank": "银行",
   "gui.marketbox.nav.market": "市场",

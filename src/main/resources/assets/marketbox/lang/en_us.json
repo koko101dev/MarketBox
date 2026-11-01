@@ -130,7 +130,7 @@
   "gui.marketbox.transaction.market_result": "Market Sale Result",
   "gui.marketbox.transaction.unknown": "Unknown",
   "tooltip.marketbox.market_price": "Market Price",
-  "gui.marketbox.config.disable_menu_blur": "Disable blur on all screens",
+  "gui.marketbox.config.disable_menu_blur": "Disable blur on all screens (this mod's screens already skip it)",
   "gui.marketbox.nav.title": "MarketBox",
   "gui.marketbox.nav.bank": "Bank",
   "gui.marketbox.nav.market": "Market",
