@@ -204,6 +204,15 @@ public class MarketScreen extends Screen {
         // Title - Centered in the market (right) section
         int titleX = leftPos + sidebarWidth + mainWidth / 2;
         guiGraphics.drawCenteredString(this.font, this.title, titleX, topPos + 5, 0xFFFFFF);
+
+        // 成交手续费提示：成交额从卖家实收中扣除
+        double feePercent = ClientData.getMarketFeePercent();
+        if (feePercent > 0) {
+            String feeHint = Component.translatable("gui.marketbox.market.fee_hint",
+                    String.format("%.1f", feePercent)).getString();
+            guiGraphics.drawString(this.font, feeHint,
+                    titleX + this.font.width(this.title) / 2 + 10, topPos + 6, 0x996633, false);
+        }
         
         MarketScreenRenderer.renderLeftSection(this, guiGraphics, mouseX, mouseY);
         MarketScreenRenderer.renderRightSection(this, guiGraphics, mouseX, mouseY);
@@ -453,7 +462,8 @@ public class MarketScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(this.lastScreen);
+        // 侧边栏各页共用一个窗口，ESC 直接关闭到游戏
+        Minecraft.getInstance().setScreen(null);
     }
 
     @Override

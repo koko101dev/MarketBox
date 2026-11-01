@@ -19,6 +19,34 @@ final class MarketScreenRenderer {
     private MarketScreenRenderer() {
     }
 
+    /** 价格输入框下方显示扣税后的预计实收 */
+    private static void renderNetIncome(MarketScreen screen, GuiGraphics guiGraphics) {
+        double feePercent = ClientData.getMarketFeePercent();
+        if (feePercent <= 0 || screen.priceInput == null) {
+            return;
+        }
+        String raw = screen.priceInput.getValue();
+        if (raw == null || raw.isEmpty()) {
+            return;
+        }
+        double price;
+        try {
+            price = Double.parseDouble(raw);
+        } catch (NumberFormatException e) {
+            return;
+        }
+        if (price <= 0) {
+            return;
+        }
+
+        double netAfterFee = price * (1 - feePercent / 100.0);
+        String text = Component.translatable("gui.marketbox.market.net_income",
+                MoneyUtils.formatValue(netAfterFee)).getString();
+        var font = net.minecraft.client.Minecraft.getInstance().font;
+        int textY = screen.priceInput.getY() + 14;
+        guiGraphics.drawString(font, text, screen.leftPos + screen.PADDING, textY, 0x66AA66, false);
+    }
+
     static void renderLeftSection(MarketScreen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
         int startX = screen.leftPos + screen.PADDING;
         int startY = screen.topPos + 45;
@@ -54,6 +82,9 @@ final class MarketScreenRenderer {
         int fieldWidth = totalWidth / 3;
         
         guiGraphics.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font, Component.translatable("gui.marketbox.market.price_label"), screen.leftPos + screen.PADDING + fieldWidth / 2, screen.priceInput.getY() - 17, 0xAAAAAA);
+
+        // 卖家预计实收：挂单前就能看到税后金额
+        renderNetIncome(screen, guiGraphics);
         guiGraphics.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font, Component.translatable("gui.marketbox.market.quantity_label"), screen.leftPos + screen.PADDING + fieldWidth + fieldWidth / 2, screen.quantityInput.getY() - 17, 0xAAAAAA);
         guiGraphics.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font, Component.translatable("gui.marketbox.market.duration_label"), screen.leftPos + screen.PADDING + fieldWidth * 2 + fieldWidth / 2, screen.durationInput.getY() - 17, 0xAAAAAA);
         

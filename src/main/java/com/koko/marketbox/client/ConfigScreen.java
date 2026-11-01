@@ -473,10 +473,13 @@ public class ConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        // 从 Mod Menu 打开时返回模组列表，避免直接退出到游戏
-        if (this.minecraft != null) {
-            this.minecraft.setScreen(this.parent);
+        if (this.minecraft == null) {
+            return;
         }
+        // 从 Mod Menu 进入时返回模组列表；从游戏内进入则直接关闭
+        boolean fromModMenu = this.parent != null
+                && this.parent.getClass().getName().contains("ModsScreen");
+        this.minecraft.setScreen(fromModMenu ? this.parent : null);
     }
 
     @Override

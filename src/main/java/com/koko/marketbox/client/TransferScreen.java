@@ -297,7 +297,8 @@ public class TransferScreen extends Screen {
             int offset = Math.min(scrollOffset, maxScroll(entries.size()));
             int listW = (int) (contentWidth * 0.52f);
 
-            if (mouseX <= contentLeft + listW + PADDING) {
+            // 必须限定在内容区左侧，否则侧边栏的点击会被列表误吞
+            if (mouseX >= contentLeft && mouseX <= contentLeft + listW + PADDING) {
                 for (int i = 0; i < entries.size(); i++) {
                     int rowY = top + i * ROW_HEIGHT - offset;
                     if (rowY + ROW_HEIGHT < top || rowY > top + listHeight()) {
@@ -327,7 +328,8 @@ public class TransferScreen extends Screen {
     @Override
     public void onClose() {
         if (this.minecraft != null) {
-            this.minecraft.setScreen(this.parent);
+            // 侧边栏各页共用一个窗口，ESC 直接关闭到游戏，而不是退回上一个页面
+            this.minecraft.setScreen(null);
         }
     }
 

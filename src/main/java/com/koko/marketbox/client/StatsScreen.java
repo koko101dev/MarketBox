@@ -181,7 +181,8 @@ public class StatsScreen extends Screen {
     @Override
     public void onClose() {
         if (this.minecraft != null) {
-            this.minecraft.setScreen(this.parent);
+            // 侧边栏各页共用一个窗口，ESC 直接关闭到游戏，而不是退回上一个页面
+            this.minecraft.setScreen(null);
         }
     }
 

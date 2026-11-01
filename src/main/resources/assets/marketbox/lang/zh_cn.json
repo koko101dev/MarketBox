@@ -195,5 +195,7 @@
   "commands.marketbox.help.reset": "/marketbox reset <玩家> — 清零余额与统计（管理员）",
   "commands.marketbox.help.market_list": "/marketbox market list — 查看挂单数量（管理员）",
   "commands.marketbox.help.market_clear": "/marketbox market clear — 清空挂单并退还物品（管理员）",
-  "commands.marketbox.help.reload": "/marketbox reload — 重新载入配置文件（管理员）"
+  "commands.marketbox.help.reload": "/marketbox reload — 重新载入配置文件（管理员）",
+  "gui.marketbox.market.fee_hint": "成交手续费 %s%%",
+  "gui.marketbox.market.net_income": "预计实收 %s"
 }
