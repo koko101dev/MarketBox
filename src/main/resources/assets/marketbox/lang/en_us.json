@@ -181,5 +181,11 @@
   "gui.marketbox.admin.error.offline": "Target player is offline",
   "gui.marketbox.player_select.title": "Select Player",
   "gui.marketbox.player_select.search": "Search by name...",
-  "gui.marketbox.player_select.empty": "No matching players"
+  "gui.marketbox.player_select.empty": "No matching players",
+  "commands.marketbox.balance.self": "Your balance: %s",
+  "commands.marketbox.balance.other": "%s's balance: %s",
+  "commands.marketbox.market.list": "Listings on market: %s",
+  "commands.marketbox.market.empty": "The market has no listings",
+  "commands.marketbox.market.cleared": "Cleared %s listings, items returned to sellers",
+  "commands.marketbox.market.cleared_notice": "Your listing was cleared by an admin, items are in pending claims"
 }

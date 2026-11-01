@@ -44,13 +44,18 @@
 ## 命令
 
 ```
+/marketbox balance [玩家]        查询余额（查他人需管理员权限）
 /marketbox set <玩家> <金额>     设置余额
 /marketbox add <玩家> <金额>     增加余额
-/marketbox reset <玩家>          清零
+/marketbox reset <玩家>          清零余额与统计数据
+/marketbox market list           查看当前挂单数量
+/marketbox market clear          清空所有挂单并退还物品
 /marketbox reload                重新载入服务端配置
 ```
 
-需要 OP 权限。
+- `balance` 不带参数查询自己，对所有人开放；其余子命令需要权限等级 ≥ 2
+- 玩家名参数支持 Tab 补全，金额参数会提示常用值（100 / 1000 / 10000 / 100000）
+- `market clear` 会把物品退还给卖家（离线则进入待领取），并逐个通知客户端移除
 
 ## 配置
 

@@ -181,5 +181,11 @@
   "gui.marketbox.admin.error.offline": "目标玩家不在线",
   "gui.marketbox.player_select.title": "选择玩家",
   "gui.marketbox.player_select.search": "搜索玩家名…",
-  "gui.marketbox.player_select.empty": "没有匹配的玩家"
+  "gui.marketbox.player_select.empty": "没有匹配的玩家",
+  "commands.marketbox.balance.self": "你的余额：%s",
+  "commands.marketbox.balance.other": "%s 的余额：%s",
+  "commands.marketbox.market.list": "当前市场共有 %s 条挂单",
+  "commands.marketbox.market.empty": "市场当前没有任何挂单",
+  "commands.marketbox.market.cleared": "已清空 %s 条挂单，物品已退还给卖家",
+  "commands.marketbox.market.cleared_notice": "你的挂单已被管理员清空，物品已放入待领取"
 }
