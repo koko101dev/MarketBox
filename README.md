@@ -21,12 +21,13 @@
 | 项目 | 状态 |
 |---|---|
 | 单人游戏（100+ 模组共存环境） | ✅ 已测试 |
-| 多人游戏基础功能 | ✅ 已测试 |
-| **专用服务器（dedicated server）** | ❌ **未测试** |
-| **高强度负载**（数百人并发、长时间连续运行） | ❌ **未测试** |
+| 多人游戏基础功能（内置服务器） | ✅ 已测试 |
+| 专用服务器启动与模组加载 | ✅ 已验证（44 个模组共存，`Done (0.882s)`） |
+| 专用服务器玩家实际连接与长时间运行 | ❌ 未测试 |
+| **高强度负载**（数百人并发） | ❌ **未测试** |
 | 与其他经济 / 权限模组的兼容性 | ⚠️ 仅做过有限测试 |
 
-作者没有条件搭建高负载环境，这几项确实是空白，不是漏写。
+专用服务器已确认能正常启动、模组正常加载、无异常抛错，但**没有验证玩家实际连接后的完整交互，也没有做过长时间运行**。作者同样没有条件搭建高负载环境。
 
 ### 如果你担心以下情况，请不要使用
 
@@ -196,9 +197,10 @@
 | Area | Status |
 |---|---|
 | Singleplayer (100+ mods loaded) | ✅ Tested |
-| Multiplayer basics | ✅ Tested |
-| **Dedicated server** | ❌ **Untested** |
-| **High load / long-running** | ❌ **Untested** |
+| Multiplayer basics (integrated server) | ✅ Tested |
+| Dedicated server startup & mod loading | ✅ Verified (44 mods loaded, `Done (0.882s)`) |
+| Dedicated server with real players / long-running | ❌ Untested |
+| **High load (hundreds of players)** | ❌ **Untested** |
 
 If you are worried about crashes, save corruption, or issues after removing the mod, **please don't use it**. This is a personal project with no warranty. **Always back up your world before installing, updating, or removing it.**
 
