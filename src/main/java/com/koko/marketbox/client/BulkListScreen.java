@@ -25,8 +25,8 @@ import java.util.Map;
 public class BulkListScreen extends Screen {
 
     private static final int PADDING = 10;
-    /** 行高 44：名称一行 + 输入框一行 + 标签一行，40 高时标签会压到下一行 */
-    private static final int ROW_HEIGHT = 44;
+    /** 单行横向布局：勾选 / 图标 / 名称 / 数量 / 单价 / 小计 一行排完 */
+    private static final int ROW_HEIGHT = 34;
     /** 一屏能放的条数，超出部分不显示（按数量从多到少排） */
     private static final int MAX_ROWS = 7;
     private static final int CHECKBOX_SIZE = 12;
@@ -146,19 +146,21 @@ public class BulkListScreen extends Screen {
     /** 为每一行创建数量与单价输入框 */
     private void buildRowWidgets() {
         int x = contentLeft + PADDING;
+        int rowW = contentWidth - PADDING * 2;
 
         for (int i = 0; i < rows.size(); i++) {
             Row row = rows.get(i);
             int rowY = listTop + i * ROW_HEIGHT;
 
-            EditBox qty = new EditBox(this.font, x + 68, rowY + 18, 46, 15, Component.empty());
+            // 数量与单价贴在右侧，留给名称与图标足够宽度，不必挤在左边
+            EditBox qty = new EditBox(this.font, x + rowW - 286, rowY + 9, 46, 16, Component.empty());
             qty.setMaxLength(6);
             qty.setFilter(s -> s.isEmpty() || s.matches("\\d{0,6}"));
             qty.setValue(String.valueOf(row.available));
             row.qtyBox = qty;
             this.addRenderableWidget(qty);
 
-            EditBox price = new EditBox(this.font, x + 152, rowY + 18, 62, 15, Component.empty());
+            EditBox price = new EditBox(this.font, x + rowW - 180, rowY + 9, 62, 16, Component.empty());
             price.setMaxLength(12);
             price.setFilter(s -> s.isEmpty() || s.matches("\\d{0,9}(\\.\\d{0,2})?"));
             price.setValue("1.00");
@@ -214,34 +216,36 @@ public class BulkListScreen extends Screen {
                 guiGraphics.fill(x, rowY, x + w, rowY + ROW_HEIGHT - 2, 0x2255FF55);
             }
 
-            int boxX = x + 4;
-            int boxY = rowY + 6;
-            guiGraphics.fill(boxX, boxY, boxX + CHECKBOX_SIZE, boxY + CHECKBOX_SIZE, 0xFF333333);
+            int boxX = x + 8;
+            int boxY = rowY + 11;
+            guiGraphics.fill(boxX, boxY, boxX + CHECKBOX_SIZE, boxY + CHECKBOX_SIZE, 0xFF2A2A2A);
             guiGraphics.renderOutline(boxX, boxY, CHECKBOX_SIZE, CHECKBOX_SIZE, 0xFF888888);
             if (row.selected) {
-                // 画一个勾，比整块填绿更像复选框
-                guiGraphics.fill(boxX + 2, boxY + 6, boxX + 5, boxY + 9, 0xFF55FF55);
-                guiGraphics.fill(boxX + 4, boxY + 7, boxX + 9, boxY + 4, 0xFF55FF55);
+                // 由左下向右上逐级抬高的小方块，拼出一个勾
+                guiGraphics.fill(boxX + 2, boxY + 5, boxX + 4, boxY + 10, 0xFF55FF55);
+                guiGraphics.fill(boxX + 4, boxY + 7, boxX + 6, boxY + 9, 0xFF55FF55);
+                guiGraphics.fill(boxX + 6, boxY + 5, boxX + 8, boxY + 7, 0xFF55FF55);
+                guiGraphics.fill(boxX + 8, boxY + 2, boxX + 11, boxY + 5, 0xFF55FF55);
             }
 
-            guiGraphics.renderItem(row.stack, x + 22, rowY + 5);
+            guiGraphics.renderItem(row.stack, x + 30, rowY + 9);
 
-            String name = font.plainSubstrByWidth(row.stack.getHoverName().getString(), 110);
-            guiGraphics.drawString(font, name, x + 44, rowY + 8, 0xEEEEEE, false);
+            String name = font.plainSubstrByWidth(row.stack.getHoverName().getString(), 160);
+            guiGraphics.drawString(font, name, x + 54, rowY + 13, 0xEEEEEE, false);
             guiGraphics.drawString(font, "×" + row.available,
-                    x + 44 + font.width(name) + 6, rowY + 8, 0x888888, false);
+                    x + 54 + font.width(name) + 6, rowY + 13, 0x888888, false);
+
+            // 标签放在输入框左侧，一行排完；右侧留白由输入框与小计占用
+            guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.bulk_qty"),
+                    x + w - 322, rowY + 13, 0x777777, false);
+            guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.bulk_price"),
+                    x + w - 216, rowY + 13, 0x777777, false);
 
             if (row.selected) {
                 String sub = MoneyUtils.formatValue(row.subtotal());
                 guiGraphics.drawString(font, sub,
-                        x + w - font.width(sub) - 6, rowY + 8, 0xFFFF55, false);
+                        x + w - font.width(sub) - 10, rowY + 13, 0xFFFF55, false);
             }
-
-            // 标签与输入框左缘对齐：数量框在 x+68、单价框在 x+152
-            guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.bulk_qty"),
-                    x + 69, rowY + 34, 0x666666, false);
-            guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.bulk_price"),
-                    x + 153, rowY + 34, 0x666666, false);
         }
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
