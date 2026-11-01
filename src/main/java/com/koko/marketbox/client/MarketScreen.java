@@ -191,12 +191,17 @@ public class MarketScreen extends Screen {
         if (feePercent > 0) {
             String feeHint = Component.translatable("gui.marketbox.market.fee_hint",
                     String.format("%.1f", feePercent)).getString();
-            int fx = titleX + this.font.width(this.title) / 2 + 10;
+            int fx = titleX + this.font.width(this.title) / 2 + 12;
             int fw = this.font.width(feeHint);
-            // 加底框提升可读性，原先的暗棕色几乎看不见
-            guiGraphics.fill(fx - 3, topPos + 3, fx + fw + 3, topPos + 15, 0x66000000);
-            guiGraphics.renderOutline(fx - 3, topPos + 3, fw + 6, 12, 0x66FFAA00);
-            guiGraphics.drawString(this.font, feeHint, fx, topPos + 6, 0xFFCC66, false);
+            int boxPadX = 5;
+            int boxH = this.font.lineHeight + 6;
+            // 与标题文字垂直居中对齐：标题基线在 topPos+5，行高 9，中心约 topPos+9.5
+            int boxY = topPos + 5 + this.font.lineHeight / 2 - boxH / 2;
+            int textY = boxY + (boxH - this.font.lineHeight) / 2 + 1;
+
+            guiGraphics.fill(fx - boxPadX, boxY, fx + fw + boxPadX, boxY + boxH, 0x66000000);
+            guiGraphics.renderOutline(fx - boxPadX, boxY, fw + boxPadX * 2, boxH, 0x88FFAA00);
+            guiGraphics.drawString(this.font, feeHint, fx, textY, 0xFFCC66, false);
         }
         
         MarketScreenRenderer.renderLeftSection(this, guiGraphics, mouseX, mouseY);

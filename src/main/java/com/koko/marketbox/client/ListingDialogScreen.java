@@ -24,7 +24,7 @@ import java.util.List;
 public class ListingDialogScreen extends Screen {
 
     private static final int W = 320;
-    private static final int H = 266;
+    private static final int H = 282;
     private static final int PAD = 10;
 
     private final Screen parent;
@@ -81,12 +81,12 @@ public class ListingDialogScreen extends Screen {
                 Component.translatable("gui.marketbox.market.follow_lowest"), b -> followLowest()));
 
         // 时长循环按钮
-        this.expiryButton = new StyledButton(left + PAD + 42, top + 184, 110, 16,
+        this.expiryButton = new StyledButton(left + PAD + 42, top + 200, 110, 16,
                 expiryLabel(), b -> cycleExpiry());
         this.addRenderableWidget(this.expiryButton);
 
         // 每人限购（0 = 不限）
-        this.limitBox = new EditBox(this.font, left + PAD + 42, top + 208, 60, 16, Component.empty());
+        this.limitBox = new EditBox(this.font, left + PAD + 42, top + 224, 60, 16, Component.empty());
         this.limitBox.setMaxLength(4);
         this.limitBox.setFilter(s -> s.isEmpty() || s.chars().allMatch(Character::isDigit));
         this.limitBox.setValue("0");
@@ -267,13 +267,18 @@ public class ListingDialogScreen extends Screen {
                 double total = unitPrice * quantity;
                 String totalText = Component.translatable("gui.marketbox.market.total_price",
                         String.valueOf(quantity), MoneyUtils.formatValue(total)).getString();
-                guiGraphics.drawString(font, totalText, left + PAD, top + 160, 0xFFFF55, false);
+                guiGraphics.drawString(font, totalText, left + PAD, top + 158, 0xFFFF55, false);
 
                 if (feePercent > 0) {
-                    double netAmount = total * (1 - feePercent / 100.0);
+                    double feeAmount = total * feePercent / 100.0;
+                    String feeText = Component.translatable("gui.marketbox.market.fee_detail",
+                            String.format("%.1f", feePercent), MoneyUtils.formatValue(feeAmount)).getString();
+                    guiGraphics.drawString(font, feeText, left + PAD, top + 170, 0xCC8844, false);
+
+                    double netAmount = total - feeAmount;
                     String netText = Component.translatable("gui.marketbox.market.net_income",
                             MoneyUtils.formatValue(netAmount)).getString();
-                    guiGraphics.drawString(font, netText, left + PAD, top + 172, 0x66AA66, false);
+                    guiGraphics.drawString(font, netText, left + PAD, top + 182, 0x66AA66, false);
                 }
             }
         } catch (NumberFormatException ignored) {
@@ -281,12 +286,12 @@ public class ListingDialogScreen extends Screen {
 
         // 时长
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.expiry_label"),
-                left + PAD, top + 188, 0xAAAAAA, false);
+                left + PAD, top + 204, 0xAAAAAA, false);
 
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.limit_label_short"),
-                left + PAD, top + 212, 0xAAAAAA, false);
+                left + PAD, top + 228, 0xAAAAAA, false);
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.no_limit_hint"),
-                left + PAD + 108, top + 212, 0x777777, false);
+                left + PAD + 108, top + 228, 0x777777, false);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }

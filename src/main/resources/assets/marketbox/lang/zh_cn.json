@@ -271,5 +271,7 @@
   "commands.marketbox.treasury.broadcast": "[市场] 管理员从金库拨款 %s 给 %s",
   "gui.marketbox.config.need_owner": "经济参数只能由服主（权限等级 4）修改",
   "tooltip.marketbox.deal_price": "最近成交",
-  "tooltip.marketbox.on_sale": "在售"
+  "tooltip.marketbox.on_sale": "在售",
+  "gui.marketbox.market.fee_detail": "手续费 %s%% · 扣除 %s",
+  "gui.marketbox.curve.day": "%s 天"
 }

@@ -271,5 +271,7 @@
   "commands.marketbox.treasury.broadcast": "[Market] Admin granted %s from treasury to %s",
   "gui.marketbox.config.need_owner": "Only the owner (permission level 4) can change economy settings",
   "tooltip.marketbox.deal_price": "Last deal",
-  "tooltip.marketbox.on_sale": "On sale"
+  "tooltip.marketbox.on_sale": "On sale",
+  "gui.marketbox.market.fee_detail": "Fee %s%% · %s deducted",
+  "gui.marketbox.curve.day": "%s d"
 }
