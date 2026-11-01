@@ -196,6 +196,9 @@
 
 ## English
 
+> 以下为英文摘要，供非中文用户参考。**中文内容以上方为准**，两者若有出入以中文版本为准。
+
+
 **MarketBox** is a server-side economy mod for Fabric 1.21.1: bank interest, a player-driven marketplace, transfers, statistics and wealth ranking.
 
 > ⚠️ **This project is AI-generated** (model: **DeepSeek V4.1 Flash**). If you are uncomfortable with AI-generated software, please do not use it.

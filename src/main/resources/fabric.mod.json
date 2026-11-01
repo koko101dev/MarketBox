@@ -3,7 +3,7 @@
   "id": "${mod_id}",
   "version": "${version}",
   "name": "MarketBox",
-  "description": "A server-side economy mod: bank interest, player marketplace, transfers and wealth ranking. AI-generated (DeepSeek V4.1 Flash) — provided as-is, back up your world first.",
+  "description": "Minecraft 服务器经济模组：银行存款生息、玩家市场、转账、收支统计与财富排行。由 AI 生成（DeepSeek V4.1 Flash），按现状提供，使用前请备份存档。",
   "authors": [
     "koko101"
   ],
