@@ -39,6 +39,8 @@ public class BulkListScreen extends Screen {
     private int listTop;
     private int expiryMinutes = 60;
     private StyledButton expiryButton;
+    /** 本地校验提示：未勾选、数量或价格无效时给出反馈 */
+    private final Toast toast = new Toast();
 
     /** 单行状态：物品、可卖数量、是否勾选、数量与单价的输入框 */
     private static final class Row {
@@ -253,6 +255,8 @@ public class BulkListScreen extends Screen {
                 selectedCount(), MoneyUtils.formatValue(selectedTotal())).getString();
         guiGraphics.drawString(font, summary, contentLeft + PADDING + 100,
                 this.height - PADDING - 14, 0xAAAAAA, false);
+
+        toast.render(guiGraphics, this.width, this.height);
     }
 
     @Override
@@ -276,7 +280,13 @@ public class BulkListScreen extends Screen {
 
     /** 把勾选的行打包提交 */
     private void submit() {
+        if (rows.stream().noneMatch(r -> r.selected)) {
+            toast.show(Component.translatable("gui.marketbox.market.bulk_nothing_selected"), true);
+            return;
+        }
+
         List<BulkListMarketItemPacket.Entry> entries = new ArrayList<>();
+        int skipped = 0;
         for (Row row : rows) {
             if (!row.selected) {
                 continue;
@@ -284,6 +294,7 @@ public class BulkListScreen extends Screen {
             int qty = row.quantity();
             double price = row.price();
             if (qty <= 0 || price <= 0) {
+                skipped++;
                 continue;
             }
             ItemStack stack = row.stack.copy();
@@ -292,6 +303,12 @@ public class BulkListScreen extends Screen {
         }
 
         if (entries.isEmpty()) {
+            toast.show(Component.translatable("gui.marketbox.market.bulk_invalid_input"), true);
+            return;
+        }
+        if (skipped > 0) {
+            // 有跳过项时提示一下，避免用户以为全部提交了
+            toast.show(Component.translatable("gui.marketbox.market.bulk_skipped", skipped), true);
             return;
         }
         ClientNetwork.send(new BulkListMarketItemPacket(entries, expiryMinutes));

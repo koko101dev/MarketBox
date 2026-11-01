@@ -307,5 +307,8 @@
   "gui.marketbox.market.bulk_summary": "%s selected, total %s",
   "gui.marketbox.market.bulk_done": "Listed %s item(s)",
   "gui.marketbox.market.bulk_all_failed": "Nothing was listed, check quantity and price",
-  "gui.marketbox.market.bulk_back": "Back"
+  "gui.marketbox.market.bulk_back": "Back",
+  "gui.marketbox.market.bulk_nothing_selected": "Tick at least one item first",
+  "gui.marketbox.market.bulk_invalid_input": "Quantity or price is invalid",
+  "gui.marketbox.market.bulk_skipped": "%s item(s) had invalid quantity or price, submission cancelled"
 }
