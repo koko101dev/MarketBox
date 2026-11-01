@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
  *
  * 数据由服务端统计后下发（只含聚合值），打开时请求一次，可手动刷新。
  */
-public class EconomyScreen extends Screen {
+public class EconomyScreen extends Screen implements FeedbackReceiver {
 
     private static final int PADDING = 16;
 
@@ -223,5 +223,10 @@ public class EconomyScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    @Override
+    public void showFeedback(Component message, boolean isError) {
+        toast.show(message, isError);
     }
 }

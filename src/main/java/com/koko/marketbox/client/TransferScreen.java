@@ -20,7 +20,7 @@ import java.util.UUID;
  * 转账页：左侧玩家列表选择收款人，右侧填写金额并确认。
  * 从银行页拆出，避免存取与转账挤在同一栏。
  */
-public class TransferScreen extends Screen {
+public class TransferScreen extends Screen implements FeedbackReceiver {
 
     private static final int PADDING = 12;
     private static final int ROW_HEIGHT = 26;
@@ -287,7 +287,8 @@ public class TransferScreen extends Screen {
     }
 
     /** 供网络反馈统一调用 */
-    void showFeedback(Component message, boolean isError) {
+    @Override
+    public void showFeedback(Component message, boolean isError) {
         toast.show(message, isError);
     }
 

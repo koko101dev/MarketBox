@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  * 玩家选择器：带搜索框的可滚动玩家列表。
  * 用于设置界面里的管理员操作，避免人多时只能左右逐个切换。
  */
-public class PlayerSelectScreen extends Screen {
+public class PlayerSelectScreen extends Screen implements FeedbackReceiver {
 
     private static final int PANEL_WIDTH = 300;
     private static final int ROW_HEIGHT = 24;
@@ -203,5 +203,10 @@ public class PlayerSelectScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    @Override
+    public void showFeedback(Component message, boolean isError) {
+        toast.show(message, isError);
     }
 }

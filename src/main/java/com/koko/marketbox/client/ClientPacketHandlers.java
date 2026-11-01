@@ -68,12 +68,9 @@ public final class ClientPacketHandlers {
                     Component message = payload.arg().isEmpty()
                             ? Component.translatable(payload.messageKey())
                             : Component.translatable(payload.messageKey(), payload.arg());
-                    if (context.client().screen instanceof MarketBoxScreen screen) {
-                        screen.showFeedback(message, payload.error());
-                    } else if (context.client().screen instanceof MarketScreen screen) {
-                        screen.showFeedback(message, payload.error());
-                    } else if (context.client().screen instanceof TransferScreen screen) {
-                        screen.showFeedback(message, payload.error());
+                    // 任何实现了 FeedbackReceiver 的界面都能收到，新增界面无需改这里
+                    if (context.client().screen instanceof FeedbackReceiver receiver) {
+                        receiver.showFeedback(message, payload.error());
                     }
                 }));
     }

@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 /**
  * Main GUI screen for MarketBox
  */
-public class MarketBoxScreen extends Screen {
+public class MarketBoxScreen extends Screen implements FeedbackReceiver {
     /** 1.21 默认皮肤贴图（宽版 Steve），用于玩家信息尚未加载时的占位 */
     static final ResourceLocation DEFAULT_SKIN =
             ResourceLocation.withDefaultNamespace("textures/entity/player/wide/steve.png");
@@ -252,7 +252,8 @@ public class MarketBoxScreen extends Screen {
     }
 
     /** 统一提示入口：isError 决定颜色，两条路径都带淡出 */
-    void showFeedback(Component message, boolean isError) {
+    @Override
+    public void showFeedback(Component message, boolean isError) {
         this.toast.show(message, isError);
     }
 

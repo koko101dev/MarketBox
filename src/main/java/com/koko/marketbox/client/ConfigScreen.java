@@ -16,7 +16,7 @@ import java.util.function.Predicate;
  * 宽度铺满屏幕，内容列限宽居中；行高随窗口高度自适应，小窗口下不会溢出。
  * 渲染细节见 {@link ConfigScreenRenderer}，脏检测见 {@link ConfigScreenState}。
  */
-public class ConfigScreen extends Screen {
+public class ConfigScreen extends Screen implements FeedbackReceiver {
 
     static final int PADDING = 12;
     /** 基准行高，实际使用 rowHeight */
@@ -76,9 +76,6 @@ public class ConfigScreen extends Screen {
     boolean listeningForKey = false;
 
     // 状态提示
-    Component statusMessage = null;
-    boolean statusIsError = false;
-    long statusTimestamp = 0;
 
     // 已保存的基线值，用于脏检测
     double savedInterestRate;
@@ -343,12 +340,16 @@ public class ConfigScreen extends Screen {
         return value == Math.floor(value) ? String.valueOf((long) value) : String.format("%.2f", value);
     }
 
-
+    /** 提示条：与其他界面共用同一套 Toast，不再本地画一条会自己消失的文字 */
+    private final Toast toast = new Toast();
 
     void showStatus(Component message, boolean isError) {
-        this.statusMessage = message;
-        this.statusIsError = isError;
-        this.statusTimestamp = System.currentTimeMillis();
+        toast.show(message, isError);
+    }
+
+    @Override
+    public void showFeedback(Component message, boolean isError) {
+        toast.show(message, isError);
     }
 
     @Override
@@ -474,16 +475,7 @@ public class ConfigScreen extends Screen {
 
         ConfigScreenRenderer.renderScrollBar(this, guiGraphics, contentBottom);
 
-        if (statusMessage != null) {
-            if (System.currentTimeMillis() - statusTimestamp < 3000) {
-                int color = statusIsError ? 0xFF5555 : 0x55FF55;
-                int textWidth = this.font.width(statusMessage);
-                guiGraphics.drawString(this.font, statusMessage,
-                        leftPos + (guiWidth - textWidth) / 2, topPos + guiHeight - BOTTOM_BAR_HEIGHT - 4, color, false);
-            } else {
-                statusMessage = null;
-            }
-        }
+        toast.render(guiGraphics, this.width, this.height);
     }
 
     @Override

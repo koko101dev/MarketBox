@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class MarketScreen extends Screen {
+public class MarketScreen extends Screen implements FeedbackReceiver {
     final Screen lastScreen;
     
     // GUI dimensions
@@ -169,7 +169,8 @@ public class MarketScreen extends Screen {
     }
 
     /** 统一提示入口：isError 决定颜色 */
-    void showFeedback(Component message, boolean isError) {
+    @Override
+    public void showFeedback(Component message, boolean isError) {
         this.toast.show(message, isError);
     }
 

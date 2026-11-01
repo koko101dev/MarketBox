@@ -22,7 +22,7 @@ import java.util.Map;
  * - 数量与单价直接在行内填写，实时显示小计
  * - 提交时合并成一个网络包，否则单条包的限流会把后面的拒掉
  */
-public class BulkListScreen extends Screen {
+public class BulkListScreen extends Screen implements FeedbackReceiver {
 
     private static final int PADDING = 10;
     /** 单行横向布局：勾选 / 图标 / 名称 / 数量 / 单价 / 小计 一行排完 */
@@ -323,5 +323,10 @@ public class BulkListScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    @Override
+    public void showFeedback(Component message, boolean isError) {
+        toast.show(message, isError);
     }
 }
