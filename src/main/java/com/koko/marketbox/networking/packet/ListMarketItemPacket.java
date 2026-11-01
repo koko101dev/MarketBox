@@ -5,6 +5,7 @@ import com.koko.marketbox.market.MarketListing;
 import com.koko.marketbox.market.MarketManager;
 import com.koko.marketbox.networking.packet.MarketListingAddedPacket;
 import com.koko.marketbox.networking.ModMessages;
+import com.koko.marketbox.networking.PacketRateLimiter;
 import com.koko.marketbox.util.MoneyUtils;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -63,6 +64,9 @@ public class ListMarketItemPacket implements CustomPacketPayload {
     public static void handle(ListMarketItemPacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer player = context.player();
         context.server().execute(() -> {
+            if (!PacketRateLimiter.allow(player)) {
+                return;
+            }
             if (player == null || payload.item.isEmpty()) {
                 return;
             }

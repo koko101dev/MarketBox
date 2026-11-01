@@ -4,6 +4,7 @@ import com.koko.marketbox.MarketBox;
 import com.koko.marketbox.event.PlayerEvents;
 import com.koko.marketbox.market.MarketManager;
 import com.koko.marketbox.networking.ModMessages;
+import com.koko.marketbox.networking.PacketRateLimiter;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -40,6 +41,9 @@ public class ClaimReturnedItemsPacket implements CustomPacketPayload {
     public static void handle(ClaimReturnedItemsPacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer player = context.player();
         context.server().execute(() -> {
+            if (!PacketRateLimiter.allow(player)) {
+                return;
+            }
             if (player == null) {
                 return;
             }

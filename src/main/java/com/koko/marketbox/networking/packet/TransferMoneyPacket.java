@@ -7,6 +7,7 @@ import com.koko.marketbox.event.PlayerEvents;
 import com.koko.marketbox.event.ServerEvents;
 import com.koko.marketbox.market.MarketManager;
 import com.koko.marketbox.networking.ModMessages;
+import com.koko.marketbox.networking.PacketRateLimiter;
 import com.koko.marketbox.util.MoneyUtils;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -56,6 +57,9 @@ public class TransferMoneyPacket implements CustomPacketPayload {
     public static void handle(TransferMoneyPacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer sender = context.player();
         context.server().execute(() -> {
+            if (!PacketRateLimiter.allow(sender)) {
+                return;
+            }
             double amount = payload.amount;
             UUID targetUuid = payload.targetUuid;
             if (sender == null || amount <= 0) {

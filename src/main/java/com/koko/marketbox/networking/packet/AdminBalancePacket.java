@@ -5,6 +5,7 @@ import com.koko.marketbox.capabilities.PlayerBalance;
 import com.koko.marketbox.capabilities.PlayerBalanceAttachment;
 import com.koko.marketbox.event.PlayerEvents;
 import com.koko.marketbox.event.ServerEvents;
+import com.koko.marketbox.networking.PacketRateLimiter;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -57,6 +58,9 @@ public class AdminBalancePacket implements CustomPacketPayload {
     public static void handle(AdminBalancePacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer admin = context.player();
         context.server().execute(() -> {
+            if (!PacketRateLimiter.allow(admin)) {
+                return;
+            }
             try {
                 if (admin == null || !admin.hasPermissions(2) || admin.getServer() == null) {
                     return;

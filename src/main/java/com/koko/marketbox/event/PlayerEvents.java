@@ -40,6 +40,7 @@ public final class PlayerEvents {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> handleJoin(handler.getPlayer()));
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            com.koko.marketbox.networking.PacketRateLimiter.forget(handler.getPlayer().getUUID());
             LAST_SYNCED_TOTAL.remove(handler.getPlayer().getUUID());
             ServerEvents.markLeaderboardDirty();
         });

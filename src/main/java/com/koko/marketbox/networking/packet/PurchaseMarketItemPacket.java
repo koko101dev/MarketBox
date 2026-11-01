@@ -9,6 +9,7 @@ import com.koko.marketbox.event.ServerEvents;
 import com.koko.marketbox.market.MarketListing;
 import com.koko.marketbox.market.MarketManager;
 import com.koko.marketbox.networking.ModMessages;
+import com.koko.marketbox.networking.PacketRateLimiter;
 import com.koko.marketbox.networking.packet.MarketListingRemovedPacket;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
@@ -53,6 +54,9 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
     public static void handle(PurchaseMarketItemPacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer buyer = context.player();
         context.server().execute(() -> {
+            if (!PacketRateLimiter.allow(buyer)) {
+                return;
+            }
             if (buyer == null) {
                 return;
             }

@@ -6,6 +6,7 @@ import com.koko.marketbox.capabilities.PlayerBalanceAttachment;
 import com.koko.marketbox.event.PlayerEvents;
 import com.koko.marketbox.event.ServerEvents;
 import com.koko.marketbox.networking.ModMessages;
+import com.koko.marketbox.networking.PacketRateLimiter;
 import com.koko.marketbox.util.MoneyUtils;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -47,6 +48,9 @@ public class WithdrawMoneyPacket implements CustomPacketPayload {
     public static void handle(WithdrawMoneyPacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer player = context.player();
         context.server().execute(() -> {
+            if (!PacketRateLimiter.allow(player)) {
+                return;
+            }
             double amount = payload.amount;
             if (player == null || amount <= 0) {
                 return;

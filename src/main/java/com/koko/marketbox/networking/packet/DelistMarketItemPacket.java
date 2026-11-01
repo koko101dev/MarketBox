@@ -5,6 +5,7 @@ import com.koko.marketbox.market.MarketListing;
 import com.koko.marketbox.market.MarketManager;
 import com.koko.marketbox.networking.packet.MarketListingRemovedPacket;
 import com.koko.marketbox.networking.ModMessages;
+import com.koko.marketbox.networking.PacketRateLimiter;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -46,6 +47,9 @@ public class DelistMarketItemPacket implements CustomPacketPayload {
     public static void handle(DelistMarketItemPacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer player = context.player();
         context.server().execute(() -> {
+            if (!PacketRateLimiter.allow(player)) {
+                return;
+            }
             if (player == null) {
                 return;
             }

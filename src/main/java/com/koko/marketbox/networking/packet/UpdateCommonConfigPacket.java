@@ -4,6 +4,7 @@ import com.koko.marketbox.Config;
 import com.koko.marketbox.MarketBox;
 import com.koko.marketbox.event.PlayerEvents;
 import com.koko.marketbox.event.ServerEvents;
+import com.koko.marketbox.networking.PacketRateLimiter;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -52,6 +53,9 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
         context.server().execute(() -> {
             try {
                 if (player == null || !player.hasPermissions(2) || player.getServer() == null) {
+                    return;
+                }
+                if (!PacketRateLimiter.allow(player)) {
                     return;
                 }
 
