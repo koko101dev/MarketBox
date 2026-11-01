@@ -192,7 +192,13 @@ public final class PlayerEvents {
         for (ServerPlayer player : players) {
             PlayerBalance balance = PlayerBalanceAttachment.get(player);
             double totalValue = balance.getBalance() + MoneyUtils.getInventoryMoneyTotal(player);
-            entries.add(new PlayerEntry(player.getName().getString(), player.getUUID(), totalValue));
+            entries.add(new PlayerEntry(
+                    player.getName().getString(),
+                    player.getUUID(),
+                    totalValue,
+                    balance.getBalance(),
+                    balance.getTotalIncome(),
+                    balance.getTotalExpense()));
             LAST_SYNCED_TOTAL.put(player.getUUID(), totalValue);
         }
         entries.sort((a, b) -> Double.compare(b.balance(), a.balance()));

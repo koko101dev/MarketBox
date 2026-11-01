@@ -36,6 +36,21 @@ public class RankingScreen extends Screen {
         this.parent = parent;
     }
 
+    /** 0=总资产 1=存款 2=收入 3=支出 */
+    private int sortMode = 0;
+    private static final String[] SORT_KEYS = {"total", "deposit", "income", "expense"};
+    private final java.util.List<StyledButton> sortButtons = new java.util.ArrayList<>();
+
+    /** 按当前维度取用于排序与展示的数值 */
+    private double valueOf(PlayerEntry entry) {
+        return switch (sortMode) {
+            case 1 -> entry.deposits();
+            case 2 -> entry.income();
+            case 3 -> entry.expense();
+            default -> entry.balance();
+        };
+    }
+
     @Override
     protected void init() {
         super.init();
@@ -46,10 +61,34 @@ public class RankingScreen extends Screen {
         this.contentWidth = this.width - navWidth;
         this.contentHeight = this.height;
         Sidebar.buttons(this, Sidebar.Page.RANKING).forEach(this::addRenderableWidget);
+
+        // 分类切换：总资产 / 存款 / 收入 / 支出
+        sortButtons.clear();
+        int tabWidth = 68;
+        int tabHeight = 16;
+        int tabY = 44;
+        int tabGap = 4;
+        int tabTotal = tabWidth * 4 + tabGap * 3;
+        int tabStartX = contentLeft + (contentWidth - tabTotal) / 2;
+        for (int i = 0; i < 4; i++) {
+            final int mode = i;
+            StyledButton btn = new StyledButton(tabStartX + i * (tabWidth + tabGap), tabY,
+                    tabWidth, tabHeight,
+                    Component.translatable("gui.marketbox.rank." + SORT_KEYS[i]),
+                    b -> {
+                        sortMode = mode;
+                        for (int k = 0; k < sortButtons.size(); k++) {
+                            sortButtons.get(k).setHighlighted(k == mode);
+                        }
+                    });
+            btn.setHighlighted(i == sortMode);
+            sortButtons.add(btn);
+            this.addRenderableWidget(btn);
+        }
     }
 
     private int listTop() {
-        return 58;
+        return 76;
     }
 
     private int listHeight() {
@@ -86,7 +125,10 @@ public class RankingScreen extends Screen {
         String wealthHeader = Component.translatable("gui.marketbox.rank.wealth").getString();
         guiGraphics.drawString(mc.font, wealthHeader, x + w - mc.font.width(wealthHeader), 42, 0x888888, false);
 
-        List<PlayerEntry> entries = ClientData.getLeaderboard();
+        List<PlayerEntry> entries = new java.util.ArrayList<>(ClientData.getLeaderboard());
+        if (sortMode != 0) {
+            entries.sort((a, b) -> Double.compare(valueOf(b), valueOf(a)));
+        }
         int top = listTop();
         int height = listHeight();
         int max = maxScroll(entries.size());
@@ -132,8 +174,8 @@ public class RankingScreen extends Screen {
                 guiGraphics.drawString(mc.font, name, x + 46, rowY + (ROW_HEIGHT - 8) / 2,
                         i < MEDAL_COLORS.length ? 0xFFFFFF : 0xDDDDDD, false);
 
-                // 金额
-                String wealth = MoneyUtils.formatValue(entry.balance());
+                // 金额：按当前排序维度显示
+                String wealth = MoneyUtils.formatValue(valueOf(entry));
                 guiGraphics.drawString(mc.font, wealth, x + w - mc.font.width(wealth),
                         rowY + (ROW_HEIGHT - 8) / 2, 0x55FF55, false);
             }
@@ -153,7 +195,10 @@ public class RankingScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
-            List<PlayerEntry> entries = ClientData.getLeaderboard();
+            List<PlayerEntry> entries = new java.util.ArrayList<>(ClientData.getLeaderboard());
+        if (sortMode != 0) {
+            entries.sort((a, b) -> Double.compare(valueOf(b), valueOf(a)));
+        }
             int top = listTop();
             int offset = Math.min(scrollOffset, maxScroll(entries.size()));
 

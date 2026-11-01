@@ -32,7 +32,10 @@ public class SyncLeaderboardPacket implements CustomPacketPayload {
             String name = buf.readUtf();
             UUID uuid = buf.readUUID();
             double balance = buf.readDouble();
-            this.entries.add(new PlayerEntry(name, uuid, balance));
+            double deposits = buf.readDouble();
+            double income = buf.readDouble();
+            double expense = buf.readDouble();
+            this.entries.add(new PlayerEntry(name, uuid, balance, deposits, income, expense));
         }
     }
 
@@ -42,6 +45,9 @@ public class SyncLeaderboardPacket implements CustomPacketPayload {
             buf.writeUtf(entry.name());
             buf.writeUUID(entry.uuid());
             buf.writeDouble(entry.balance());
+            buf.writeDouble(entry.deposits());
+            buf.writeDouble(entry.income());
+            buf.writeDouble(entry.expense());
         }
     }
 
