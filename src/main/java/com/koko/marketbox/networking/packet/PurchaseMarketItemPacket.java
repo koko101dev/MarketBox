@@ -100,9 +100,11 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
                 double fee = cleanPrice * Config.getMarketFeePercent() / 100.0;
                 double sellerReceive = cleanPrice - fee;
                 // 按配置：手续费归入金库，或直接销毁（默认）
-                if (fee > 0 && Config.isFeeToTreasury()) {
+                boolean toTreasury = Config.isFeeToTreasury();
+                if (fee > 0 && toTreasury) {
                     manager.addTreasury(fee);
                 }
+                com.koko.marketbox.util.EconomyStats.addFee(fee, toTreasury);
                 sellerBalance.addBalance(sellerReceive, "gui.marketbox.transaction.market_sell_prefix:" + itemNameStr + detail);
                 PlayerEvents.syncPlayerBalance(seller);
 

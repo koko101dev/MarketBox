@@ -34,7 +34,8 @@ public final class Config {
 
     /** 服务端权威配置（利息相关） */
     public static final class Common {
-        public double interestRate = 0.19;
+        /** 默认 0.05%／期：0.19 会让货币一年膨胀上万倍，不适合长期运营 */
+        public double interestRate = 0.05;
         public int interestIntervalSeconds = 1800;
         /** 市场成交手续费百分比（0-100），从卖家实收中扣除 */
         public double marketFeePercent = 2.0;

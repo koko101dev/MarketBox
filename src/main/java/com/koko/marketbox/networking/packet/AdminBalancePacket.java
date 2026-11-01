@@ -84,6 +84,9 @@ public class AdminBalancePacket implements CustomPacketPayload {
                     }
                 }
 
+                if (payload.action == ACTION_ADD) {
+                    com.koko.marketbox.util.EconomyStats.addAdminIssued(amount);
+                }
                 PlayerEvents.syncPlayerBalance(target);
                 PlayerEvents.persistPlayer(target);
                 ServerEvents.markLeaderboardDirty();

@@ -94,6 +94,10 @@ public final class MarketBoxCommand {
                         .requires(OP_ONLY)
                         .executes(context -> reload(context.getSource())))
 
+                .then(Commands.literal("economy")
+                        .requires(OP_ONLY)
+                        .executes(context -> showEconomy(context.getSource())))
+
                 .then(Commands.literal("treasury")
                         .executes(context -> showTreasury(context.getSource()))
                         .then(Commands.literal("withdraw")
@@ -137,13 +141,48 @@ public final class MarketBoxCommand {
     private static int showHelp(CommandSourceStack source) {
         source.sendSuccess(() -> Component.translatable("commands.marketbox.help.header"), false);
         for (String key : new String[]{"balance", "set", "add", "reset",
-                "market_list", "market_clear", "treasury", "reload"}) {
+                "market_list", "market_clear", "treasury", "economy", "reload"}) {
             source.sendSuccess(() -> Component.translatable("commands.marketbox.help." + key), false);
         }
         return 1;
     }
 
     /** 查看金库余额 */
+    /** 经济概览：货币存量与本次会话的增减 */
+    private static int showEconomy(CommandSourceStack source) {
+        var server = source.getServer();
+        var manager = MarketManager.get(server.overworld());
+
+        // 在线玩家总资产（离线玩家数据未加载，无法统计）
+        double onlineTotal = 0;
+        int onlineCount = 0;
+        for (ServerPlayer p : server.getPlayerList().getPlayers()) {
+            onlineTotal += PlayerBalanceAttachment.get(p).getBalance();
+            onlineCount++;
+        }
+
+        // lambda 需要 effectively-final，这里做一次复制
+        final double totalSnapshot = onlineTotal;
+        final int countSnapshot = onlineCount;
+        double treasury = manager.getTreasuryBalance();
+        double net = com.koko.marketbox.util.EconomyStats.netInflation();
+
+        source.sendSuccess(() -> Component.translatable("commands.marketbox.economy.header"), false);
+        source.sendSuccess(() -> Component.translatable("commands.marketbox.economy.holdings",
+                MoneyUtils.formatValue(totalSnapshot), String.valueOf(countSnapshot)), false);
+        source.sendSuccess(() -> Component.translatable("commands.marketbox.economy.treasury",
+                MoneyUtils.formatValue(treasury)), false);
+        source.sendSuccess(() -> Component.translatable("commands.marketbox.economy.interest",
+                MoneyUtils.formatValue(com.koko.marketbox.util.EconomyStats.getInterestIssued())), false);
+        source.sendSuccess(() -> Component.translatable("commands.marketbox.economy.admin",
+                MoneyUtils.formatValue(com.koko.marketbox.util.EconomyStats.getAdminIssued())), false);
+        source.sendSuccess(() -> Component.translatable("commands.marketbox.economy.fee_destroyed",
+                MoneyUtils.formatValue(com.koko.marketbox.util.EconomyStats.getFeeDestroyed())), false);
+        source.sendSuccess(() -> Component.translatable("commands.marketbox.economy.net",
+                MoneyUtils.formatValue(net)), false);
+        return 1;
+    }
+
     private static int showTreasury(CommandSourceStack source) {
         MarketManager manager = MarketManager.get(source.getServer().overworld());
         String balance = MoneyUtils.formatValue(manager.getTreasuryBalance());
@@ -167,6 +206,7 @@ public final class MarketBoxCommand {
         PlayerEvents.persistPlayer(target);
         ServerEvents.markLeaderboardDirty();
 
+        com.koko.marketbox.util.EconomyStats.addTreasuryGrant(granted);
         String formatted = MoneyUtils.formatValue(granted);
         source.sendSuccess(() -> Component.translatable("commands.marketbox.treasury.withdraw_success",
                 formatted, target.getName().getString()), true);
@@ -238,6 +278,7 @@ public final class MarketBoxCommand {
             balance.setBalance(amount);
         } else {
             balance.addBalance(amount, "gui.marketbox.transaction.admin");
+            com.koko.marketbox.util.EconomyStats.addAdminIssued(amount);
         }
 
         PlayerEvents.syncPlayerBalance(target);

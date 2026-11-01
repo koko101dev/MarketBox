@@ -105,6 +105,7 @@ public final class PlayerEvents {
     private static boolean checkAndApplyInterest(ServerPlayer player) {
         PlayerBalance balance = PlayerBalanceAttachment.get(player);
         double interestAdded = balance.applyInterest(Config.getInterestRate(), Config.getInterestIntervalSeconds());
+        com.koko.marketbox.util.EconomyStats.addInterest(interestAdded);
         if (interestAdded > 0) {
             player.sendSystemMessage(Component.translatable("gui.marketbox.interest_applied",
                     String.format("%.2f", interestAdded)));

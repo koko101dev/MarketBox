@@ -232,5 +232,13 @@
   "gui.marketbox.config.fee_mode": "手续费去向",
   "gui.marketbox.config.treasury_balance": "金库余额",
   "gui.marketbox.config.fee_mode.treasury": "金库",
-  "gui.marketbox.config.fee_mode.destroy": "销毁"
+  "gui.marketbox.config.fee_mode.destroy": "销毁",
+  "commands.marketbox.economy.header": "———— 经济概览 ————",
+  "commands.marketbox.economy.holdings": "在线玩家总资产：%s（%s 人）",
+  "commands.marketbox.economy.treasury": "市场金库：%s",
+  "commands.marketbox.economy.interest": "本次会话利息发放：+%s",
+  "commands.marketbox.economy.admin": "管理员发放：+%s",
+  "commands.marketbox.economy.fee_destroyed": "手续费销毁：-%s",
+  "commands.marketbox.economy.net": "净增货币：%s",
+  "commands.marketbox.help.economy": "/marketbox economy — 查看货币总量与通胀来源（管理员）"
 }

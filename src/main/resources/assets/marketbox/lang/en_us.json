@@ -232,5 +232,13 @@
   "gui.marketbox.config.fee_mode": "Fee Destination",
   "gui.marketbox.config.treasury_balance": "Treasury Balance",
   "gui.marketbox.config.fee_mode.treasury": "Treasury",
-  "gui.marketbox.config.fee_mode.destroy": "Destroyed"
+  "gui.marketbox.config.fee_mode.destroy": "Destroyed",
+  "commands.marketbox.economy.header": "———— Economy Overview ————",
+  "commands.marketbox.economy.holdings": "Online players' total: %s (%s online)",
+  "commands.marketbox.economy.treasury": "Market treasury: %s",
+  "commands.marketbox.economy.interest": "Interest issued this session: +%s",
+  "commands.marketbox.economy.admin": "Admin issued: +%s",
+  "commands.marketbox.economy.fee_destroyed": "Fees destroyed: -%s",
+  "commands.marketbox.economy.net": "Net money supply change: %s",
+  "commands.marketbox.help.economy": "/marketbox economy — view money supply and inflation sources (admin)"
 }
