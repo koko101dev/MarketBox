@@ -98,6 +98,7 @@
 
 ## 命令
 
+```
 /marketbox help                              显示命令说明
 /marketbox balance [玩家]                    查询余额（查他人需等级 2）
 /marketbox economy                           经济概览（等级 2）
@@ -109,6 +110,7 @@
 /marketbox market list                       查看挂单数量（等级 2）
 /marketbox market clear                      清空挂单并退还（等级 4）
 /marketbox reload                            重新载入配置（等级 2）
+```
 
 - 玩家名支持 Tab 补全，金额参数会提示常用值（100 / 1000 / 10000 / 100000）
 - 大部分功能也能在界面里完成：经济页可拨款，设置页可调利率与手续费
