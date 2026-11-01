@@ -39,6 +39,8 @@ public class RankingScreen extends Screen {
     @Override
     protected void init() {
         super.init();
+        // 订阅排行榜更新：服务端只在有人查看时推送，避免全服广播
+        ClientNetwork.send(new com.koko.marketbox.networking.packet.RequestLeaderboardPacket(true));
         int navWidth = Sidebar.width(this.width);
         this.contentLeft = navWidth;
         this.contentWidth = this.width - navWidth;
@@ -189,6 +191,7 @@ public class RankingScreen extends Screen {
 
     @Override
     public void onClose() {
+        ClientNetwork.send(new com.koko.marketbox.networking.packet.RequestLeaderboardPacket(false));
         if (this.minecraft != null) {
             // 侧边栏各页共用一个窗口，ESC 直接关闭到游戏，而不是退回上一个页面
             this.minecraft.setScreen(null);

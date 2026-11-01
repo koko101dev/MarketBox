@@ -31,6 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class PlayerEvents {
     private static final Map<UUID, Double> LAST_SYNCED_TOTAL = new ConcurrentHashMap<>();
+    /** 正在查看排行榜界面的玩家：只给他们推送榜单，避免全服广播 */
+    private static final java.util.Set<UUID> LEADERBOARD_SUBSCRIBERS =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     private PlayerEvents() {
     }
@@ -41,6 +44,7 @@ public final class PlayerEvents {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             com.koko.marketbox.networking.PacketRateLimiter.forget(handler.getPlayer().getUUID());
             LAST_SYNCED_TOTAL.remove(handler.getPlayer().getUUID());
+            LEADERBOARD_SUBSCRIBERS.remove(handler.getPlayer().getUUID());
             ServerEvents.markLeaderboardDirty();
         });
 
@@ -54,8 +58,10 @@ public final class PlayerEvents {
 
     private static void handleJoin(ServerPlayer player) {
         // 诊断用：确认玩家加入时从存档中恢复到了多少余额
-        com.koko.marketbox.MarketBox.LOGGER.info("[MarketBox] {} 登录，读取余额={} 分",
-                player.getName().getString(), PlayerBalanceAttachment.get(player).getBalanceCents());
+        if (com.koko.marketbox.MarketBox.LOGGER.isDebugEnabled()) {
+            com.koko.marketbox.MarketBox.LOGGER.debug("[MarketBox] {} 登录，读取余额={} 分",
+                    player.getName().getString(), PlayerBalanceAttachment.get(player).getBalanceCents());
+        }
 
         // 同步管理员权限，客户端据此决定设置界面显示哪些项
         ModMessages.sendToPlayer(player, new SyncAdminStatusPacket(player.hasPermissions(2)));
@@ -166,6 +172,21 @@ public final class PlayerEvents {
         }
     }
 
+    public static void subscribeLeaderboard(ServerPlayer player) {
+        if (player == null) {
+            return;
+        }
+        LEADERBOARD_SUBSCRIBERS.add(player.getUUID());
+        // 立刻推一次，打开界面不用等下一轮
+        syncLeaderboard(List.of(player));
+    }
+
+    public static void unsubscribeLeaderboard(ServerPlayer player) {
+        if (player != null) {
+            LEADERBOARD_SUBSCRIBERS.remove(player.getUUID());
+        }
+    }
+
     public static void syncLeaderboard(List<ServerPlayer> players) {
         List<PlayerEntry> entries = new ArrayList<>();
         for (ServerPlayer player : players) {
@@ -178,7 +199,10 @@ public final class PlayerEvents {
 
         SyncLeaderboardPacket packet = new SyncLeaderboardPacket(entries);
         for (ServerPlayer player : players) {
-            ModMessages.sendToPlayer(player, packet);
+            // 只推给正在看排行榜的玩家；关闭界面后不再消耗带宽
+            if (LEADERBOARD_SUBSCRIBERS.contains(player.getUUID())) {
+                ModMessages.sendToPlayer(player, packet);
+            }
         }
     }
 }

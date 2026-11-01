@@ -43,6 +43,13 @@ public final class ModMessages {
         PayloadTypeRegistry.playC2S().register(RequestEconomyPacket.ID, RequestEconomyPacket.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(RequestEconomyPacket.ID, RequestEconomyPacket::handle);
 
+        PayloadTypeRegistry.playC2S().register(
+                com.koko.marketbox.networking.packet.RequestLeaderboardPacket.ID,
+                com.koko.marketbox.networking.packet.RequestLeaderboardPacket.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(
+                com.koko.marketbox.networking.packet.RequestLeaderboardPacket.ID,
+                com.koko.marketbox.networking.packet.RequestLeaderboardPacket::handle);
+
         PayloadTypeRegistry.playC2S().register(AdminBalancePacket.ID, AdminBalancePacket.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(AdminBalancePacket.ID, AdminBalancePacket::handle);
 
