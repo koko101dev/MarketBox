@@ -5,6 +5,7 @@ import com.koko.marketbox.networking.packet.ClaimReturnedItemsPacket;
 import com.koko.marketbox.networking.packet.DelistMarketItemPacket;
 import com.koko.marketbox.networking.packet.AdminBalancePacket;
 import com.koko.marketbox.networking.packet.RequestEconomyPacket;
+import com.koko.marketbox.networking.packet.TreasuryGrantPacket;
 import com.koko.marketbox.networking.packet.SyncEconomyPacket;
 import com.koko.marketbox.networking.packet.DepositMoneyPacket;
 import com.koko.marketbox.networking.packet.ListMarketItemPacket;
@@ -35,6 +36,9 @@ public final class ModMessages {
 
     public static void register() {
         // ---- 客户端 -> 服务端 ----
+        PayloadTypeRegistry.playC2S().register(TreasuryGrantPacket.ID, TreasuryGrantPacket.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(TreasuryGrantPacket.ID, TreasuryGrantPacket::handle);
+
         PayloadTypeRegistry.playC2S().register(RequestEconomyPacket.ID, RequestEconomyPacket.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(RequestEconomyPacket.ID, RequestEconomyPacket::handle);
 

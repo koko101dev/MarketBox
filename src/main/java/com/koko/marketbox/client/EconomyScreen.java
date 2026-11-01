@@ -16,6 +16,9 @@ public class EconomyScreen extends Screen {
 
     private final Screen parent;
     private final Toast toast = new Toast();
+    /** 金库拨款的目标玩家（仅服主可用） */
+    private com.koko.marketbox.market.PlayerEntry grantTarget;
+    private net.minecraft.client.gui.components.EditBox amountBox;
     private int contentLeft;
     private int contentWidth;
     private int contentHeight;
@@ -42,6 +45,66 @@ public class EconomyScreen extends Screen {
                 contentLeft + contentWidth - PADDING - 60, 12, 60, 16,
                 Component.translatable("gui.marketbox.economy.refresh"),
                 b -> ClientNetwork.send(new com.koko.marketbox.networking.packet.RequestEconomyPacket())));
+
+        // 金库操作仅服主（等级 4）可见
+        if (ClientData.isAdmin() && this.minecraft != null && this.minecraft.player != null
+                && this.minecraft.player.hasPermissions(4)) {
+            buildAdminControls();
+        }
+    }
+
+    /** 金库拨款：选人 + 金额 + 拨款 */
+    private void buildAdminControls() {
+        int x = contentLeft + PADDING;
+        int y = contentHeight - 96;
+
+        this.addRenderableWidget(new StyledButton(x, y, 110, 18,
+                Component.literal(grantTarget != null ? grantTarget.name()
+                        : Component.translatable("gui.marketbox.transfer.no_target").getString()),
+                b -> {
+                    if (this.minecraft != null) {
+                        this.minecraft.setScreen(new PlayerSelectScreen(this, entry -> {
+                            this.grantTarget = entry;
+                            this.rebuildWidgets();
+                        }));
+                    }
+                }));
+
+        this.amountBox = new net.minecraft.client.gui.components.EditBox(this.font, x + 116, y, 90, 18, Component.empty());
+        this.amountBox.setMaxLength(12);
+        this.amountBox.setFilter(s -> s.isEmpty() || s.chars().allMatch(Character::isDigit)
+                || (s.chars().filter(c -> c == '.').count() == 1 && s.matches("[0-9]+\\.[0-9]{0,2}")));
+        this.addRenderableWidget(this.amountBox);
+
+        this.addRenderableWidget(new StyledButton(x + 212, y, 70, 18,
+                Component.translatable("gui.marketbox.economy.withdraw"), b -> submitGrant()));
+
+        this.addRenderableWidget(new StyledButton(x + 288, y, 70, 18,
+                Component.translatable("gui.marketbox.economy.goto_settings"), b -> {
+            if (this.minecraft != null) {
+                this.minecraft.setScreen(new ConfigScreen(this));
+            }
+        }));
+    }
+
+    private void submitGrant() {
+        if (grantTarget == null || amountBox == null) {
+            toast.show(Component.translatable("gui.marketbox.transfer.error.no_target"), true);
+            return;
+        }
+        double amount;
+        try {
+            amount = Double.parseDouble(amountBox.getValue());
+        } catch (NumberFormatException e) {
+            toast.show(Component.translatable("gui.marketbox.error.invalid_amount"), true);
+            return;
+        }
+        if (amount <= 0) {
+            toast.show(Component.translatable("gui.marketbox.error.invalid_amount"), true);
+            return;
+        }
+        ClientNetwork.send(new com.koko.marketbox.networking.packet.TreasuryGrantPacket(grantTarget.uuid(), amount));
+        amountBox.setValue("");
     }
 
     @Override
@@ -97,6 +160,18 @@ public class EconomyScreen extends Screen {
                 ? Component.translatable("gui.marketbox.economy.hint_inflation")
                 : Component.translatable("gui.marketbox.economy.hint_stable");
         guiGraphics.drawString(font, hint, x, y, net > 0 ? 0xCC8844 : 0x777777, false);
+
+        // 金库操作区（仅服主可见）
+        if (ClientData.isAdmin() && this.minecraft != null && this.minecraft.player != null
+                && this.minecraft.player.hasPermissions(4)) {
+            int boxTop = contentHeight - 120;
+            guiGraphics.fill(x, boxTop, x + w, boxTop + 108, 0x22FFFFFF);
+            guiGraphics.renderOutline(x, boxTop, w, 108, 0x33FFAA00);
+            guiGraphics.drawString(font, Component.translatable("gui.marketbox.economy.section_admin"),
+                    x + 6, boxTop + 6, 0xFFAA00, false);
+            guiGraphics.drawString(font, Component.translatable("gui.marketbox.economy.admin_hint"),
+                    x + 6, boxTop + 80, 0x777777, false);
+        }
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         toast.render(guiGraphics, this.width);

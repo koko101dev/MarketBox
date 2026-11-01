@@ -263,5 +263,10 @@
   "gui.marketbox.economy.net": "净增货币",
   "gui.marketbox.economy.listings": "挂单总数",
   "gui.marketbox.economy.hint_inflation": "净增为正说明货币在膨胀，可考虑降低利率或提高手续费",
-  "gui.marketbox.economy.hint_stable": "货币供应稳定"
+  "gui.marketbox.economy.hint_stable": "货币供应稳定",
+  "gui.marketbox.economy.section_admin": "金库操作",
+  "gui.marketbox.economy.admin_hint": "仅服主（权限等级 4）可操作，拨款会向全服公告",
+  "gui.marketbox.economy.withdraw": "拨款",
+  "gui.marketbox.economy.goto_settings": "设置",
+  "commands.marketbox.treasury.broadcast": "[市场] 管理员从金库拨款 %s 给 %s"
 }

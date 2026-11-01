@@ -263,5 +263,10 @@
   "gui.marketbox.economy.net": "Net money change",
   "gui.marketbox.economy.listings": "Total listings",
   "gui.marketbox.economy.hint_inflation": "Positive net means inflation — consider lowering the rate or raising fees",
-  "gui.marketbox.economy.hint_stable": "Money supply is stable"
+  "gui.marketbox.economy.hint_stable": "Money supply is stable",
+  "gui.marketbox.economy.section_admin": "Treasury Actions",
+  "gui.marketbox.economy.admin_hint": "Owner only (permission level 4). Grants are announced server-wide.",
+  "gui.marketbox.economy.withdraw": "Grant",
+  "gui.marketbox.economy.goto_settings": "Settings",
+  "commands.marketbox.treasury.broadcast": "[Market] Admin granted %s from treasury to %s"
 }
