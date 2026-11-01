@@ -32,6 +32,34 @@ public class MarketDataGameTests implements FabricGameTest {
                 perPlayerLimit);
     }
 
+    /**
+     * 挂单价格必须是总价，单价 = 总价 / 数量。
+     * 批量上架曾经把单价当总价提交，导致买家以 1/N 的价格买走整组物品。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 200)
+    public void listingPriceIsTotalPrice(GameTestHelper helper) {
+        MarketListing listing = listing(64, 64.0, System.currentTimeMillis(), 60, 0);
+
+        if (Math.abs(listing.price() - 64.0) > 0.001) {
+            helper.fail("挂单总价应为 64.00，实际 " + listing.price());
+            return;
+        }
+        double unitPrice = listing.price() / listing.item().getCount();
+        if (Math.abs(unitPrice - 1.0) > 0.001) {
+            helper.fail("单价应为 1.00，实际 " + unitPrice);
+            return;
+        }
+
+        // 部分购买后单价应保持不变
+        MarketListing remaining = listing.withRemaining(32, 32.0);
+        double afterPrice = remaining.price() / remaining.item().getCount();
+        if (Math.abs(afterPrice - 1.0) > 0.001) {
+            helper.fail("部分购买后单价应为 1.00，实际 " + afterPrice);
+            return;
+        }
+        helper.succeed();
+    }
+
     /** 过期挂单应自动下架，并把原物退还给卖家 */
     @GameTest(template = EMPTY_STRUCTURE)
     public void expiredListingReturnsItem(GameTestHelper helper) {
