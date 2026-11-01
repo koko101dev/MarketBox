@@ -19,88 +19,10 @@ final class MarketScreenRenderer {
     private MarketScreenRenderer() {
     }
 
-    /** 价格输入框下方显示扣税后的预计实收 */
-    private static void renderNetIncome(MarketScreen screen, GuiGraphics guiGraphics) {
-        double feePercent = ClientData.getMarketFeePercent();
-        if (feePercent <= 0 || screen.priceInput == null) {
-            return;
-        }
-        String raw = screen.priceInput.getValue();
-        if (raw == null || raw.isEmpty()) {
-            return;
-        }
-        double price;
-        try {
-            price = Double.parseDouble(raw);
-        } catch (NumberFormatException e) {
-            return;
-        }
-        if (price <= 0) {
-            return;
-        }
-
-        double netAfterFee = price * (1 - feePercent / 100.0);
-        String text = Component.translatable("gui.marketbox.market.net_income",
-                MoneyUtils.formatValue(netAfterFee)).getString();
-        var font = net.minecraft.client.Minecraft.getInstance().font;
-        int textY = screen.priceInput.getY() + 14;
-        guiGraphics.drawString(font, text, screen.leftPos + screen.PADDING, textY, 0x66AA66, false);
-    }
 
     static void renderLeftSection(MarketScreen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        int startX = screen.leftPos + screen.PADDING;
-        int startY = screen.topPos + 45;
-        
-        // Item selection box
-        int boxSize = 40;
-        int boxX = screen.leftPos + (screen.sidebarWidth - boxSize) / 2;
-        int boxY = startY;
-        
-        boolean hovered = mouseX >= boxX && mouseX <= boxX + boxSize && mouseY >= boxY && mouseY <= boxY + boxSize;
-        int borderColor = screen.isSelectingItem ? 0xFF00FF00 : (hovered ? 0xFFFFFFFF : 0xFF555555);
-        
-        guiGraphics.fill(boxX, boxY, boxX + boxSize, boxY + boxSize, 0x44000000);
-        guiGraphics.renderOutline(boxX, boxY, boxSize, boxSize, borderColor);
-        
-        if (!screen.selectedItem.isEmpty()) {
-            int itemSize = 16;
-            guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(boxX + (boxSize - itemSize * 2) / 2, boxY + (boxSize - itemSize * 2) / 2, 0);
-            guiGraphics.pose().scale(2.0f, 2.0f, 2.0f);
-            guiGraphics.renderItem(screen.selectedItem, 0, 0);
-            guiGraphics.renderItemDecorations(net.minecraft.client.Minecraft.getInstance().font, screen.selectedItem, 0, 0);
-            guiGraphics.pose().popPose();
-        } else {
-            String text = screen.isSelectingItem ? "..." : "+";
-            guiGraphics.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font, text, boxX + boxSize / 2, boxY + (boxSize - 8) / 2, 0xAAAAAA);
-        }
-        
-        guiGraphics.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font, Component.translatable("gui.marketbox.market.add_item"), screen.leftPos + screen.sidebarWidth / 2, boxY - 12, 0xDDDDDD);
-        
-        // Price and Quantity labels
-        int totalWidth = screen.sidebarWidth - screen.PADDING * 2;
-        int fieldWidth = totalWidth / 3;
-        
-        guiGraphics.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font, Component.translatable("gui.marketbox.market.price_label"), screen.leftPos + screen.PADDING + fieldWidth / 2, screen.priceInput.getY() - 17, 0xAAAAAA);
-
-        // 卖家预计实收：挂单前就能看到税后金额
-        renderNetIncome(screen, guiGraphics);
-        guiGraphics.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font, Component.translatable("gui.marketbox.market.quantity_label"), screen.leftPos + screen.PADDING + fieldWidth + fieldWidth / 2, screen.quantityInput.getY() - 17, 0xAAAAAA);
-        guiGraphics.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font, Component.translatable("gui.marketbox.market.duration_label"), screen.leftPos + screen.PADDING + fieldWidth * 2 + fieldWidth / 2, screen.durationInput.getY() - 17, 0xAAAAAA);
-        
-        // Input backgrounds
-        int bgY = screen.priceInput.getY() - 7;
-        int bgHeight = 20;
-        
-        // Combined BG for all inputs
-        guiGraphics.fill(screen.leftPos + screen.PADDING, bgY, screen.leftPos + screen.PADDING + totalWidth, bgY + bgHeight, 0xFF050505);
-        guiGraphics.renderOutline(screen.leftPos + screen.PADDING, bgY, totalWidth, bgHeight, 0xFF555555);
-        
-        // Middle divider lines
-        int dividerX1 = screen.leftPos + screen.PADDING + fieldWidth;
-        int dividerX2 = screen.leftPos + screen.PADDING + fieldWidth * 2;
-        guiGraphics.fill(dividerX1, bgY + 2, dividerX1 + 1, bgY + bgHeight - 2, 0xFF444444);
-        guiGraphics.fill(dividerX2, bgY + 2, dividerX2 + 1, bgY + bgHeight - 2, 0xFF444444);
+        // 左栏只展示「我的挂单」，上架改由点击背包物品的弹窗完成
+        MyListingsPanel.render(screen, guiGraphics, mouseX, mouseY);
     }
 
     static void renderReturnedItemsSection(MarketScreen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {

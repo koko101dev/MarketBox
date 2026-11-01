@@ -34,10 +34,6 @@ public class MarketScreen extends Screen {
     
     // Left side components
     ItemStack selectedItem = ItemStack.EMPTY;
-    EditBox priceInput;
-    EditBox quantityInput;
-    EditBox durationInput;
-    StyledButton sellButton;
     StyledButton claimButton;
     boolean isSelectingItem = false;
     
@@ -85,51 +81,12 @@ public class MarketScreen extends Screen {
         this.mainWidth = this.guiWidth - this.sidebarWidth;
 
 
-        // Price input
+        // 左栏改为「我的挂单」列表（渲染见 MyListingsPanel），这里只留底部的领取按钮
         int inputX = leftPos + PADDING;
-        // 上架区纵向位置按屏幕高度取比例，避免大分辨率下挤在顶部
-        int inputY = topPos + (int)(guiHeight * 0.34f);
         int totalWidth = sidebarWidth - PADDING * 2;
-        int fieldWidth = totalWidth / 3;
-        
-        // Price input box
-        this.priceInput = new EditBox(this.font, inputX + 4, inputY + 8, fieldWidth - 8, 12, Component.empty());
-        this.priceInput.setCanLoseFocus(true);
-        this.priceInput.setBordered(false);
-        this.priceInput.setMaxLength(9);
-        this.priceInput.setFilter(s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
-        this.addRenderableWidget(this.priceInput);
-        
-        // Quantity input box
-        int quantityX = inputX + fieldWidth;
-        this.quantityInput = new EditBox(this.font, quantityX + 4, inputY + 8, fieldWidth - 8, 12, Component.empty());
-        this.quantityInput.setCanLoseFocus(true);
-        this.quantityInput.setBordered(false);
-        this.quantityInput.setMaxLength(4);
-        this.quantityInput.setFilter(s -> s.isEmpty() || s.matches("\\d+"));
-        this.addRenderableWidget(this.quantityInput);
+        int claimY = topPos + guiHeight - 42;
 
-        // Duration input box (Minutes)
-        int durationX = inputX + fieldWidth * 2;
-        this.durationInput = new EditBox(this.font, durationX + 4, inputY + 8, fieldWidth - 8, 12, Component.empty());
-        this.durationInput.setCanLoseFocus(true);
-        this.durationInput.setBordered(false);
-        this.durationInput.setMaxLength(2);
-        this.durationInput.setFilter(s -> s.isEmpty() || (s.matches("\\d+") && Integer.parseInt(s) <= 60));
-        this.durationInput.setValue(""); // Default to empty as requested
-        this.addRenderableWidget(this.durationInput);
-
-        // Sell button
-        int buttonGap = 2; // Spacing between buttons
-        int inputBottomY = inputY + 21; // Bottom of input box backgrounds
-        int sellY = inputBottomY + buttonGap;
-        this.sellButton = new StyledButton(inputX, sellY, totalWidth, 20, Component.translatable("gui.marketbox.market.sell_button"), (btn) -> {
-            MarketScreenActions.handleSell(this);
-        });
-        this.addRenderableWidget(this.sellButton);
-
-        // Claim button
-        int claimY = sellY + 20 + buttonGap;
+        // Claim button（固定左栏底部）
         this.claimButton = new StyledButton(inputX, claimY, totalWidth, 20, Component.translatable("gui.marketbox.market.claim_button"), (btn) -> {
             ClientNetwork.send(new ClaimReturnedItemsPacket());
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
@@ -292,10 +249,13 @@ public class MarketScreen extends Screen {
             return true;
         }
 
+        // 左栏「我的挂单」：点击任意一行即下架
+        if (button == 0 && !isSelectingItem && MyListingsPanel.handleClick(this, mouseX, mouseY)) {
+            return true;
+        }
+
         // If no widget was clicked, we manually unfocus our input boxes
         this.searchBox.setFocused(false);
-        this.priceInput.setFocused(false);
-        this.quantityInput.setFocused(false);
 
         // Check if clicking the item selection box
         int boxSize = 40;

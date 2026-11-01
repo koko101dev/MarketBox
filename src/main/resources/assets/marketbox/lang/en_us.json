@@ -208,5 +208,11 @@
   "gui.marketbox.market.expiry_label": "Duration",
   "gui.marketbox.market.expiry_value": "%s min",
   "gui.marketbox.market.cancel": "Cancel",
-  "gui.marketbox.market.confirm_list": "List"
+  "gui.marketbox.market.confirm_list": "List",
+  "gui.marketbox.market.my_listings": "My Listings (%s)",
+  "gui.marketbox.market.my_listings_empty": "No listings yet",
+  "gui.marketbox.market.click_to_list": "Click an item in your inventory to list it",
+  "gui.marketbox.market.remain_min": "%s min",
+  "gui.marketbox.market.remain_expired": "Expired",
+  "gui.marketbox.market.more_listings": "%s more..."
 }

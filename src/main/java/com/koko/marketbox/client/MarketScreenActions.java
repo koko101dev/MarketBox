@@ -1,6 +1,5 @@
 package com.koko.marketbox.client;
 
-import com.koko.marketbox.networking.packet.ListMarketItemPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -25,14 +24,6 @@ final class MarketScreenActions {
 
     static void updateWidgetStates(MarketScreen screen) {
         boolean active = !screen.isSelectingItem;
-        screen.priceInput.visible = true; // Keep visible
-        screen.priceInput.setEditable(active);
-        screen.quantityInput.visible = true; // Keep visible
-        screen.quantityInput.setEditable(active);
-        screen.durationInput.visible = true; // Keep visible
-        screen.durationInput.setEditable(active);
-        screen.sellButton.visible = true; // Keep visible
-        screen.sellButton.active = active;
         screen.searchBox.visible = true; // Keep visible
         screen.searchBox.setEditable(active);
         
@@ -56,47 +47,4 @@ final class MarketScreenActions {
                 || message.equals(Component.translatable("gui.marketbox.nav.settings"));
     }
 
-    static void handleSell(MarketScreen screen) {
-        if (screen.selectedItem.isEmpty()) return;
-        String priceText = screen.priceInput.getValue();
-        String quantityText = screen.quantityInput.getValue();
-        String durationText = screen.durationInput.getValue();
-        
-        if (priceText.isEmpty() || quantityText.isEmpty()) return;
-        
-        // If duration is empty, show error
-        if (durationText.isEmpty()) {
-            screen.showError(Component.translatable("gui.marketbox.market.error.empty_duration"));
-            return;
-        }
-        
-        try {
-            double price = Double.parseDouble(priceText);
-            int quantity = Integer.parseInt(quantityText);
-            int duration = Integer.parseInt(durationText);
-            
-            if (price <= 0) {
-                screen.showError(Component.translatable("gui.marketbox.market.error.invalid_price"));
-                return;
-            }
-            if (quantity <= 0) {
-                screen.showError(Component.translatable("gui.marketbox.market.error.invalid_quantity"));
-                return;
-            }
-            if (duration <= 0 || duration > 60) {
-                screen.showError(Component.translatable("gui.marketbox.market.error.invalid_duration"));
-                return;
-            }
-            
-            ClientNetwork.send(new ListMarketItemPacket(screen.selectedItem, price, quantity, duration));
-            
-            // Play click sound
-            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            
-            screen.selectedItem = ItemStack.EMPTY;
-            screen.priceInput.setValue("");
-            screen.quantityInput.setValue("");
-            screen.durationInput.setValue(""); // Reset to empty
-        } catch (NumberFormatException ignored) {}
-    }
 }

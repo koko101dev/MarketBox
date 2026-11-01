@@ -208,5 +208,11 @@
   "gui.marketbox.market.expiry_label": "时长",
   "gui.marketbox.market.expiry_value": "%s 分钟",
   "gui.marketbox.market.cancel": "取消",
-  "gui.marketbox.market.confirm_list": "上架"
+  "gui.marketbox.market.confirm_list": "上架",
+  "gui.marketbox.market.my_listings": "我的挂单（%s）",
+  "gui.marketbox.market.my_listings_empty": "暂无挂单",
+  "gui.marketbox.market.click_to_list": "点击背包物品即可上架",
+  "gui.marketbox.market.remain_min": "%s 分钟",
+  "gui.marketbox.market.remain_expired": "已过期",
+  "gui.marketbox.market.more_listings": "还有 %s 条…"
 }
