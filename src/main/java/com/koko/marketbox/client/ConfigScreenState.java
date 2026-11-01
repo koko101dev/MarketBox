@@ -156,7 +156,7 @@ final class ConfigScreenState {
             try {
                 ClientNetwork.send(new UpdateCommonConfigPacket(rate, interval, parseOrDefault(screen.feeBox, screen.savedMarketFee)));
             } catch (Exception e) {
-                MarketBox.LOGGER.error("同步配置到服务端失败", e);
+                MarketBox.LOGGER.error("Failed to sync config to server", e);
                 screen.showStatus(Component.translatable("gui.marketbox.config.error.network"), true);
                 return;
             }

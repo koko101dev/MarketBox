@@ -326,7 +326,7 @@ public class MarketManager extends SavedData {
                     ItemStack savedItem = readItem(listingTag.get("item"), registries);
                     if (savedItem.isEmpty()) {
                         // 物品解析失败时跳过整条挂单，否则会留下没法购买的空气挂单
-                        MarketBox.LOGGER.warn("[MarketBox] 跳过第 {} 条挂单：物品无法解析", i);
+                        MarketBox.LOGGER.warn("[MarketBox] Skipping listing #{}: unresolvable item", i);
                         continue;
                     }
                     manager.listings.add(new MarketListing(
@@ -340,7 +340,7 @@ public class MarketManager extends SavedData {
                             listingTag.contains("perPlayerLimit") ? listingTag.getInt("perPlayerLimit") : 0
                     ));
                 } catch (Exception e) {
-                    MarketBox.LOGGER.warn("[MarketBox] 跳过第 {} 条无法解析的挂单", i, e);
+                    MarketBox.LOGGER.warn("[MarketBox] Skipping unparsable listing #{}", i, e);
                 }
             }
         }
@@ -356,14 +356,14 @@ public class MarketManager extends SavedData {
                         try {
                             list.add(readItem(itemTags.get(i), registries));
                         } catch (Exception e) {
-                            MarketBox.LOGGER.warn("[MarketBox] 跳过一件无法解析的退货物品", e);
+                            MarketBox.LOGGER.warn("[MarketBox] Skipping an unparsable returned item", e);
                         }
                     }
                     if (!list.isEmpty()) {
                         manager.returnedItems.put(ownerId, list);
                     }
                 } catch (Exception e) {
-                    MarketBox.LOGGER.warn("[MarketBox] 跳过格式异常的退货记录 key={}", key, e);
+                    MarketBox.LOGGER.warn("[MarketBox] Skipping malformed returned-items entry: {}", key, e);
                 }
             }
         }
@@ -395,7 +395,7 @@ public class MarketManager extends SavedData {
                         manager.purchases.put(listingId, perPlayer);
                     }
                 } catch (Exception e) {
-                    MarketBox.LOGGER.warn("[MarketBox] 跳过格式异常的购买记录 key={}", listingKey);
+                    MarketBox.LOGGER.warn("[MarketBox] Skipping malformed purchase record: {}", listingKey);
                 }
             }
         }
@@ -410,7 +410,7 @@ public class MarketManager extends SavedData {
                 try {
                     manager.pendingPaymentsCents.put(UUID.fromString(key), paymentsTag.getLong(key));
                 } catch (Exception e) {
-                    MarketBox.LOGGER.warn("[MarketBox] 跳过格式异常的待领取记录 key={}", key);
+                    MarketBox.LOGGER.warn("[MarketBox] Skipping malformed pending payment: {}", key);
                 }
             }
         }

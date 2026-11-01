@@ -98,7 +98,7 @@ public class AdminBalancePacket implements CustomPacketPayload {
                 };
                 ServerPlayNetworking.send(admin, new ActionFeedbackPacket(key, target.getName().getString(), false));
             } catch (Exception e) {
-                MarketBox.LOGGER.error("管理员调整余额失败 类型={}", e.getClass().getSimpleName());
+                MarketBox.LOGGER.error("Admin balance update failed", e.getClass().getSimpleName());
             }
         });
     }

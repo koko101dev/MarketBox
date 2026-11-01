@@ -94,7 +94,7 @@ public class TreasuryGrantPacket implements CustomPacketPayload {
                 ModMessages.sendToPlayer(admin, new ActionFeedbackPacket(
                         "commands.marketbox.treasury.withdraw_success", formatted + " -> " + targetName, false));
             } catch (Exception e) {
-                MarketBox.LOGGER.error("金库拨款失败 类型={}", e.getClass().getSimpleName());
+                MarketBox.LOGGER.error("Treasury grant failed", e.getClass().getSimpleName());
             }
         });
     }

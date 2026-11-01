@@ -71,7 +71,7 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
                 double safeFee = Math.max(0.0, Math.min(50.0, payload.marketFeePercent));
 
                 // 审计：经济参数变更写入服务器日志，事后可追溯
-                MarketBox.LOGGER.info("[Audit] {} 修改经济配置：利率 {} -> {}, 周期 {} -> {} 秒, 手续费 {} -> {}%",
+                MarketBox.LOGGER.info("[Audit] {} changed economy config: rate {} -> {}, interval {} -> {} sec, fee {} -> {}%",
                         player.getName().getString(),
                         Config.getInterestRate(), safeRate,
                         Config.getInterestIntervalSeconds(), safeInterval,
@@ -84,13 +84,12 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
                     try {
                         PlayerEvents.syncPlayerBalance(p);
                     } catch (Exception e) {
-                        MarketBox.LOGGER.error("配置更新后同步余额失败 player={} 类型={}",
-                                p.getUUID(), e.getClass().getSimpleName(), e);
+                        MarketBox.LOGGER.error("Failed to sync balance after config update, player={}", p.getUUID(), e);
                     }
                 }
                 ServerEvents.markLeaderboardDirty();
             } catch (Exception e) {
-                MarketBox.LOGGER.error("更新公共配置失败 类型={}", e.getClass().getSimpleName(), e);
+                MarketBox.LOGGER.error("Failed to update common config", e);
             }
         });
     }

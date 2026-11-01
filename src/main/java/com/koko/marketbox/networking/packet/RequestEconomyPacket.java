@@ -62,7 +62,7 @@ public class RequestEconomyPacket implements CustomPacketPayload {
                         EconomyStats.getFeeToTreasury(),
                         manager.getListings().size()));
             } catch (Exception e) {
-                MarketBox.LOGGER.error("统计经济数据失败 类型={}", e.getClass().getSimpleName());
+                MarketBox.LOGGER.error("Economy stats request failed", e.getClass().getSimpleName());
             }
         });
     }

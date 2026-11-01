@@ -23,7 +23,7 @@ public class MarketBox implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("MarketBox 开始初始化...");
+        LOGGER.info("MarketBox initializing...");
 
         // 配置与物价表：两端都需要，客户端需本地价格用于展示
         Config.load();
@@ -41,7 +41,7 @@ public class MarketBox implements ModInitializer {
         PlayerEvents.register();
         MarketBoxCommand.register();
 
-        LOGGER.info("MarketBox 初始化完成，版本 {}",
+        LOGGER.info("MarketBox initialized, version {}",
                 FabricLoader.getInstance().getModContainer(MODID)
                         .map(c -> c.getMetadata().getVersion().getFriendlyString())
                         .orElse("unknown"));

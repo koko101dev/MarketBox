@@ -190,7 +190,7 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
                 PlayerEvents.persistPlayer(buyer);
                 ServerEvents.markLeaderboardDirty();
             } catch (Exception e) {
-                MarketBox.LOGGER.error("购买挂单失败 类型={}", e.getClass().getSimpleName());
+                MarketBox.LOGGER.error("Purchase failed", e.getClass().getSimpleName());
             }
         });
     }

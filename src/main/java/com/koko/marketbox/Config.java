@@ -82,7 +82,7 @@ public final class Config {
     public static void load() {
         common = read(COMMON_PATH, Common.class, new Common());
         client = read(CLIENT_PATH, Client.class, new Client());
-        LOGGER.info("配置加载完成：利率={}%，周期={}分钟", common.interestRate, common.interestIntervalMinutes);
+        LOGGER.info("Config loaded: rate={}%, interval={} min", common.interestRate, common.interestIntervalMinutes);
     }
 
     private static <T> T read(Path path, Class<T> type, T fallback) {
@@ -95,7 +95,7 @@ public final class Config {
             return parsed == null ? fallback : parsed;
         } catch (Exception e) {
             // 配置损坏不应导致游戏崩溃，回落默认值
-            LOGGER.error("读取配置失败 " + path, e);
+            LOGGER.error("Failed to read config " + path, e);
             return fallback;
         }
     }
@@ -105,7 +105,7 @@ public final class Config {
             Files.createDirectories(path.getParent());
             Files.writeString(path, GSON.toJson(value), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            LOGGER.error("写入配置失败 " + path, e);
+            LOGGER.error("Failed to write config " + path, e);
         }
     }
 

@@ -59,7 +59,7 @@ public final class PlayerEvents {
     private static void handleJoin(ServerPlayer player) {
         // 诊断用：确认玩家加入时从存档中恢复到了多少余额
         if (com.koko.marketbox.MarketBox.LOGGER.isDebugEnabled()) {
-            com.koko.marketbox.MarketBox.LOGGER.debug("[MarketBox] {} 登录，读取余额={} 分",
+            com.koko.marketbox.MarketBox.LOGGER.debug("[MarketBox] {} joined, balance={} cents",
                     player.getName().getString(), PlayerBalanceAttachment.get(player).getBalanceCents());
         }
 
