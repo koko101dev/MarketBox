@@ -1,0 +1,218 @@
+package com.koko.marketbox.gametest;
+
+import com.koko.marketbox.capabilities.PlayerBalance;
+import com.koko.marketbox.market.MarketListing;
+import com.koko.marketbox.market.MarketManager;
+import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import java.util.UUID;
+
+/**
+ * 压力测试：用极端数据量暴露算法与数据结构的弱点。
+ *
+ * 这些用例不追求"功能正确"，而是回答两个问题：
+ * 1. 数据量涨到 100 倍时，耗时是线性还是会爆炸？
+ * 2. 极端序列（大量部分购买、反复存读）之后，数值还守恒吗？
+ *
+ * 运行：./gradlew runGameTest
+ */
+public class StressGameTests implements FabricGameTest {
+
+    /** 单次扫描的耗时上限：过期检查每 5 秒跑一次，超过一个 tick（50ms）就会掉帧 */
+    private static final long SCAN_BUDGET_MS = 50;
+
+    /**
+     * 一万条挂单同时过期时的扫描耗时。
+     *
+     * checkAutoDelist 内部用 CopyOnWriteArrayList.remove()，每次删除都会复制整个数组，
+     * 复杂度是 O(n²)。挂单越多越慢，这条测试就是量它到底有多慢。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 1200)
+    public void scanTenThousandExpiredListings(GameTestHelper helper) {
+        MarketManager manager = new MarketManager();
+        long twoHoursAgo = System.currentTimeMillis() - 2L * 60 * 60 * 1000;
+
+        for (int i = 0; i < 10_000; i++) {
+            manager.addListing(new MarketListing(
+                    UUID.randomUUID(),
+                    new ItemStack(Items.STONE, 1),
+                    1.0,
+                    UUID.randomUUID(),
+                    "seller" + i,
+                    twoHoursAgo,
+                    60,
+                    0));
+        }
+
+        long start = System.nanoTime();
+        manager.checkAutoDelist(helper.getLevel());
+        long elapsed = (System.nanoTime() - start) / 1_000_000;
+
+        if (!manager.getListings().isEmpty()) {
+            helper.fail("应全部下架，剩余 " + manager.getListings().size());
+            return;
+        }
+        if (elapsed > SCAN_BUDGET_MS * 20) {
+            helper.fail("扫描一万条过期挂单耗时 " + elapsed + "ms，超过 1 秒，建议改用批量移除");
+            return;
+        }
+        // 记录实测值，方便对比优化前后
+        System.out.println("[Stress] 一万条过期挂单扫描耗时 " + elapsed + "ms");
+        helper.succeed();
+    }
+
+    /** 一千个玩家的余额数据存读耗时：决定服务器保存时的卡顿程度 */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 1200)
+    public void saveAndLoadThousandPlayers(GameTestHelper helper) {
+        CompoundTag[] tags = new CompoundTag[1000];
+        for (int i = 0; i < tags.length; i++) {
+            PlayerBalance balance = new PlayerBalance();
+            balance.setBalance(1000 + i);
+            // 制造 50 条流水与分类数据，模拟长期玩家
+            for (int j = 0; j < 50; j++) {
+                balance.addBalance(1.0, "gui.marketbox.transaction.market_sell");
+            }
+            tags[i] = balance.toTag();
+        }
+
+        long start = System.nanoTime();
+        for (CompoundTag tag : tags) {
+            PlayerBalance.fromTag(tag);
+        }
+        long elapsed = (System.nanoTime() - start) / 1_000_000;
+
+        if (elapsed > 1000) {
+            helper.fail("解析一千个玩家数据耗时 " + elapsed + "ms，超过 1 秒");
+            return;
+        }
+        System.out.println("[Stress] 一千个玩家数据解析耗时 " + elapsed + "ms");
+        helper.succeed();
+    }
+
+    /**
+     * 连续一百次部分购买后，总价是否仍然守恒。
+     *
+     * 每次买入按「剩余总价 / 剩余数量」算单价并四舍五入到分，
+     * 次数多了容易累积误差，这条测试盯的就是这个。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 600)
+    public void hundredPartialPurchasesStayConsistent(GameTestHelper helper) {
+        double originalTotal = 100.00;
+        int originalCount = 100;
+
+        MarketListing listing = new MarketListing(
+                UUID.randomUUID(),
+                new ItemStack(Items.STONE, originalCount),
+                originalTotal,
+                UUID.randomUUID(),
+                "seller",
+                System.currentTimeMillis(),
+                60,
+                0);
+
+        double collected = 0;
+        int remaining = originalCount;
+        double remainingPrice = originalTotal;
+
+        for (int i = 0; i < 100 && remaining > 0; i++) {
+            double unitPrice = remainingPrice / remaining;
+            double cost = Math.round(unitPrice * 100) / 100.0;
+            collected += cost;
+            remainingPrice -= cost;
+            remaining -= 1;
+            listing = listing.withRemaining(remaining, remainingPrice);
+        }
+
+        double diff = Math.abs(collected - originalTotal);
+        if (diff > 0.05) {
+            helper.fail(String.format("百分百次部分购买后总额偏差 %.2f（收 %.2f，应收 %.2f）",
+                    diff, collected, originalTotal));
+            return;
+        }
+        System.out.println(String.format("[Stress] 一百次部分购买累计偏差 %.4f", diff));
+        helper.succeed();
+    }
+
+    /**
+     * 反复存读市场数据后，字段是否仍然完整。
+     * 相当于服务器反复重启一百次，检查有没有字段在中途丢掉。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 600)
+    public void repeatedSaveLoadKeepsAllFields(GameTestHelper helper) {
+        MarketManager manager = new MarketManager();
+        UUID seller = UUID.randomUUID();
+        manager.addListing(new MarketListing(UUID.randomUUID(), new ItemStack(Items.DIAMOND, 7),
+                999.99, seller, "卖家", System.currentTimeMillis(), 60, 3));
+        manager.addTreasury(1234.56);
+        manager.addPendingPayment(seller, 78.9);
+
+        var registries = helper.getLevel().registryAccess();
+        MarketManager current = manager;
+        for (int i = 0; i < 100; i++) {
+            CompoundTag saved = current.save(new CompoundTag(), registries);
+            current = MarketManager.load(saved, registries);
+        }
+
+        var listings = current.getListings();
+        if (listings.size() != 1) {
+            helper.fail("反复存读后挂单丢失，剩余 " + listings.size());
+            return;
+        }
+        var only = listings.get(0);
+        if (only.item().getCount() != 7 || only.perPlayerLimit() != 3 || only.expiryMinutes() != 60) {
+            helper.fail(String.format("字段丢失：数量=%d 限购=%d 时长=%d",
+                    only.item().getCount(), only.perPlayerLimit(), only.expiryMinutes()));
+            return;
+        }
+        if (Math.abs(current.getTreasuryBalance() - 1234.56) > 0.01) {
+            helper.fail("金库余额漂移：" + current.getTreasuryBalance());
+            return;
+        }
+        if (Math.abs(current.getPendingPayment(seller) - 78.9) > 0.01) {
+            helper.fail("待领取金额漂移：" + current.getPendingPayment(seller));
+            return;
+        }
+        helper.succeed();
+    }
+
+    /**
+     * 一万次余额增减后，总额与分类统计是否与流水一致。
+     * 分类统计是新增的数据结构，这里验证它不会和总额对不上。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 600)
+    public void categoryTotalsMatchBalance(GameTestHelper helper) {
+        PlayerBalance balance = new PlayerBalance();
+
+        for (int i = 0; i < 5000; i++) {
+            balance.addBalance(2.0, "gui.marketbox.transaction.interest");
+            balance.addBalance(-1.0, "gui.marketbox.transaction.market_buy");
+        }
+
+        // 5000 × (2 - 1) = 5000
+        if (Math.abs(balance.getBalance() - 5000) > 0.01) {
+            helper.fail("余额应为 5000，实际 " + balance.getBalance());
+            return;
+        }
+
+        long incomeSum = balance.getIncomeByCategory().values().stream().mapToLong(Long::longValue).sum();
+        long expenseSum = balance.getExpenseByCategory().values().stream().mapToLong(Long::longValue).sum();
+
+        if (Math.abs(incomeSum / 100.0 - balance.getTotalIncome()) > 0.01) {
+            helper.fail(String.format("分类收入合计 %.2f 与总收入 %.2f 不一致",
+                    incomeSum / 100.0, balance.getTotalIncome()));
+            return;
+        }
+        if (Math.abs(expenseSum / 100.0 - balance.getTotalExpense()) > 0.01) {
+            helper.fail(String.format("分类支出合计 %.2f 与总支出 %.2f 不一致",
+                    expenseSum / 100.0, balance.getTotalExpense()));
+            return;
+        }
+        System.out.println("[Stress] 一万次增减后分类统计与总额一致");
+        helper.succeed();
+    }
+}

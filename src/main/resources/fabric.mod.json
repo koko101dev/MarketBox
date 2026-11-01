@@ -27,7 +27,8 @@
     ],
     "fabric-gametest": [
       "com.koko.marketbox.gametest.MarketBoxGameTests",
-      "com.koko.marketbox.gametest.MarketDataGameTests"
+      "com.koko.marketbox.gametest.MarketDataGameTests",
+      "com.koko.marketbox.gametest.StressGameTests"
     ]
   },
   "depends": {
