@@ -26,7 +26,8 @@
       "com.koko.marketbox.client.ModMenuIntegration"
     ],
     "fabric-gametest": [
-      "com.koko.marketbox.gametest.MarketBoxGameTests"
+      "com.koko.marketbox.gametest.MarketBoxGameTests",
+      "com.koko.marketbox.gametest.MarketDataGameTests"
     ]
   },
   "depends": {
