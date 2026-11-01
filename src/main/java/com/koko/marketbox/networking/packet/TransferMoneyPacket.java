@@ -87,10 +87,13 @@ public class TransferMoneyPacket implements CustomPacketPayload {
             }
 
             double cleanAmount = cents / 100.0;
-            String targetName = sender.getServer().getProfileCache()
-                    .get(targetUuid)
-                    .map(GameProfile::getName)
-                    .orElse(targetUuid.toString());
+            // 先确认目标玩家真实存在：否则钱从发送方扣掉后无人能领取，等于销毁货币
+            var profileLookup = sender.getServer().getProfileCache().get(targetUuid);
+            if (profileLookup.isEmpty()) {
+                ModMessages.sendToPlayer(sender, new ActionFeedbackPacket("gui.marketbox.error.player_not_found"));
+                return;
+            }
+            String targetName = profileLookup.get().getName();
 
             senderBalance.addBalance(-cleanAmount, "gui.marketbox.transaction.transfer_to_prefix:" + targetName);
 

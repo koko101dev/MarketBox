@@ -4,6 +4,7 @@ import com.koko.marketbox.MarketBox;
 import com.koko.marketbox.capabilities.PlayerBalanceAttachment;
 import com.koko.marketbox.market.MarketManager;
 import com.koko.marketbox.networking.ModMessages;
+import com.koko.marketbox.networking.PacketRateLimiter;
 import com.koko.marketbox.util.EconomyStats;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -34,6 +35,10 @@ public class RequestEconomyPacket implements CustomPacketPayload {
     public static void handle(RequestEconomyPacket payload, ServerPlayNetworking.Context context) {
         var player = context.player();
         context.server().execute(() -> {
+            // 每次请求都要遍历全服玩家汇总资产，必须限流
+            if (!PacketRateLimiter.allow(player)) {
+                return;
+            }
             try {
                 var server = player.getServer();
                 if (server == null) {
