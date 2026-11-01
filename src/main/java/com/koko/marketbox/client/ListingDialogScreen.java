@@ -57,21 +57,23 @@ public class ListingDialogScreen extends Screen {
         this.left = (this.width - W) / 2;
         this.top = (this.height - H) / 2;
 
-        // 数量滑条
-        this.slider = new QuantitySlider(left + PAD, top + 62, W - PAD * 2, 16);
-        this.addRenderableWidget(this.slider);
+        // 只有 1 个可卖时，滑条与步进按钮都没有意义，直接留白
+        if (maxCount > 1) {
+            this.slider = new QuantitySlider(left + PAD, top + 62, W - PAD * 2, 16);
+            this.addRenderableWidget(this.slider);
 
-        // 步进按钮：步长按价值自适应
-        int step = stepSize();
-        int btnY = top + 84;
-        int bw = 62;
-        int gap = 4;
-        this.addRenderableWidget(new StyledButton(left + PAD, btnY, bw, 16,
-                Component.literal("-" + step), b -> setQuantity(quantity - step)));
-        this.addRenderableWidget(new StyledButton(left + PAD + bw + gap, btnY, bw, 16,
-                Component.literal("+" + step), b -> setQuantity(quantity + step)));
-        this.addRenderableWidget(new StyledButton(left + PAD + (bw + gap) * 2, btnY, W - PAD * 2 - (bw + gap) * 2, 16,
-                Component.translatable("gui.marketbox.market.qty_all"), b -> setQuantity(maxCount)));
+            int step = stepSize();
+            int btnY = top + 84;
+            int bw = 62;
+            int gap = 4;
+            this.addRenderableWidget(new StyledButton(left + PAD, btnY, bw, 16,
+                    Component.literal("-" + step), b -> setQuantity(quantity - step)));
+            this.addRenderableWidget(new StyledButton(left + PAD + bw + gap, btnY, bw, 16,
+                    Component.literal("+" + step), b -> setQuantity(quantity + step)));
+            this.addRenderableWidget(new StyledButton(left + PAD + (bw + gap) * 2, btnY,
+                    W - PAD * 2 - (bw + gap) * 2, 16,
+                    Component.translatable("gui.marketbox.market.qty_all"), b -> setQuantity(maxCount)));
+        }
 
         // 价格输入
         this.priceBox = new EditBox(this.font, left + PAD, top + 126, 180, 16, Component.empty());

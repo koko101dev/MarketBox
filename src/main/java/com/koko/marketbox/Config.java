@@ -41,11 +41,11 @@ public final class Config {
         public double marketFeePercent = 2.0;
         /**
          * 手续费去向：
-         * DESTROY  = 直接销毁，回收货币（默认，最稳妥）
-         * TREASURY = 进入市场金库，由服主用命令拨款
+         * TREASURY = 进入市场金库，服主可用 /marketbox treasury withdraw 拨款（默认）
+         * DESTROY  = 直接销毁，用于回收货币、抑制通胀
          * 只允许通过配置文件修改，游戏内仅只读展示，避免多管理员互相改成自己。
          */
-        public String marketFeeMode = "DESTROY";
+        public String marketFeeMode = "TREASURY";
     }
 
     /** 客户端本地配置（HUD 相关） */

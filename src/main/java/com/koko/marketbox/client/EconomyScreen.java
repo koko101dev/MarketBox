@@ -131,6 +131,11 @@ public class EconomyScreen extends Screen {
                         + "（" + ClientData.getEconomyOnlineCount() + " 人）", 0xFFFFFF);
         y = row(guiGraphics, font, x, w, y, "gui.marketbox.economy.treasury",
                 MoneyUtils.formatValue(ClientData.getTreasuryBalance()), 0xFFCC66);
+        y = row(guiGraphics, font, x, w, y, "gui.marketbox.economy.fee_mode",
+                Component.translatable(ClientData.isFeeToTreasury()
+                        ? "gui.marketbox.config.fee_mode.treasury"
+                        : "gui.marketbox.config.fee_mode.destroy").getString(),
+                ClientData.isFeeToTreasury() ? 0x66CC66 : 0x888888);
         y += 8;
 
         // ---- 本次会话 ----
@@ -139,8 +144,13 @@ public class EconomyScreen extends Screen {
                 "+" + MoneyUtils.formatValue(ClientData.getEconomyInterest()), 0xFF8866);
         y = row(guiGraphics, font, x, w, y, "gui.marketbox.economy.admin",
                 "+" + MoneyUtils.formatValue(ClientData.getEconomyAdmin()), 0xFF8866);
-        y = row(guiGraphics, font, x, w, y, "gui.marketbox.economy.fee_destroyed",
-                "-" + MoneyUtils.formatValue(ClientData.getEconomyFeeDestroyed()), 0x66CC66);
+        if (ClientData.isFeeToTreasury()) {
+            y = row(guiGraphics, font, x, w, y, "gui.marketbox.economy.fee_to_treasury",
+                    "+" + MoneyUtils.formatValue(ClientData.getEconomyFeeToTreasury()), 0xCCCC66);
+        } else {
+            y = row(guiGraphics, font, x, w, y, "gui.marketbox.economy.fee_destroyed",
+                    "-" + MoneyUtils.formatValue(ClientData.getEconomyFeeDestroyed()), 0x66CC66);
+        }
 
         double net = ClientData.getEconomyInterest() + ClientData.getEconomyAdmin()
                 - ClientData.getEconomyFeeDestroyed();

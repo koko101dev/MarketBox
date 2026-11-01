@@ -275,5 +275,7 @@
   "gui.marketbox.market.fee_detail": "手续费 %s%% · 扣除 %s",
   "gui.marketbox.curve.day": "%s 天",
   "gui.marketbox.market.list_hint": "单击选中，点 × 下架",
-  "gui.marketbox.market.price_too_high": "超出单笔上限（100 万）"
+  "gui.marketbox.market.price_too_high": "超出单笔上限（100 万）",
+  "gui.marketbox.economy.fee_mode": "手续费去向",
+  "gui.marketbox.economy.fee_to_treasury": "手续费入金库"
 }

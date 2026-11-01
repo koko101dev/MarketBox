@@ -46,19 +46,23 @@ public class PurchaseDialogScreen extends Screen {
         this.left = (this.width - W) / 2;
         this.top = (this.height - H) / 2;
 
-        this.slider = new QuantitySlider(left + PAD, top + 104, W - PAD * 2, 16);
-        this.addRenderableWidget(this.slider);
+        // 只能买 1 个时不需要数量选择器
+        if (maxSelectable > 1) {
+            this.slider = new QuantitySlider(left + PAD, top + 104, W - PAD * 2, 16);
+            this.addRenderableWidget(this.slider);
 
-        int step = stepSize();
-        int btnY = top + 126;
-        int bw = 58;
-        int gap = 4;
-        this.addRenderableWidget(new StyledButton(left + PAD, btnY, bw, 16,
-                Component.literal("-" + step), b -> setQuantity(quantity - step)));
-        this.addRenderableWidget(new StyledButton(left + PAD + bw + gap, btnY, bw, 16,
-                Component.literal("+" + step), b -> setQuantity(quantity + step)));
-        this.addRenderableWidget(new StyledButton(left + PAD + (bw + gap) * 2, btnY, W - PAD * 2 - (bw + gap) * 2, 16,
-                Component.translatable("gui.marketbox.market.qty_all"), b -> setQuantity(maxSelectable)));
+            int step = stepSize();
+            int btnY = top + 126;
+            int bw = 58;
+            int gap = 4;
+            this.addRenderableWidget(new StyledButton(left + PAD, btnY, bw, 16,
+                    Component.literal("-" + step), b -> setQuantity(quantity - step)));
+            this.addRenderableWidget(new StyledButton(left + PAD + bw + gap, btnY, bw, 16,
+                    Component.literal("+" + step), b -> setQuantity(quantity + step)));
+            this.addRenderableWidget(new StyledButton(left + PAD + (bw + gap) * 2, btnY,
+                    W - PAD * 2 - (bw + gap) * 2, 16,
+                    Component.translatable("gui.marketbox.market.qty_all"), b -> setQuantity(maxSelectable)));
+        }
 
         int bottomY = top + H - 30;
         this.addRenderableWidget(new StyledButton(left + W / 2 - 96, bottomY, 90, 20,

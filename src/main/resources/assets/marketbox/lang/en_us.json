@@ -275,5 +275,7 @@
   "gui.marketbox.market.fee_detail": "Fee %s%% · %s deducted",
   "gui.marketbox.curve.day": "%s d",
   "gui.marketbox.market.list_hint": "Click to select, × to delist",
-  "gui.marketbox.market.price_too_high": "Exceeds limit (1M)"
+  "gui.marketbox.market.price_too_high": "Exceeds limit (1M)",
+  "gui.marketbox.economy.fee_mode": "Fee destination",
+  "gui.marketbox.economy.fee_to_treasury": "Fees to treasury"
 }
