@@ -88,7 +88,9 @@ public class ListMarketItemPacket implements CustomPacketPayload {
                 ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.invalid_quantity"));
                 return;
             }
-            if (payload.expiryMinutes <= 0 || payload.expiryMinutes > 60) {
+            // 界面档位为 30/60/180/360 分钟，上限必须与之对齐，
+            // 否则选 3 小时、6 小时会直接报「时长无效」
+            if (payload.expiryMinutes <= 0 || payload.expiryMinutes > 360) {
                 ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.invalid_duration"));
                 return;
             }

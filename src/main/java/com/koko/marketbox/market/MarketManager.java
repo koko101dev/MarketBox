@@ -211,9 +211,9 @@ public class MarketManager extends SavedData {
         return value == null ? -1 : value;
     }
 
-    /** 全部成交价，供客户端同步 */
+    /** 全部成交价，供客户端同步（返回副本，避免调用方改动内部状态） */
     public Map<String, Double> getDealPrices() {
-        return dealPrices;
+        return new java.util.HashMap<>(dealPrices);
     }
 
     public double getTreasuryBalance() {
@@ -273,6 +273,8 @@ public class MarketManager extends SavedData {
             listingTag.putString("sellerName", listing.sellerName());
             listingTag.putLong("createdAt", listing.createdAt());
             listingTag.putInt("expiryMinutes", listing.expiryMinutes());
+            // 漏存这个字段会让「每人限购」在重启后全部失效
+            listingTag.putInt("perPlayerLimit", listing.perPlayerLimit());
             listTag.add(listingTag);
         }
         tag.put("listings", listTag);
@@ -321,9 +323,15 @@ public class MarketManager extends SavedData {
             for (int i = 0; i < listTag.size(); i++) {
                 try {
                     CompoundTag listingTag = listTag.getCompound(i);
+                    ItemStack savedItem = readItem(listingTag.get("item"), registries);
+                    if (savedItem.isEmpty()) {
+                        // 物品解析失败时跳过整条挂单，否则会留下没法购买的空气挂单
+                        MarketBox.LOGGER.warn("[MarketBox] 跳过第 {} 条挂单：物品无法解析", i);
+                        continue;
+                    }
                     manager.listings.add(new MarketListing(
                             listingTag.getUUID("id"),
-                            readItem(listingTag.get("item"), registries),
+                            savedItem,
                             listingTag.getDouble("price"),
                             listingTag.getUUID("sellerUUID"),
                             listingTag.getString("sellerName"),
@@ -332,7 +340,7 @@ public class MarketManager extends SavedData {
                             listingTag.contains("perPlayerLimit") ? listingTag.getInt("perPlayerLimit") : 0
                     ));
                 } catch (Exception e) {
-                    MarketBox.LOGGER.warn("[MarketBox] 跳过第 {} 条无法解析的挂单：{}", i, e.getClass().getSimpleName());
+                    MarketBox.LOGGER.warn("[MarketBox] 跳过第 {} 条无法解析的挂单", i, e);
                 }
             }
         }
@@ -348,14 +356,14 @@ public class MarketManager extends SavedData {
                         try {
                             list.add(readItem(itemTags.get(i), registries));
                         } catch (Exception e) {
-                            MarketBox.LOGGER.warn("[MarketBox] 跳过一件无法解析的退货物品：{}", e.getClass().getSimpleName());
+                            MarketBox.LOGGER.warn("[MarketBox] 跳过一件无法解析的退货物品", e);
                         }
                     }
                     if (!list.isEmpty()) {
                         manager.returnedItems.put(ownerId, list);
                     }
                 } catch (Exception e) {
-                    MarketBox.LOGGER.warn("[MarketBox] 跳过格式异常的退货记录 key={}：{}", key, e.getClass().getSimpleName());
+                    MarketBox.LOGGER.warn("[MarketBox] 跳过格式异常的退货记录 key={}", key, e);
                 }
             }
         }
