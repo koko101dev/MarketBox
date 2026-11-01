@@ -69,4 +69,29 @@ final class ConfigScreenRenderer {
         int labelY = y + screen.rowHeight / 2 - 4;
         guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, label, labelX, labelY, 0xDDDDDD, false);
     }
+
+    /**
+     * 右侧滚动条与按钮栏上方的渐隐阴影。
+     * 阴影只在未滚到底时出现，提示下方仍有内容。
+     */
+    static void renderScrollBar(ConfigScreen screen, GuiGraphics guiGraphics, int contentBottom) {
+        if (screen.maxScroll <= 0) {
+            return;
+        }
+        int visibleHeight = screen.guiHeight - ConfigScreen.BOTTOM_BAR_HEIGHT;
+        int contentHeight = visibleHeight + screen.maxScroll;
+        int barHeight = Math.max(24, visibleHeight * visibleHeight / contentHeight);
+        int barY = screen.topPos + (visibleHeight - barHeight) * screen.scrollOffset / screen.maxScroll;
+        int barX = screen.contentLeft + screen.contentWidth - 5;
+
+        guiGraphics.fill(barX, screen.topPos + 2, barX + 5, screen.topPos + visibleHeight - 2, 0x44FFFFFF);
+        guiGraphics.fill(barX, barY, barX + 5, barY + barHeight, 0xFFCCCCCC);
+
+        if (screen.scrollOffset < screen.maxScroll) {
+            guiGraphics.fill(screen.leftPos, contentBottom - 6,
+                    screen.leftPos + screen.guiWidth, contentBottom, 0x55000000);
+            guiGraphics.fill(screen.leftPos, contentBottom - 3,
+                    screen.leftPos + screen.guiWidth, contentBottom, 0x77000000);
+        }
+    }
 }

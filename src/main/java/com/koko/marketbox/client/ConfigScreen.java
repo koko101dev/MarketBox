@@ -25,7 +25,7 @@ public class ConfigScreen extends Screen {
     private static final int CONTROL_WIDTH = 140;
     private static final int CONTROL_HEIGHT = 20;
     private static final int TOGGLE_WIDTH = 60;
-    private static final int BOTTOM_BAR_HEIGHT = 44;
+    static final int BOTTOM_BAR_HEIGHT = 44;
 
     int guiWidth;
     int guiHeight;
@@ -450,23 +450,7 @@ public class ConfigScreen extends Screen {
 
         ConfigScreenRenderer.renderInlineValidation(this, guiGraphics);
 
-        // 内容超出可视区时在右侧显示滚动条，提示可以滚动
-        if (maxScroll > 0) {
-            int visibleHeight = guiHeight - BOTTOM_BAR_HEIGHT;
-            int contentHeight = visibleHeight + maxScroll;
-            int barHeight = Math.max(24, visibleHeight * visibleHeight / contentHeight);
-            int barY = topPos + (visibleHeight - barHeight) * scrollOffset / maxScroll;
-            int barX = contentLeft + contentWidth - 5;
-            // 轨道与滑块都提亮：原来太细太暗，看不出还有内容可滚
-            guiGraphics.fill(barX, topPos + 2, barX + 5, topPos + visibleHeight - 2, 0x44FFFFFF);
-            guiGraphics.fill(barX, barY, barX + 5, barY + barHeight, 0xFFCCCCCC);
-
-            // 未滚到底时，在按钮栏上方画一条渐隐阴影，提示下方还有内容
-            if (scrollOffset < maxScroll) {
-                guiGraphics.fill(leftPos, contentBottom - 6, leftPos + guiWidth, contentBottom, 0x55000000);
-                guiGraphics.fill(leftPos, contentBottom - 3, leftPos + guiWidth, contentBottom, 0x77000000);
-            }
-        }
+        ConfigScreenRenderer.renderScrollBar(this, guiGraphics, contentBottom);
 
         if (statusMessage != null) {
             if (System.currentTimeMillis() - statusTimestamp < 3000) {
