@@ -52,7 +52,7 @@
 
 | 页面 | 内容 |
 |---|---|
-| **银行** | 存入 / 取出、快捷金额、14 天复利收益曲线 |
+| **银行** | 存入 / 取出、快捷金额、每日收益预估、下次结息倒计时 |
 | **转账** | 搜索并选择收款人，排行榜可一键跳转 |
 | **市场** | 弹窗式上架、部分购买、我的挂单、分类与搜索 |
 | **统计** | 收入 / 支出 / 净收益概览、比例条、可滚动流水 |
@@ -236,7 +236,7 @@
 > 以下为英文摘要，供非中文用户参考。**中文内容以上方为准**，两者若有出入以中文版本为准。
 
 
-**MarketBox** is a server-side economy mod for Fabric 1.21.1: bank interest, a player-driven marketplace with partial purchases and per-player limits, transfers, statistics, wealth ranking and a treasury/economy dashboard for server owners.
+**MarketBox** is a server-side economy mod for Fabric 1.21.1: bank interest with daily payouts, a player-driven marketplace with partial purchases and per-player limits, transfers, statistics, wealth ranking and a treasury/economy dashboard for server owners.
 
 > ⚠️ **This project is AI-generated** (model: **DeepSeek V4.1 Flash**). If you are uncomfortable with AI-generated software, please do not use it.
 
