@@ -108,15 +108,22 @@ final class MarketBoxScreenRenderer {
 
         var font = net.minecraft.client.Minecraft.getInstance().font;
 
+        // 用「每天」而不是「14 天」：玩家对"一天"有直观感受，14 天要换算
+        double perDay = balance * (Math.pow(1 + rate, periodsPerDay) - 1);
+        if (!Double.isFinite(perDay) || perDay <= 0) {
+            return;
+        }
+
         String title = Component.translatable("gui.marketbox.forecast.title").getString();
         guiGraphics.drawString(font, title, x, y, 0xAAAAAA, false);
 
-        String futureText = MoneyUtils.formatValue(future);
-        guiGraphics.drawString(font, futureText, x + 2, y + 14, 0xFFFFFF, false);
+        String perDayText = Component.translatable("gui.marketbox.forecast.per_day",
+                MoneyUtils.formatValue(perDay)).getString();
+        guiGraphics.drawString(font, perDayText, x + 2, y + 14, 0x55FF55, false);
 
-        String gainText = Component.translatable("gui.marketbox.forecast.gain",
-                MoneyUtils.formatValue(gain)).getString();
-        guiGraphics.drawString(font, gainText, x + 2, y + 30, 0x55FF55, false);
+        String futureText = Component.translatable("gui.marketbox.forecast.future",
+                MoneyUtils.formatValue(future)).getString();
+        guiGraphics.drawString(font, futureText, x + 2, y + 28, 0x888888, false);
     }
 
 

@@ -276,6 +276,7 @@
   "gui.marketbox.market.preview_sell": "以 %s/个 出售 %s 个 %s",
   "gui.marketbox.market.preview_money_fee": "买家付 %s，你实收 %s（手续费 %s）",
   "gui.marketbox.market.preview_money": "买家付 %s",
-  "gui.marketbox.forecast.title": "按当前利率，14 天后预计余额",
-  "gui.marketbox.forecast.gain": "利息约 +%s"
+  "gui.marketbox.forecast.title": "按当前利率（真实时间）",
+  "gui.marketbox.forecast.per_day": "每天约赚 +%s",
+  "gui.marketbox.forecast.future": "14 天后余额 %s"
 }

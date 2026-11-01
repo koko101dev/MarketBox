@@ -276,6 +276,7 @@
   "gui.marketbox.market.preview_sell": "Selling %s %s at %s each",
   "gui.marketbox.market.preview_money_fee": "Buyer pays %s, you receive %s (fee %s)",
   "gui.marketbox.market.preview_money": "Buyer pays %s",
-  "gui.marketbox.forecast.title": "Projected balance in 14 days",
-  "gui.marketbox.forecast.gain": "Interest approx. +%s"
+  "gui.marketbox.forecast.title": "At the current rate (real time)",
+  "gui.marketbox.forecast.per_day": "About +%s per day",
+  "gui.marketbox.forecast.future": "%s after 14 days"
 }
