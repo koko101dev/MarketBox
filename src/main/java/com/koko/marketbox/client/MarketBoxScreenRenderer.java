@@ -127,85 +127,42 @@ final class MarketBoxScreenRenderer {
                 plotX, titleY, 0xAAAAAA, false);
 
         // 背景与边框
-        guiGraphics.fill(plotX, plotTop, plotX + plotW, plotBottom, 0x22000000);
-        guiGraphics.renderOutline(plotX, plotTop, plotW, plotH, 0x44FFFFFF);
+        guiGraphics.fill(plotX, plotTop, plotX + plotW, plotBottom, 0x18000000);
+        guiGraphics.renderOutline(plotX, plotTop, plotW, plotH, 0x33FFFFFF);
 
-        // 横向网格：25% / 50% / 75%
-        for (int i = 1; i <= 3; i++) {
-            int gy = plotTop + plotH * i / 4;
-            guiGraphics.fill(plotX + 1, gy, plotX + plotW - 1, gy + 1, 0x1AFFFFFF);
-        }
-
-        // 面积填充（半透明，仍逐列，但只填充到曲线下方）
+        // 面积填充：很淡，只用来暗示"累计收益"的量
+        int prevPy = plotBottom;
         for (int px = 0; px < plotW; px++) {
             double day = (double) px / (plotW - 1) * days;
             double gain = (Math.pow(1 + rate, periodsPerDay * day) - 1) * 100;
             double ratio = Double.isFinite(gain) ? Math.max(0.0, Math.min(1.0, gain / maxGain)) : 1.0;
-            int py = plotBottom - (int) (ratio * (plotH - 2));
-            guiGraphics.fill(plotX + px, py, plotX + px + 1, plotBottom, 0x2255FF55);
+            int py = plotBottom - (int) (ratio * (plotH - 3));
+
+            guiGraphics.fill(plotX + px, py, plotX + px + 1, plotBottom, 0x1855FF55);
+            // 曲线本体：每列都画，且从上一列高度连过来，线宽 3px，消除台阶感
+            int from = Math.min(prevPy, py);
+            int to = Math.max(prevPy, py) + 3;
+            guiGraphics.fill(plotX + px, from, plotX + px + 1, to, 0xFF55DD55);
+            prevPy = py;
         }
 
-        // 曲线：每 8px 一个采样点，用 Bresenham 连线
-        int prevX = plotX;
-        int prevY = plotBottom;
-        for (int px = 0; px <= plotW; px += 8) {
-            int cx = Math.min(plotX + px, plotX + plotW - 1);
-            double day = (double) px / Math.max(1, plotW - 1) * days;
-            double gain = (Math.pow(1 + rate, periodsPerDay * day) - 1) * 100;
-            double ratio = Double.isFinite(gain) ? Math.max(0.0, Math.min(1.0, gain / maxGain)) : 1.0;
-            int cy = plotBottom - (int) (ratio * (plotH - 2));
-
-            if (px > 0) {
-                drawLine(guiGraphics, prevX, prevY, cx, cy, 0xFF55FF55, 2);
-            }
-            prevX = cx;
-            prevY = cy;
-        }
-
-        // Y 轴最大值（右上角）
+        // 右上角终点值，带半透明底避免与曲线粘连
         String maxLabel = String.format("+%.1f%%", maxGain);
-        guiGraphics.drawString(font, maxLabel, plotX + plotW - font.width(maxLabel) - 4, plotTop + 3, 0x55FF55, false);
-        // Y 轴零点（左下角）
-        guiGraphics.drawString(font, "0%", plotX + 4, plotBottom - 11, 0x777777, false);
+        int labelW = font.width(maxLabel);
+        int labelX = plotX + plotW - labelW - 6;
+        guiGraphics.fill(labelX - 3, plotTop + 3, labelX + labelW + 3, plotTop + 14, 0x88000000);
+        guiGraphics.drawString(font, maxLabel, labelX, plotTop + 5, 0x66FF66, false);
 
         // X 轴时间标签
         String d0 = Component.translatable("gui.marketbox.curve.day", "0").getString();
         String d7 = Component.translatable("gui.marketbox.curve.day", "7").getString();
         String d14 = Component.translatable("gui.marketbox.curve.day", String.valueOf(days)).getString();
-        int labelY = plotBottom + 3;
-        guiGraphics.drawString(font, d0, plotX, labelY, 0x777777, false);
+        int labelY = plotBottom + 4;
+        guiGraphics.drawString(font, d0, plotX + 1, labelY, 0x777777, false);
         guiGraphics.drawString(font, d7, plotX + plotW / 2 - font.width(d7) / 2, labelY, 0x777777, false);
-        guiGraphics.drawString(font, d14, plotX + plotW - font.width(d14), labelY, 0x777777, false);
-
-        // 中点刻度线（第 7 天）
-        int midX = plotX + plotW / 2;
-        guiGraphics.fill(midX, plotTop + 1, midX + 1, plotBottom, 0x1AFFFFFF);
+        guiGraphics.drawString(font, d14, plotX + plotW - font.width(d14) - 1, labelY, 0x777777, false);
     }
 
-    /** Bresenham 直线，厚度从 y 向下延伸 */
-    private static void drawLine(GuiGraphics guiGraphics, int x0, int y0, int x1, int y1, int color, int thickness) {
-        int dx = Math.abs(x1 - x0);
-        int dy = Math.abs(y1 - y0);
-        int sx = x0 < x1 ? 1 : -1;
-        int sy = y0 < y1 ? 1 : -1;
-        int err = dx - dy;
-
-        while (true) {
-            guiGraphics.fill(x0, y0, x0 + 1, y0 + thickness, color);
-            if (x0 == x1 && y0 == y1) {
-                break;
-            }
-            int e2 = 2 * err;
-            if (e2 > -dy) {
-                err -= dy;
-                x0 += sx;
-            }
-            if (e2 < dx) {
-                err += dx;
-                y0 += sy;
-            }
-        }
-    }
 
 
     static void renderPlayerInfo(MarketBoxScreen screen, GuiGraphics guiGraphics) {
