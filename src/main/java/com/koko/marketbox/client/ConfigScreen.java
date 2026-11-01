@@ -352,7 +352,7 @@ public class ConfigScreen extends Screen {
         }
 
         // 左侧导航栏（三个界面共用）
-        Sidebar.render(guiGraphics, this.width, this.height, ClientData.getBankBadgeCount());
+        Sidebar.render(guiGraphics, this.width, this.height, ClientData.getMarketBadgeCount());
 
         guiGraphics.fill(leftPos, topPos, leftPos + guiWidth, topPos + guiHeight, 0xDD101010);
         guiGraphics.renderOutline(leftPos, topPos, guiWidth, guiHeight, 0xFF555555);

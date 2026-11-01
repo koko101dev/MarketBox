@@ -67,7 +67,7 @@ final class Sidebar {
     }
 
     /** 绘制侧边栏背景与标题 */
-    static void render(GuiGraphics guiGraphics, int screenWidth, int screenHeight, int bankBadge) {
+    static void render(GuiGraphics guiGraphics, int screenWidth, int screenHeight, int marketBadge) {
         int navWidth = width(screenWidth);
 
         // 底板与右侧分隔线
@@ -82,12 +82,13 @@ final class Sidebar {
         // 标题下的分隔线
         guiGraphics.fill(8, 34, navWidth - 8, 35, 0xFF3A3A3A);
 
-        // 银行入口角标：有待领取物品/收益时提示数量
-        if (bankBadge > 0) {
-            String badge = bankBadge > 9 ? "9+" : String.valueOf(bankBadge);
+        // 市场入口角标：退回物品与待领取收益都归属市场
+        if (marketBadge > 0) {
+            String badge = marketBadge > 9 ? "9+" : String.valueOf(marketBadge);
             int btnWidth = navWidth - 12;
             int textX = 6 + btnWidth - Minecraft.getInstance().font.width(badge) - 3;
-            guiGraphics.drawString(Minecraft.getInstance().font, badge, textX, 56, 0xFFFF5555, true);
+            // 市场按钮位于第三个：y = 52 + 22 * 2
+            guiGraphics.drawString(Minecraft.getInstance().font, badge, textX, 52 + 22 * 2 + 4, 0xFFFF5555, true);
         }
     }
 }

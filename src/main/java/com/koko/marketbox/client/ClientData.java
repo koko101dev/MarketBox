@@ -124,8 +124,11 @@ public class ClientData {
         pendingPayment = value;
     }
 
-    /** 银行页角标：有退货物品或有待领取收益时提示 */
-    public static int getBankBadgeCount() {
+    /**
+     * 市场角标：退回物品与待领取收益都来自市场交易，
+     * 提示应当出现在「市场」入口而不是「银行」。
+     */
+    public static int getMarketBadgeCount() {
         int count = returnedItems == null ? 0 : returnedItems.size();
         if (pendingPayment > 0) {
             count++;

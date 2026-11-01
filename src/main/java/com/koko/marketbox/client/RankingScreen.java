@@ -67,7 +67,7 @@ public class RankingScreen extends Screen {
         } else {
             super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         }
-        Sidebar.render(guiGraphics, this.width, this.height, ClientData.getBankBadgeCount());
+        Sidebar.render(guiGraphics, this.width, this.height, ClientData.getMarketBadgeCount());
 
         guiGraphics.fill(contentLeft, 0, this.width, contentHeight, 0xE6101010);
 

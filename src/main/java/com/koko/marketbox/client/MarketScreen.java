@@ -84,7 +84,9 @@ public class MarketScreen extends Screen {
         // 左栏改为「我的挂单」列表（渲染见 MyListingsPanel），这里只留底部的领取按钮
         int inputX = leftPos + PADDING;
         int totalWidth = sidebarWidth - PADDING * 2;
-        int claimY = topPos + guiHeight - 42;
+        // 按钮上移，给下方的「退回物品」列表留出 110px（约 5 行）；
+        // 原来贴在底部，列表算出来的高度是负数，整块被压成一条。
+        int claimY = topPos + guiHeight - 146;
 
         // 上架入口：左栏顶部的显式按钮（原先是一个看不见的 40x40 方框）
         this.listItemButton = new StyledButton(inputX, topPos + 40, totalWidth, 20,
@@ -176,7 +178,7 @@ public class MarketScreen extends Screen {
         }
 
         // 左侧导航栏（三个界面共用）
-        Sidebar.render(guiGraphics, this.width, this.height, ClientData.getBankBadgeCount());
+        Sidebar.render(guiGraphics, this.width, this.height, ClientData.getMarketBadgeCount());
         
         // Reset active tooltip each frame
         this.activeTooltip = null;

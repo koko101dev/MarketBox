@@ -291,7 +291,7 @@ public class MarketBoxScreen extends Screen {
         }
 
         // 左侧导航栏（三个界面共用）
-        Sidebar.render(guiGraphics, this.width, this.height, ClientData.getBankBadgeCount());
+        Sidebar.render(guiGraphics, this.width, this.height, ClientData.getMarketBadgeCount());
         
         
         // 2. Render Main GUI Background
