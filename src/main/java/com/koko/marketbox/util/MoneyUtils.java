@@ -59,11 +59,13 @@ public class MoneyUtils {
         int unitIndex = 0;
         double formattedValue = value;
         
-        while (formattedValue >= 1000 && unitIndex < units.length - 1) {
+        // 用 999.995 而不是 1000 做阈值：999999 除以 1000 是 999.999，
+        // 按 %.2f 会四舍五入成 "1000.00K"，应该进位到 "1.00M"
+        while (Math.abs(formattedValue) >= 999.995 && unitIndex < units.length - 1) {
             formattedValue /= 1000;
             unitIndex++;
         }
-        
+
         return String.format("%.2f%s", formattedValue, units[unitIndex]);
     }
 

@@ -274,5 +274,6 @@
   "tooltip.marketbox.on_sale": "On sale",
   "gui.marketbox.market.fee_detail": "Fee %s%% · %s deducted",
   "gui.marketbox.curve.day": "%s d",
-  "gui.marketbox.market.list_hint": "Click to select, × to delist"
+  "gui.marketbox.market.list_hint": "Click to select, × to delist",
+  "gui.marketbox.market.price_too_high": "Exceeds limit (1M)"
 }
