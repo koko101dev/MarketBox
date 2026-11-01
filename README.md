@@ -44,16 +44,33 @@
 
 ---
 
-## 特性
+## 界面
 
-| 模块 | 说明 |
+七个页面共用左侧导航栏：
+
+`银行` · `转账` · `市场` · `统计` · `排行` · `经济` · `设置`
+
+| 页面 | 内容 |
 |---|---|
-| **银行** | 存入 / 取出，按周期结算利息；快捷金额可配置；含 14 天复利收益曲线 |
-| **市场** | 玩家自由上架、购买、下架；分类筛选与关键词搜索；到期自动下架退还 |
-| **转账** | 独立页面选择收款人，排行榜可点击跳转；支持按名字搜索 |
-| **收支统计** | 收入 / 支出 / 净收益概览、比例条、可滚动流水 |
-| **财富排行** | 总资产排序，前三名金银铜标记，自己所在行高亮 |
-| **统一导航** | 五个页面共用左侧边栏 |
+| **银行** | 存入 / 取出、快捷金额、14 天复利收益曲线 |
+| **转账** | 搜索并选择收款人，排行榜可一键跳转 |
+| **市场** | 弹窗式上架、部分购买、我的挂单、分类与搜索 |
+| **统计** | 收入 / 支出 / 净收益概览、比例条、可滚动流水 |
+| **排行** | 总资产排序，前三名金银铜标记 |
+| **经济** | 货币存量、会话流水、金库余额、通胀提示（服主可拨款） |
+| **设置** | 利率、手续费、HUD、按键、快捷金额 |
+
+## 市场机制
+
+**价格完全由玩家决定**：物品提示里显示的是市场实际挂单的价格区间，没有任何内置物价表。没有人卖的物品不显示价格——因为没有成交就没有参考意义。
+
+**上架流程**：点击背包物品 → 弹窗中选择数量（滑条 + 按价值自适应的步进）、填写单价、选择时长、可选设置每人限购 → 上架。
+
+**部分购买**：买家可以只买一部分，挂单剩余数量会自动更新，卖光后移除。
+
+**每人限购**：卖家可选择开启，默认不限。开启后单个买家累计购买量超限会被服务端拒绝。
+
+**手续费**：从卖家实收中扣除，可选择销毁（默认，回收货币）或归入市场金库。
 
 - **服务端权威**：所有金额与物品变更都在服务端二次校验，客户端无法伪造
 - **增量同步**：挂单变更只推送变化项，带宽不随在线人数平方增长
@@ -79,19 +96,20 @@
 
 ## 命令
 
-```
-/marketbox help                  显示命令说明
-/marketbox balance [玩家]        查询余额（查他人需管理员）
-/marketbox set <玩家> <金额>     设置余额（管理员）
-/marketbox add <玩家> <金额>     增加余额（管理员）
-/marketbox reset <玩家>          清零余额与统计（管理员）
-/marketbox market list           查看挂单数量（管理员）
-/marketbox market clear          清空挂单并退还物品（管理员）
-/marketbox reload                重新载入配置文件（管理员）
-```
+/marketbox help                              显示命令说明
+/marketbox balance [玩家]                    查询余额（查他人需等级 2）
+/marketbox economy                           经济概览（等级 2）
+/marketbox treasury                          查看市场金库（所有人）
+/marketbox treasury withdraw <玩家> <金额>    金库拨款（等级 4）
+/marketbox set <玩家> <金额>                 设置余额（等级 4）
+/marketbox add <玩家> <金额>                 增加余额（等级 4）
+/marketbox reset <玩家>                      清零余额与统计（等级 4）
+/marketbox market list                       查看挂单数量（等级 2）
+/marketbox market clear                      清空挂单并退还（等级 4）
+/marketbox reload                            重新载入配置（等级 2）
 
-- 玩家名参数支持 Tab 补全，金额参数会提示常用值
-- 权限判定使用 `hasPermission(2)`
+- 玩家名支持 Tab 补全，金额参数会提示常用值（100 / 1000 / 10000 / 100000）
+- 大部分功能也能在界面里完成：经济页可拨款，设置页可调利率与手续费
 
 ## 配置
 
@@ -101,9 +119,10 @@
 
 | 字段 | 默认 | 说明 |
 |---|---|---|
-| `interestRate` | `0.19` | 每周期利息百分比 |
+| `interestRate` | `0.05` | 每周期利息百分比 |
 | `interestIntervalSeconds` | `1800` | 结息周期（秒） |
-| `marketFeePercent` | `2.0` | 市场成交手续费（%），从卖家实收中扣除并销毁 |
+| `marketFeePercent` | `2.0` | 市场成交手续费（%），从卖家实收中扣除 |
+| `marketFeeMode` | `DESTROY` | 手续费去向：`DESTROY` 销毁 / `TREASURY` 进入金库 |
 
 **`marketbox-client.json`**（仅本地生效）
 
@@ -115,13 +134,23 @@
 | `disableMenuBlur` | `true` | 关闭菜单背景模糊 |
 | `quickAmount1/2/3` | `100 / 1000 / 10000` | 快捷金额档位 |
 
-> ⚠️ 默认利率 `0.19% / 30 分钟` 复利非常快（14 天约 2.5 倍）。长期运营请调低，例如 `0.02%`。
+> ⚠️ 默认利率 `0.05% / 30 分钟`（每天约 +2.4%）。早期版本是 0.19%，复利会让货币一年膨胀上万倍，不建议长期使用。
+>
+> `marketFeeMode` 只能通过配置文件修改——不放进游戏内设置，是为了避免多个管理员互相把手续费改成给自己。
 
 ## 权限
 
-金钱相关配置**仅管理员（权限等级 ≥ 2）可见可改**，普通玩家的设置界面只显示 HUD 与快捷金额。
+按操作的可逆性分级：
 
-界面隐藏只是入口层，服务端对每个请求都会再次校验——伪造网络包同样会被拒绝。
+| 操作 | 所需等级 |
+|---|---|
+| 查看自己余额、经济页数据 | 无 |
+| 查看他人余额、调整利率与手续费率、查挂单数 | 2（普通 OP） |
+| 改他人余额、重置数据、清空市场、金库拨款 | **4（服主）** |
+
+等级 4 对应服务器的 `/op <玩家> 4`。这样普通管理员可以日常维护，但动不了钱。
+
+金钱相关的设置项对普通玩家完全不渲染（不是禁用），服务端对每个请求仍会再次校验 `hasPermissions`——伪造网络包同样会被拒绝。
 
 ## 数据与存档
 
@@ -199,7 +228,7 @@
 > 以下为英文摘要，供非中文用户参考。**中文内容以上方为准**，两者若有出入以中文版本为准。
 
 
-**MarketBox** is a server-side economy mod for Fabric 1.21.1: bank interest, a player-driven marketplace, transfers, statistics and wealth ranking.
+**MarketBox** is a server-side economy mod for Fabric 1.21.1: bank interest, a player-driven marketplace with partial purchases and per-player limits, transfers, statistics, wealth ranking and a treasury/economy dashboard for server owners.
 
 > ⚠️ **This project is AI-generated** (model: **DeepSeek V4.1 Flash**). If you are uncomfortable with AI-generated software, please do not use it.
 
@@ -217,9 +246,15 @@ If you are worried about crashes, save corruption, or issues after removing the 
 
 **Requirements**: Minecraft 1.21.1, Fabric Loader ≥ 0.16.0, Fabric API, Java 21. Both client and server must install the mod.
 
-**Commands**: run `/marketbox help` in game.
+**Pages**: Bank · Transfer · Market · Stats · Ranking · Economy · Settings — all sharing one sidebar.
 
-**Config**: `config/marketbox-common.json` (server, synced) and `config/marketbox-client.json` (client).
+**Market**: prices come entirely from player listings (no built-in price table). Listing uses a dialog with a quantity slider, unit price, duration and an optional per-player purchase limit. Buyers can purchase partially; the remaining quantity updates for everyone.
+
+**Permission levels**: level 2 for daily admin (view balances, adjust rate/fees); level 4 for money operations (set balances, clear market, treasury grants).
+
+**Commands**: run `/marketbox help` in game. Most actions are also available in the UI (treasury grants on the Economy page).
+
+**Config**: `config/marketbox-common.json` (server, synced) and `config/marketbox-client.json` (client). `marketFeeMode` (`DESTROY` / `TREASURY`) can only be changed in the file, not in-game.
 
 **Third-party assets**: currency item textures are from **Utopia Custom** by Limit 小火柴 and OrzMiku, used under the **MIT** license. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details and the full license text.
 
