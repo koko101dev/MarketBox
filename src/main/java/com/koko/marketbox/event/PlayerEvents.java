@@ -11,9 +11,7 @@ import com.koko.marketbox.networking.packet.SyncLeaderboardPacket;
 import com.koko.marketbox.networking.packet.SyncAdminStatusPacket;
 import com.koko.marketbox.networking.packet.SyncMarketListingsPacket;
 import com.koko.marketbox.networking.packet.SyncPlayerBalancePacket;
-import com.koko.marketbox.networking.packet.SyncPricesPacket;
 import com.koko.marketbox.util.MoneyUtils;
-import com.koko.marketbox.util.PriceManager;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.network.chat.Component;
@@ -80,7 +78,6 @@ public final class PlayerEvents {
 
         sendFullMarketSync(player, manager);
         // 玩家加入时同步最新价格表
-        ModMessages.sendToPlayer(player, new SyncPricesPacket(PriceManager.getPrices()));
     }
 
     private static void tickPlayer(ServerPlayer player) {

@@ -218,6 +218,5 @@
   "gui.marketbox.market.list_item_button": "+ 上架物品",
   "gui.marketbox.market.empty_hint": "暂时没有挂单",
   "gui.marketbox.market.empty_hint_sub": "点击左侧「+ 上架物品」开始出售",
-  "tooltip.marketbox.listing_count": "%s 条挂单",
-  "tooltip.marketbox.reference_price": "参考价"
+  "tooltip.marketbox.listing_count": "%s 条挂单"
 }

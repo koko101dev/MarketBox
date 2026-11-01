@@ -3,7 +3,6 @@ package com.koko.marketbox.client;
 import com.koko.marketbox.Config;
 import com.koko.marketbox.market.MarketListing;
 import com.koko.marketbox.util.MoneyUtils;
-import com.koko.marketbox.util.PriceManager;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -14,12 +13,9 @@ import java.util.List;
 /**
  * 客户端提示框：在物品说明中追加价格。
  *
- * 价格来源分两层：
- * 1. 市场实际挂单（优先）——玩家一挂单，该物品就有真实价格，
- *    完全不依赖静态数据，模组物品也能自动覆盖
- * 2. 内置物价表（兜底）——没有挂单时给出参考值
- *
- * 两者都没有则不显示，避免给出错误信息。
+ * 价格完全由市场决定：只显示玩家实际挂单的价格区间。
+ * 没有任何挂单时不显示价格行——没有人在卖的东西，标一个参考价只会误导玩家。
+ * 这样不需要维护任何静态物价数据，模组物品也能自动覆盖。
  */
 public final class ClientEvents {
 
@@ -47,14 +43,8 @@ public final class ClientEvents {
                 return;
             }
 
-            // 没有挂单时退回内置物价表
-            Double reference = PriceManager.getPrice(stack);
-            if (reference != null) {
-                lines.add(Component.empty());
-                lines.add(Component.translatable("tooltip.marketbox.reference_price")
-                        .append(Component.literal(": " + MoneyUtils.formatValue(reference)))
-                        .withStyle(ChatFormatting.GRAY));
-            }
+            // 没有挂单就不显示：没人卖的东西，标价也没有意义
+
         });
     }
 

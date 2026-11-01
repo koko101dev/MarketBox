@@ -9,9 +9,7 @@ import com.koko.marketbox.market.MarketListing;
 import com.koko.marketbox.market.MarketManager;
 import com.koko.marketbox.networking.ModMessages;
 import com.koko.marketbox.networking.packet.MarketListingRemovedPacket;
-import com.koko.marketbox.networking.packet.SyncPricesPacket;
 import com.koko.marketbox.util.MoneyUtils;
-import com.koko.marketbox.util.PriceManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -162,10 +160,8 @@ public final class MarketBoxCommand {
 
     private static int reload(CommandSourceStack source) {
         Config.load();
-        PriceManager.loadPrices();
 
         if (source.getServer() != null) {
-            ModMessages.sendToAll(source.getServer(), new SyncPricesPacket(PriceManager.getPrices()));
             for (ServerPlayer player : source.getServer().getPlayerList().getPlayers()) {
                 PlayerEvents.syncPlayerBalance(player);
             }

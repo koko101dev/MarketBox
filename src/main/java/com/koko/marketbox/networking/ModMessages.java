@@ -13,7 +13,6 @@ import com.koko.marketbox.networking.packet.MarketListingRemovedPacket;
 import com.koko.marketbox.networking.packet.SyncAdminStatusPacket;
 import com.koko.marketbox.networking.packet.SyncMarketListingsPacket;
 import com.koko.marketbox.networking.packet.SyncPlayerBalancePacket;
-import com.koko.marketbox.networking.packet.SyncPricesPacket;
 import com.koko.marketbox.networking.packet.TransferMoneyPacket;
 import com.koko.marketbox.networking.packet.UpdateCommonConfigPacket;
 import com.koko.marketbox.networking.packet.WithdrawMoneyPacket;
@@ -69,7 +68,6 @@ public final class ModMessages {
 
         PayloadTypeRegistry.playS2C().register(MarketListingAddedPacket.ID, MarketListingAddedPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(MarketListingRemovedPacket.ID, MarketListingRemovedPacket.CODEC);
-        PayloadTypeRegistry.playS2C().register(SyncPricesPacket.ID, SyncPricesPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(ActionFeedbackPacket.ID, ActionFeedbackPacket.CODEC);
     }
 

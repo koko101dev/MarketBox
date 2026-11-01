@@ -7,7 +7,6 @@ import com.koko.marketbox.event.ServerEvents;
 import com.koko.marketbox.item.ModCreativeModeTabs;
 import com.koko.marketbox.item.ModItems;
 import com.koko.marketbox.networking.ModMessages;
-import com.koko.marketbox.util.PriceManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +27,6 @@ public class MarketBox implements ModInitializer {
 
         // 配置与物价表：两端都需要，客户端需本地价格用于展示
         Config.load();
-        PriceManager.loadPrices();
 
         // 注册表条目必须早于网络与事件
         ModItems.register();

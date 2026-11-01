@@ -7,8 +7,6 @@ import com.koko.marketbox.networking.packet.SyncAdminStatusPacket;
 import com.koko.marketbox.networking.packet.MarketListingRemovedPacket;
 import com.koko.marketbox.networking.packet.SyncMarketListingsPacket;
 import com.koko.marketbox.networking.packet.SyncPlayerBalancePacket;
-import com.koko.marketbox.networking.packet.SyncPricesPacket;
-import com.koko.marketbox.util.PriceManager;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.chat.Component;
 
@@ -48,9 +46,6 @@ public final class ClientPacketHandlers {
 
         ClientPlayNetworking.registerGlobalReceiver(MarketListingRemovedPacket.ID, (payload, context) ->
                 context.client().execute(() -> ClientData.removeMarketListing(payload.listingId())));
-
-        ClientPlayNetworking.registerGlobalReceiver(SyncPricesPacket.ID, (payload, context) ->
-                context.client().execute(() -> PriceManager.updatePrices(payload.prices())));
 
         ClientPlayNetworking.registerGlobalReceiver(ActionFeedbackPacket.ID, (payload, context) ->
                 context.client().execute(() -> {

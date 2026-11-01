@@ -3,7 +3,6 @@ package com.koko.marketbox.client;
 import com.koko.marketbox.market.MarketListing;
 import com.koko.marketbox.networking.packet.ListMarketItemPacket;
 import com.koko.marketbox.util.MoneyUtils;
-import com.koko.marketbox.util.PriceManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -100,26 +99,33 @@ public class ListingDialogScreen extends Screen {
         }
         double unit = referenceUnitPrice();
         int step;
-        if (unit >= 1000) {
-            step = 1;
-        } else if (unit >= 100) {
-            step = 4;
-        } else if (unit >= 10) {
-            step = 16;
+        if (unit > 0) {
+            // 有市场价：按价值决定，越贵步长越小
+            if (unit >= 1000) {
+                step = 1;
+            } else if (unit >= 100) {
+                step = 4;
+            } else if (unit >= 10) {
+                step = 16;
+            } else {
+                step = 64;
+            }
         } else {
-            step = 64;
+            // 没有市场价：按可堆叠数量推断，避免新物品一步跳走大半
+            if (maxCount <= 8) {
+                step = 1;
+            } else if (maxCount <= 32) {
+                step = 8;
+            } else {
+                step = 16;
+            }
         }
         return Math.max(1, Math.min(step, maxCount));
     }
 
-    /** 参考单价：优先用市场最低单价，没有挂单时用物价表 */
+    /** 参考单价：只用市场最低单价，没有挂单返回 -1 */
     private double referenceUnitPrice() {
-        double market = lowestUnitPrice();
-        if (market > 0) {
-            return market;
-        }
-        Double p = PriceManager.getPrice(item);
-        return p != null ? p : 0;
+        return lowestUnitPrice();
     }
 
     /** 同物品在市场上的最低单价；无挂单返回 -1 */
