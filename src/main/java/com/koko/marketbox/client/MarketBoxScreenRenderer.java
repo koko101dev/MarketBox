@@ -80,8 +80,11 @@ final class MarketBoxScreenRenderer {
         // 5. 收益预估：直接给出金额，比一条永远向上的曲线更有用
         renderEarningsForecast(screen, guiGraphics, startX, contentY + 26, maxWidth);
 
-        // 6. 最近几次结息：让玩家看到利息实际到账的节奏
-        renderRecentInterest(guiGraphics, startX, contentY + 88, maxWidth);
+        // 6. 最近几次结息：中栏剩余空间足够才显示，避免超出底部
+        int historyY = contentY + 88;
+        if (historyY + 60 <= screen.topPos + screen.guiHeight - 8) {
+            renderRecentInterest(guiGraphics, startX, historyY, maxWidth);
+        }
     }
 
 

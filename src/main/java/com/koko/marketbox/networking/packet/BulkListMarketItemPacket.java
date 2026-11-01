@@ -98,14 +98,17 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
                 MarketManager manager = MarketManager.get(player.serverLevel());
                 int listed = 0;
                 int failed = 0;
+                // 只在进入循环前统计一次，避免每条都全量遍历挂单列表
+                int currentCount = manager.countBySeller(player.getUUID());
 
                 for (Entry entry : payload.entries) {
-                    if (manager.countBySeller(player.getUUID()) >= 20) {
+                    if (currentCount >= 20) {
                         failed++;
                         continue;
                     }
                     if (listItem(player, manager, entry, payload.expiryMinutes)) {
                         listed++;
+                        currentCount++;
                     } else {
                         failed++;
                     }

@@ -64,7 +64,8 @@ public class RankingScreen extends Screen {
 
         // 分类切换：总资产 / 存款 / 收入 / 支出
         sortButtons.clear();
-        int tabWidth = 68;
+        // 宽度随可用空间收缩，避免窗口较窄时四个按钮排到容器外
+        int tabWidth = Math.max(52, Math.min(68, (contentWidth - 16) / 4));
         int tabHeight = 16;
         int tabY = 44;
         int tabGap = 4;

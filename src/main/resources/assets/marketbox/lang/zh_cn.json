@@ -310,5 +310,6 @@
   "gui.marketbox.market.bulk_back": "返回",
   "gui.marketbox.market.bulk_nothing_selected": "请先勾选要上架的物品",
   "gui.marketbox.market.bulk_invalid_input": "数量或价格无效，无法上架",
-  "gui.marketbox.market.bulk_skipped": "有 %s 项数量或价格无效，已取消提交"
+  "gui.marketbox.market.bulk_skipped": "有 %s 项数量或价格无效，已取消提交",
+  "gui.marketbox.market.bulk_row_invalid": "第 %s 行的数量或价格无效，请修正后重试"
 }

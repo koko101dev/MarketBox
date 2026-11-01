@@ -310,5 +310,6 @@
   "gui.marketbox.market.bulk_back": "Back",
   "gui.marketbox.market.bulk_nothing_selected": "Tick at least one item first",
   "gui.marketbox.market.bulk_invalid_input": "Quantity or price is invalid",
-  "gui.marketbox.market.bulk_skipped": "%s item(s) had invalid quantity or price, submission cancelled"
+  "gui.marketbox.market.bulk_skipped": "%s item(s) had invalid quantity or price, submission cancelled",
+  "gui.marketbox.market.bulk_row_invalid": "Row %s has invalid quantity or price"
 }
