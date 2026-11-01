@@ -2,7 +2,6 @@ package com.koko.marketbox.client;
 
 import com.koko.marketbox.market.MarketListing;
 import com.koko.marketbox.networking.packet.ClaimReturnedItemsPacket;
-import com.koko.marketbox.networking.packet.PurchaseMarketItemPacket;
 import com.koko.marketbox.util.MoneyUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -365,8 +364,7 @@ public class MarketScreen extends Screen {
                         int halfW = (btnW - 2) / 2;
                         // Buy button
                         if (mouseX >= btnX && mouseX <= btnX + halfW && mouseY >= btnY && mouseY <= btnY + btnH) {
-                            ClientNetwork.send(new PurchaseMarketItemPacket(listing.id()));
-                            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.ITEM_PICKUP, 1.0F));
+                            Minecraft.getInstance().setScreen(new PurchaseDialogScreen(this, listing));
                             return true;
                         }
                         // Delist button
@@ -378,8 +376,7 @@ public class MarketScreen extends Screen {
                         }
                     } else {
                         if (mouseX >= btnX && mouseX <= btnX + btnW && mouseY >= btnY && mouseY <= btnY + btnH) {
-                            ClientNetwork.send(new PurchaseMarketItemPacket(listing.id()));
-                            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.ITEM_PICKUP, 1.0F));
+                            Minecraft.getInstance().setScreen(new PurchaseDialogScreen(this, listing));
                             return true;
                         }
                     }

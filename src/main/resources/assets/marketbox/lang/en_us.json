@@ -240,5 +240,14 @@
   "commands.marketbox.economy.admin": "Admin issued: +%s",
   "commands.marketbox.economy.fee_destroyed": "Fees destroyed: -%s",
   "commands.marketbox.economy.net": "Net money supply change: %s",
-  "commands.marketbox.help.economy": "/marketbox economy — view money supply and inflation sources (admin)"
+  "commands.marketbox.help.economy": "/marketbox economy — view money supply and inflation sources (admin)",
+  "gui.marketbox.market.error.limit_reached": "You have reached the per-player limit for this listing",
+  "gui.marketbox.market.purchase_success_detail": "Purchased %s",
+  "gui.marketbox.market.buy_dialog_title": "Buy Item",
+  "gui.marketbox.market.buy_total": "Total %s",
+  "gui.marketbox.market.buy_confirm": "Buy",
+  "gui.marketbox.market.limit_label": "Limit %s per player",
+  "gui.marketbox.market.remaining": "%s remaining",
+  "gui.marketbox.market.no_limit_hint": "No limit",
+  "gui.marketbox.market.limit_label_short": "Limit/player"
 }

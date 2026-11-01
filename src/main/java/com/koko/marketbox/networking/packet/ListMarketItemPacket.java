@@ -34,12 +34,15 @@ public class ListMarketItemPacket implements CustomPacketPayload {
     private final double price;
     private final int quantity;
     private final int expiryMinutes;
+    /** 每人限购数量，0 表示不限 */
+    private final int perPlayerLimit;
 
-    public ListMarketItemPacket(ItemStack item, double price, int quantity, int expiryMinutes) {
+    public ListMarketItemPacket(ItemStack item, double price, int quantity, int expiryMinutes, int perPlayerLimit) {
         this.item = item;
         this.price = price;
         this.quantity = quantity;
         this.expiryMinutes = expiryMinutes;
+        this.perPlayerLimit = perPlayerLimit;
     }
 
     public ListMarketItemPacket(RegistryFriendlyByteBuf buf) {
@@ -47,6 +50,7 @@ public class ListMarketItemPacket implements CustomPacketPayload {
         this.price = buf.readDouble();
         this.quantity = buf.readVarInt();
         this.expiryMinutes = buf.readVarInt();
+        this.perPlayerLimit = buf.readVarInt();
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
@@ -54,6 +58,7 @@ public class ListMarketItemPacket implements CustomPacketPayload {
         buf.writeDouble(price);
         buf.writeVarInt(quantity);
         buf.writeVarInt(expiryMinutes);
+        buf.writeVarInt(perPlayerLimit);
     }
 
     @Override
@@ -131,7 +136,8 @@ public class ListMarketItemPacket implements CustomPacketPayload {
                     player.getUUID(),
                     player.getName().getString(),
                     System.currentTimeMillis(),
-                    payload.expiryMinutes
+                    payload.expiryMinutes,
+                    payload.perPlayerLimit
             );
             manager.addListing(created);
 

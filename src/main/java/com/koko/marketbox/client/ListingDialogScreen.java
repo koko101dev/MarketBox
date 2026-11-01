@@ -24,7 +24,7 @@ import java.util.List;
 public class ListingDialogScreen extends Screen {
 
     private static final int W = 320;
-    private static final int H = 240;
+    private static final int H = 266;
     private static final int PAD = 10;
 
     private final Screen parent;
@@ -39,6 +39,7 @@ public class ListingDialogScreen extends Screen {
 
     private QuantitySlider slider;
     private EditBox priceBox;
+    private EditBox limitBox;
     private StyledButton expiryButton;
 
     public ListingDialogScreen(Screen parent, ItemStack item, int maxCount) {
@@ -83,6 +84,13 @@ public class ListingDialogScreen extends Screen {
         this.expiryButton = new StyledButton(left + PAD + 42, top + 184, 110, 16,
                 expiryLabel(), b -> cycleExpiry());
         this.addRenderableWidget(this.expiryButton);
+
+        // 每人限购（0 = 不限）
+        this.limitBox = new EditBox(this.font, left + PAD + 42, top + 208, 60, 16, Component.empty());
+        this.limitBox.setMaxLength(4);
+        this.limitBox.setFilter(s -> s.isEmpty() || s.chars().allMatch(Character::isDigit));
+        this.limitBox.setValue("0");
+        this.addRenderableWidget(this.limitBox);
 
         // 底部按钮
         int bottomY = top + H - 32;
@@ -198,8 +206,13 @@ public class ListingDialogScreen extends Screen {
         if (unitPrice <= 0) {
             return;
         }
+        int limit = 0;
+        try {
+            limit = Integer.parseInt(limitBox.getValue().isEmpty() ? "0" : limitBox.getValue());
+        } catch (NumberFormatException ignored) {
+        }
         double total = unitPrice * quantity;
-        ClientNetwork.send(new ListMarketItemPacket(item, total, quantity, expiryMinutes));
+        ClientNetwork.send(new ListMarketItemPacket(item, total, quantity, expiryMinutes, Math.max(0, limit)));
         close();
     }
 
@@ -269,6 +282,11 @@ public class ListingDialogScreen extends Screen {
         // 时长
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.expiry_label"),
                 left + PAD, top + 188, 0xAAAAAA, false);
+
+        guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.limit_label_short"),
+                left + PAD, top + 212, 0xAAAAAA, false);
+        guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.no_limit_hint"),
+                left + PAD + 108, top + 212, 0x777777, false);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }

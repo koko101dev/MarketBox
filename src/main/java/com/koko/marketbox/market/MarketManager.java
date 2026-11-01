@@ -37,6 +37,8 @@ public class MarketManager extends SavedData {
     private final List<MarketListing> listings = new CopyOnWriteArrayList<>();
     private final Map<UUID, List<ItemStack>> returnedItems = new ConcurrentHashMap<>();
     private final Map<UUID, Long> pendingPaymentsCents = new ConcurrentHashMap<>();
+    /** 每个挂单下各玩家已购买的数量：listingId -> (playerId -> 数量) */
+    private final Map<UUID, Map<UUID, Integer>> purchases = new ConcurrentHashMap<>();
     /** 市场金库存量（分）。手续费归入此处，由服主通过命令拨款 */
     private long treasuryCents = 0;
 
@@ -150,6 +152,40 @@ public class MarketManager extends SavedData {
     }
 
     /** 查询待领取付款（不消费），用于界面角标 */
+    /** 某玩家在某挂单上已购买的数量 */
+    public int getPurchased(UUID listingId, UUID playerId) {
+        Map<UUID, Integer> perListing = purchases.get(listingId);
+        return perListing == null ? 0 : perListing.getOrDefault(playerId, 0);
+    }
+
+    /** 记录购买量（用于每人限购校验） */
+    public void addPurchase(UUID listingId, UUID playerId, int amount) {
+        if (amount <= 0) {
+            return;
+        }
+        purchases.computeIfAbsent(listingId, k -> new ConcurrentHashMap<>())
+                .merge(playerId, amount, Integer::sum);
+        setDirty();
+    }
+
+    /** 挂单被移除时清掉购买记录，避免长期占用内存 */
+    public void clearPurchases(UUID listingId) {
+        if (purchases.remove(listingId) != null) {
+            setDirty();
+        }
+    }
+
+    /** 用新的剩余数量替换某条挂单（部分购买后调用） */
+    public void replaceListing(MarketListing updated) {
+        for (int i = 0; i < listings.size(); i++) {
+            if (listings.get(i).id().equals(updated.id())) {
+                listings.set(i, updated);
+                setDirty();
+                return;
+            }
+        }
+    }
+
     public double getTreasuryBalance() {
         return treasuryCents / 100.0;
     }
@@ -227,6 +263,14 @@ public class MarketManager extends SavedData {
         }
         tag.put("pendingPaymentsCents", paymentsTag);
         tag.putLong("treasuryCents", treasuryCents);
+
+        CompoundTag purchasesTag = new CompoundTag();
+        purchases.forEach((listingId, perPlayer) -> {
+            CompoundTag inner = new CompoundTag();
+            perPlayer.forEach((playerId, count) -> inner.putInt(playerId.toString(), count));
+            purchasesTag.put(listingId.toString(), inner);
+        });
+        tag.put("purchases", purchasesTag);
         return tag;
     }
 
@@ -250,7 +294,8 @@ public class MarketManager extends SavedData {
                             listingTag.getUUID("sellerUUID"),
                             listingTag.getString("sellerName"),
                             listingTag.getLong("createdAt"),
-                            listingTag.contains("expiryMinutes") ? listingTag.getInt("expiryMinutes") : 60
+                            listingTag.contains("expiryMinutes") ? listingTag.getInt("expiryMinutes") : 60,
+                            listingTag.contains("perPlayerLimit") ? listingTag.getInt("perPlayerLimit") : 0
                     ));
                 } catch (Exception e) {
                     MarketBox.LOGGER.warn("[MarketBox] 跳过第 {} 条无法解析的挂单：{}", i, e.getClass().getSimpleName());
@@ -277,6 +322,28 @@ public class MarketManager extends SavedData {
                     }
                 } catch (Exception e) {
                     MarketBox.LOGGER.warn("[MarketBox] 跳过格式异常的退货记录 key={}：{}", key, e.getClass().getSimpleName());
+                }
+            }
+        }
+
+        if (tag.contains("purchases", Tag.TAG_COMPOUND)) {
+            CompoundTag purchasesTag = tag.getCompound("purchases");
+            for (String listingKey : purchasesTag.getAllKeys()) {
+                try {
+                    UUID listingId = UUID.fromString(listingKey);
+                    CompoundTag inner = purchasesTag.getCompound(listingKey);
+                    Map<UUID, Integer> perPlayer = new ConcurrentHashMap<>();
+                    for (String playerKey : inner.getAllKeys()) {
+                        try {
+                            perPlayer.put(UUID.fromString(playerKey), inner.getInt(playerKey));
+                        } catch (Exception ignored) {
+                        }
+                    }
+                    if (!perPlayer.isEmpty()) {
+                        manager.purchases.put(listingId, perPlayer);
+                    }
+                } catch (Exception e) {
+                    MarketBox.LOGGER.warn("[MarketBox] 跳过格式异常的购买记录 key={}", listingKey);
                 }
             }
         }
