@@ -62,7 +62,9 @@
 
 ## 市场机制
 
-**价格完全由玩家决定**：物品提示里显示的是市场实际挂单的价格区间，没有任何内置物价表。没有人卖的物品不显示价格——因为没有成交就没有参考意义。
+**价格完全由玩家决定**：物品提示显示两行——「最近成交」是最近一笔真实成交的单价，「在售」是当前挂单的**中位数**（避免单条离谱挂单污染显示）。
+
+没有任何内置价目表。既没成交过、也没人挂单的物品不显示价格——没有交易就没有参考意义。
 
 **上架流程**：点击背包物品 → 弹窗中选择数量（滑条 + 按价值自适应的步进）、填写单价、选择时长、可选设置每人限购 → 上架。
 
@@ -250,7 +252,7 @@ If you are worried about crashes, save corruption, or issues after removing the 
 
 **Pages**: Bank · Transfer · Market · Stats · Ranking · Economy · Settings — all sharing one sidebar.
 
-**Market**: prices come entirely from player listings (no built-in price table). Listing uses a dialog with a quantity slider, unit price, duration and an optional per-player purchase limit. Buyers can purchase partially; the remaining quantity updates for everyone.
+**Market**: prices come entirely from player activity (no built-in price table) — tooltips show the last deal price and the median of current listings. Listing uses a dialog with a quantity slider, unit price, duration and an optional per-player purchase limit. Buyers can purchase partially; the remaining quantity updates for everyone.
 
 **Permission levels**: level 2 for daily admin (view balances, adjust rate/fees); level 4 for money operations (set balances, clear market, treasury grants).
 
