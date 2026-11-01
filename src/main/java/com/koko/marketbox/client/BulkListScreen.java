@@ -1,8 +1,10 @@
 package com.koko.marketbox.client;
 
+import com.koko.marketbox.networking.packet.BulkListMarketItemPacket;
 import com.koko.marketbox.util.MoneyUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -13,28 +15,64 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 批量上架：列出背包里可卖的物品，点某一项直接进入上架弹窗。
+ * 批量上架：勾选多种物品，各自填数量与单价，一次提交全部。
  *
- * 相比原来的「点背包物品 → 弹窗」，这里省去了打开背包、找物品的步骤，
- * 连着卖十几种东西时不必反复开关背包。上架完成回到本页可继续下一件。
+ * 与逐个上架的区别：
+ * - 一屏内同时设置多件物品，不必反复开关弹窗
+ * - 数量与单价直接在行内填写，实时显示小计
+ * - 提交时合并成一个网络包，否则单条包的限流会把后面的拒掉
  */
 public class BulkListScreen extends Screen {
 
     private static final int PADDING = 10;
-    private static final int ROW_HEIGHT = 24;
-    private static final int HEADER_HEIGHT = 34;
+    private static final int ROW_HEIGHT = 40;
+    /** 一屏能放的条数，超出部分不显示（按数量从多到少排） */
+    private static final int MAX_ROWS = 7;
+    private static final int CHECKBOX_SIZE = 12;
 
     private final Screen parent;
-    private final List<Entry> entries = new ArrayList<>();
+    private final List<Row> rows = new ArrayList<>();
 
     private int contentLeft;
     private int contentWidth;
     private int listTop;
-    private int listHeight;
-    private float scrollOffset;
+    private int expiryMinutes = 60;
+    private StyledButton expiryButton;
 
-    /** 合并后的物品：同种物品汇总数量 */
-    private record Entry(ItemStack stack, int count) {
+    /** 单行状态：物品、可卖数量、是否勾选、数量与单价的输入框 */
+    private static final class Row {
+        final ItemStack stack;
+        final int available;
+        boolean selected;
+        EditBox qtyBox;
+        EditBox priceBox;
+
+        Row(ItemStack stack, int available) {
+            this.stack = stack;
+            this.available = available;
+        }
+
+        int quantity() {
+            try {
+                int v = Integer.parseInt(qtyBox == null ? "" : qtyBox.getValue().trim());
+                return Math.max(0, Math.min(v, available));
+            } catch (Exception e) {
+                return available;
+            }
+        }
+
+        double price() {
+            try {
+                double v = Double.parseDouble(priceBox == null ? "" : priceBox.getValue().trim());
+                return v > 0 && Double.isFinite(v) ? v : 1.0;
+            } catch (Exception e) {
+                return 1.0;
+            }
+        }
+
+        double subtotal() {
+            return price() * quantity();
+        }
     }
 
     public BulkListScreen(Screen parent) {
@@ -48,20 +86,39 @@ public class BulkListScreen extends Screen {
         int navWidth = Sidebar.width(this.width);
         this.contentLeft = navWidth;
         this.contentWidth = this.width - navWidth;
-        this.listTop = HEADER_HEIGHT;
-        this.listHeight = this.height - listTop - PADDING - 28;
+        this.listTop = 44;
 
         Sidebar.buttons(this, Sidebar.Page.MARKET).forEach(this::addRenderableWidget);
-        this.addRenderableWidget(new StyledButton(
-                this.width - PADDING - 60, this.height - PADDING - 20, 60, 18,
-                Component.translatable("gui.done"), b -> this.onClose()));
 
         collectSellableItems();
+        buildRowWidgets();
+
+        int bottomY = this.height - PADDING - 20;
+        this.expiryButton = new StyledButton(contentLeft + PADDING, bottomY, 90, 20,
+                expiryLabel(), b -> {
+            expiryMinutes = switch (expiryMinutes) {
+                case 30 -> 60;
+                case 60 -> 180;
+                case 180 -> 360;
+                default -> 30;
+            };
+            expiryButton.setMessage(expiryLabel());
+        });
+        this.addRenderableWidget(expiryButton);
+
+        this.addRenderableWidget(new StyledButton(this.width - PADDING - 90, bottomY, 90, 20,
+                Component.translatable("gui.marketbox.market.bulk_submit"), b -> submit()));
+        this.addRenderableWidget(new StyledButton(this.width - PADDING - 90 - 64, bottomY, 60, 20,
+                Component.translatable("gui.done"), b -> this.onClose()));
     }
 
-    /** 收集背包里可卖的物品，同类合并计数 */
+    private Component expiryLabel() {
+        return Component.translatable("gui.marketbox.market.bulk_expiry", expiryMinutes);
+    }
+
+    /** 收集背包里可卖的物品，同类合并，按数量排序后取前若干条 */
     private void collectSellableItems() {
-        entries.clear();
+        rows.clear();
         var player = Minecraft.getInstance().player;
         if (player == null) {
             return;
@@ -74,18 +131,47 @@ public class BulkListScreen extends Screen {
             if (stack.isEmpty() || MoneyUtils.isCurrency(stack)) {
                 continue;
             }
-            // 以单件作为 key，避免数量差异导致同类物品被拆成多行
             ItemStack key = stack.copy();
             key.setCount(1);
             merged.merge(key, stack.getCount(), Integer::sum);
         }
 
-        merged.forEach((key, count) -> entries.add(new Entry(key, count)));
-        entries.sort((a, b) -> Integer.compare(b.count(), a.count()));
+        merged.entrySet().stream()
+                .sorted((a, b) -> Integer.compare(b.getValue(), a.getValue()))
+                .limit(MAX_ROWS)
+                .forEach(e -> rows.add(new Row(e.getKey(), e.getValue())));
     }
 
-    private int maxScroll() {
-        return Math.max(0, entries.size() * ROW_HEIGHT - listHeight);
+    /** 为每一行创建数量与单价输入框 */
+    private void buildRowWidgets() {
+        int x = contentLeft + PADDING;
+
+        for (int i = 0; i < rows.size(); i++) {
+            Row row = rows.get(i);
+            int rowY = listTop + i * ROW_HEIGHT;
+
+            EditBox qty = new EditBox(this.font, x + 68, rowY + 19, 44, 14, Component.empty());
+            qty.setMaxLength(6);
+            qty.setFilter(s -> s.isEmpty() || s.matches("\\d{0,6}"));
+            qty.setValue(String.valueOf(row.available));
+            row.qtyBox = qty;
+            this.addRenderableWidget(qty);
+
+            EditBox price = new EditBox(this.font, x + 152, rowY + 19, 60, 14, Component.empty());
+            price.setMaxLength(12);
+            price.setFilter(s -> s.isEmpty() || s.matches("\\d{0,9}(\\.\\d{0,2})?"));
+            price.setValue("1.00");
+            row.priceBox = price;
+            this.addRenderableWidget(price);
+        }
+    }
+
+    private int selectedCount() {
+        return (int) rows.stream().filter(r -> r.selected).count();
+    }
+
+    private double selectedTotal() {
+        return rows.stream().filter(r -> r.selected).mapToDouble(Row::subtotal).sum();
     }
 
     @Override
@@ -104,53 +190,63 @@ public class BulkListScreen extends Screen {
         guiGraphics.drawString(font, this.title, contentLeft + PADDING, 12, 0xFFAA00, false);
         guiGraphics.drawString(font,
                 Component.translatable("gui.marketbox.market.bulk_hint"),
-                contentLeft + PADDING, 24, 0x777777, false);
-        guiGraphics.fill(contentLeft + PADDING, HEADER_HEIGHT - 2,
-                this.width - PADDING, HEADER_HEIGHT - 1, 0xFF3A3A3A);
+                contentLeft + PADDING, 26, 0x777777, false);
+        guiGraphics.fill(contentLeft + PADDING, 40, this.width - PADDING, 41, 0xFF3A3A3A);
 
         int x = contentLeft + PADDING;
         int w = contentWidth - PADDING * 2;
 
-        if (entries.isEmpty()) {
+        if (rows.isEmpty()) {
             guiGraphics.drawCenteredString(font,
                     Component.translatable("gui.marketbox.market.bulk_empty"),
-                    x + w / 2, listTop + listHeight / 2 - 4, 0x666666);
-        } else {
-            guiGraphics.enableScissor(contentLeft, listTop, this.width, listTop + listHeight);
-            for (int i = 0; i < entries.size(); i++) {
-                Entry entry = entries.get(i);
-                int rowY = listTop + i * ROW_HEIGHT - (int) scrollOffset;
-                if (rowY + ROW_HEIGHT < listTop || rowY > listTop + listHeight) {
-                    continue;
-                }
+                    contentLeft + contentWidth / 2, listTop + 40, 0x666666);
+        }
 
-                boolean hovered = mouseX >= x && mouseX <= x + w
-                        && mouseY >= rowY && mouseY <= rowY + ROW_HEIGHT;
-                if (hovered) {
-                    guiGraphics.fill(x, rowY, x + w, rowY + ROW_HEIGHT, 0x33FFFFFF);
-                } else if (i % 2 == 0) {
-                    guiGraphics.fill(x, rowY, x + w, rowY + ROW_HEIGHT, 0x12FFFFFF);
-                }
+        for (int i = 0; i < rows.size(); i++) {
+            Row row = rows.get(i);
+            int rowY = listTop + i * ROW_HEIGHT;
 
-                guiGraphics.renderItem(entry.stack(), x + 4, rowY + 4);
-
-                String name = font.plainSubstrByWidth(entry.stack().getHoverName().getString(), w - 110);
-                guiGraphics.drawString(font, name, x + 26, rowY + 8, 0xEEEEEE, false);
-
-                String countText = "×" + entry.count();
-                guiGraphics.drawString(font, countText,
-                        x + w - font.width(countText) - 8, rowY + 8, 0xAAAAAA, false);
-
-                if (hovered) {
-                    String hint = Component.translatable("gui.marketbox.market.bulk_click").getString();
-                    guiGraphics.drawString(font, hint,
-                            x + w - font.width(hint) - 60, rowY + 8, 0xFFAA00, false);
-                }
+            if (i % 2 == 0) {
+                guiGraphics.fill(x, rowY, x + w, rowY + ROW_HEIGHT - 2, 0x12FFFFFF);
             }
-            guiGraphics.disableScissor();
+            if (row.selected) {
+                guiGraphics.fill(x, rowY, x + w, rowY + ROW_HEIGHT - 2, 0x2255FF55);
+            }
+
+            int boxX = x + 4;
+            int boxY = rowY + 6;
+            guiGraphics.fill(boxX, boxY, boxX + CHECKBOX_SIZE, boxY + CHECKBOX_SIZE, 0xFF333333);
+            guiGraphics.renderOutline(boxX, boxY, CHECKBOX_SIZE, CHECKBOX_SIZE, 0xFF888888);
+            if (row.selected) {
+                guiGraphics.fill(boxX + 3, boxY + 3, boxX + CHECKBOX_SIZE - 3, boxY + CHECKBOX_SIZE - 3,
+                        0xFF55FF55);
+            }
+
+            guiGraphics.renderItem(row.stack, x + 22, rowY + 5);
+
+            String name = font.plainSubstrByWidth(row.stack.getHoverName().getString(), 110);
+            guiGraphics.drawString(font, name, x + 44, rowY + 8, 0xEEEEEE, false);
+            guiGraphics.drawString(font, "×" + row.available,
+                    x + 44 + font.width(name) + 6, rowY + 8, 0x888888, false);
+
+            if (row.selected) {
+                String sub = MoneyUtils.formatValue(row.subtotal());
+                guiGraphics.drawString(font, sub,
+                        x + w - font.width(sub) - 4, rowY + 8, 0xFFFF55, false);
+            }
+
+            guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.bulk_qty"),
+                    x + 66, rowY + 33, 0x666666, false);
+            guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.bulk_price"),
+                    x + 118, rowY + 33, 0x666666, false);
         }
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        String summary = Component.translatable("gui.marketbox.market.bulk_summary",
+                selectedCount(), MoneyUtils.formatValue(selectedTotal())).getString();
+        guiGraphics.drawString(font, summary, contentLeft + PADDING + 100,
+                this.height - PADDING - 14, 0xAAAAAA, false);
     }
 
     @Override
@@ -158,28 +254,42 @@ public class BulkListScreen extends Screen {
         int x = contentLeft + PADDING;
         int w = contentWidth - PADDING * 2;
 
-        if (button == 0 && mouseX >= x && mouseX <= x + w
-                && mouseY >= listTop && mouseY <= listTop + listHeight) {
-            int index = (int) ((mouseY - listTop + scrollOffset) / ROW_HEIGHT);
-            if (index >= 0 && index < entries.size()) {
-                Entry entry = entries.get(index);
-                // 直接复用现有上架弹窗，上架完回到本页继续下一件
-                Minecraft.getInstance().setScreen(new ListingDialogScreen(
-                        this, entry.stack().copy(), entry.count()));
-                return true;
+        if (button == 0 && mouseX >= x && mouseX <= x + w && mouseY >= listTop) {
+            int index = (int) ((mouseY - listTop) / ROW_HEIGHT);
+            if (index >= 0 && index < rows.size()) {
+                // 只有点最左侧的勾选框才切换，避免点输入框时误触
+                if (mouseX <= x + 4 + CHECKBOX_SIZE + 2) {
+                    Row row = rows.get(index);
+                    row.selected = !row.selected;
+                    return true;
+                }
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        int max = maxScroll();
-        if (max > 0) {
-            scrollOffset = Mth.clamp((float) (scrollOffset - scrollY * 14), 0f, max);
-            return true;
+    /** 把勾选的行打包提交 */
+    private void submit() {
+        List<BulkListMarketItemPacket.Entry> entries = new ArrayList<>();
+        for (Row row : rows) {
+            if (!row.selected) {
+                continue;
+            }
+            int qty = row.quantity();
+            double price = row.price();
+            if (qty <= 0 || price <= 0) {
+                continue;
+            }
+            ItemStack stack = row.stack.copy();
+            stack.setCount(qty);
+            entries.add(new BulkListMarketItemPacket.Entry(stack, price, qty));
         }
-        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+
+        if (entries.isEmpty()) {
+            return;
+        }
+        ClientNetwork.send(new BulkListMarketItemPacket(entries, expiryMinutes));
+        Minecraft.getInstance().setScreen(parent);
     }
 
     @Override
@@ -190,12 +300,5 @@ public class BulkListScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
-    }
-
-    /** 与 MC 的数学工具保持一致，避免额外依赖 */
-    private static final class Mth {
-        static float clamp(float value, float min, float max) {
-            return value < min ? min : Math.min(value, max);
-        }
     }
 }

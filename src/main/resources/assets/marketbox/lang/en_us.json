@@ -297,7 +297,14 @@
   "gui.marketbox.stats.cat.other": "other",
   "gui.marketbox.market.bulk_button": "Bulk",
   "gui.marketbox.market.bulk_title": "Bulk listing",
-  "gui.marketbox.market.bulk_hint": "Click an item to list it, then continue with the next",
+  "gui.marketbox.market.bulk_hint": "Tick items, set quantity and price, then list them all at once",
   "gui.marketbox.market.bulk_empty": "Nothing sellable in your inventory",
-  "gui.marketbox.market.bulk_click": "Click to list"
+  "gui.marketbox.market.bulk_click": "Click to list",
+  "gui.marketbox.market.bulk_submit": "List",
+  "gui.marketbox.market.bulk_expiry": "%s min",
+  "gui.marketbox.market.bulk_qty": "Qty",
+  "gui.marketbox.market.bulk_price": "Price",
+  "gui.marketbox.market.bulk_summary": "%s selected, total %s",
+  "gui.marketbox.market.bulk_done": "Listed %s item(s)",
+  "gui.marketbox.market.bulk_all_failed": "Nothing was listed, check quantity and price"
 }

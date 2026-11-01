@@ -40,6 +40,13 @@ public final class ModMessages {
         PayloadTypeRegistry.playC2S().register(TreasuryGrantPacket.ID, TreasuryGrantPacket.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(TreasuryGrantPacket.ID, TreasuryGrantPacket::handle);
 
+        PayloadTypeRegistry.playC2S().register(
+                com.koko.marketbox.networking.packet.BulkListMarketItemPacket.ID,
+                com.koko.marketbox.networking.packet.BulkListMarketItemPacket.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(
+                com.koko.marketbox.networking.packet.BulkListMarketItemPacket.ID,
+                com.koko.marketbox.networking.packet.BulkListMarketItemPacket::handle);
+
         PayloadTypeRegistry.playC2S().register(RequestEconomyPacket.ID, RequestEconomyPacket.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(RequestEconomyPacket.ID, RequestEconomyPacket::handle);
 

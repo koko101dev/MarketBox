@@ -297,7 +297,14 @@
   "gui.marketbox.stats.cat.other": "其他",
   "gui.marketbox.market.bulk_button": "批量",
   "gui.marketbox.market.bulk_title": "批量上架",
-  "gui.marketbox.market.bulk_hint": "点击物品打开上架窗口，完成后可继续下一件",
+  "gui.marketbox.market.bulk_hint": "勾选物品后填写数量与单价，一次全部上架",
   "gui.marketbox.market.bulk_empty": "背包里没有可卖的物品",
-  "gui.marketbox.market.bulk_click": "点击上架"
+  "gui.marketbox.market.bulk_click": "点击上架",
+  "gui.marketbox.market.bulk_submit": "上架",
+  "gui.marketbox.market.bulk_expiry": "%s 分钟",
+  "gui.marketbox.market.bulk_qty": "数量",
+  "gui.marketbox.market.bulk_price": "单价",
+  "gui.marketbox.market.bulk_summary": "已选 %s 件，合计 %s",
+  "gui.marketbox.market.bulk_done": "已上架 %s 件",
+  "gui.marketbox.market.bulk_all_failed": "上架失败，请检查数量与价格是否有效"
 }
