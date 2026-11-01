@@ -159,7 +159,8 @@ public class ConfigScreen extends Screen {
 
         int contentHeight = PADDING * 2 + sectionCount * SECTION_HEADER_HEIGHT + contentRows * rowHeight;
         int visibleHeight = this.guiHeight - BOTTOM_BAR_HEIGHT;
-        this.maxScroll = Math.max(0, contentHeight - visibleHeight);
+        // 多留 10px：滚到底时最后一行不会紧贴按钮栏
+        this.maxScroll = Math.max(0, contentHeight - visibleHeight + 10);
         this.scrollOffset = Math.max(0, Math.min(this.scrollOffset, this.maxScroll));
 
         editBoxes.clear();
@@ -453,11 +454,18 @@ public class ConfigScreen extends Screen {
         if (maxScroll > 0) {
             int visibleHeight = guiHeight - BOTTOM_BAR_HEIGHT;
             int contentHeight = visibleHeight + maxScroll;
-            int barHeight = Math.max(20, visibleHeight * visibleHeight / contentHeight);
+            int barHeight = Math.max(24, visibleHeight * visibleHeight / contentHeight);
             int barY = topPos + (visibleHeight - barHeight) * scrollOffset / maxScroll;
-            int barX = contentLeft + contentWidth - 3;
-            guiGraphics.fill(barX, topPos, barX + 3, topPos + visibleHeight, 0x33FFFFFF);
-            guiGraphics.fill(barX, barY, barX + 3, barY + barHeight, 0xFFAAAAAA);
+            int barX = contentLeft + contentWidth - 5;
+            // 轨道与滑块都提亮：原来太细太暗，看不出还有内容可滚
+            guiGraphics.fill(barX, topPos + 2, barX + 5, topPos + visibleHeight - 2, 0x44FFFFFF);
+            guiGraphics.fill(barX, barY, barX + 5, barY + barHeight, 0xFFCCCCCC);
+
+            // 未滚到底时，在按钮栏上方画一条渐隐阴影，提示下方还有内容
+            if (scrollOffset < maxScroll) {
+                guiGraphics.fill(leftPos, contentBottom - 6, leftPos + guiWidth, contentBottom, 0x55000000);
+                guiGraphics.fill(leftPos, contentBottom - 3, leftPos + guiWidth, contentBottom, 0x77000000);
+            }
         }
 
         if (statusMessage != null) {
