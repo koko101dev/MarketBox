@@ -28,6 +28,10 @@ final class ConfigScreenState {
         screen.tempMaxPrice = commonDefaults.maxListingPrice;
         screen.tempMaxTx = commonDefaults.maxTransactionAmount;
         screen.tempTransferEnabled = commonDefaults.transferEnabled;
+        screen.tempEnabledDenominations = new java.util.ArrayList<>(
+                commonDefaults.enabledDenominations == null
+                        ? java.util.List.of(0.01, 0.1, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0)
+                        : commonDefaults.enabledDenominations);
 
         screen.tempShowHud = clientDefaults.showHud;
         screen.tempShowMarketPriceTooltip = clientDefaults.showMarketPriceTooltip;
@@ -115,6 +119,10 @@ final class ConfigScreenState {
             if (screen.tempTransferEnabled != screen.savedTransferEnabled) {
                 return true;
             }
+            if (!new java.util.HashSet<>(screen.tempEnabledDenominations)
+                    .equals(new java.util.HashSet<>(screen.savedEnabledDenominations))) {
+                return true;
+            }
         } catch (NumberFormatException ignored) {
         }
 
@@ -177,10 +185,11 @@ final class ConfigScreenState {
                 screen.savedMaxPrice = parseOrDefault(screen.maxPriceBox, screen.savedMaxPrice);
                 screen.savedMaxTx = parseOrDefault(screen.maxTxBox, screen.savedMaxTx);
                 screen.savedTransferEnabled = screen.tempTransferEnabled;
+                screen.savedEnabledDenominations = new java.util.ArrayList<>(screen.tempEnabledDenominations);
                 ClientNetwork.send(new UpdateCommonConfigPacket(
                         rate, interval, parseOrDefault(screen.feeBox, screen.savedMarketFee),
                         (int) screen.savedMaxListings, screen.savedMaxPrice, screen.savedMaxTx,
-                        screen.savedTransferEnabled));
+                        screen.savedTransferEnabled, screen.tempEnabledDenominations));
             } catch (Exception e) {
                 MarketBox.LOGGER.error("Failed to sync config to server", e);
                 screen.showStatus(Component.translatable("gui.marketbox.config.error.network"), true);

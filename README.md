@@ -145,6 +145,7 @@
 | `maxTransactionAmount` | `1000000000` | 单笔存入、取出、转账上限 |
 | `transferEnabled` | `true` | 是否允许玩家之间互相转账 |
 | `listingBlacklist` | `[]` | 禁止上架的物品 ID 列表 |
+| `enabledDenominations` | 全部八种 | 启用的货币面额；禁用的不再发放，已有货币仍可存入 |
 | `marketFeeMode` | `DESTROY` | 手续费去向：`DESTROY` 销毁 / `TREASURY` 进入金库 |
 
 **`marketbox-client.json`**（仅本地生效）

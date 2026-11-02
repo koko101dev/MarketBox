@@ -58,6 +58,11 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
     double tempMaxPrice;
     double tempMaxTx;
     boolean tempTransferEnabled;
+    /** 启用的面额（管理员可勾选），禁用后不再发放该面额 */
+    java.util.List<Double> tempEnabledDenominations = new java.util.ArrayList<>();
+    java.util.List<Double> savedEnabledDenominations = new java.util.ArrayList<>();
+    /** 全部可选面额，从大到小 */
+    static final double[] ALL_DENOMINATIONS = {100, 50, 20, 10, 5, 1, 0.1, 0.01};
     double tempQuick1;
     double tempQuick2;
     double tempQuick3;
@@ -130,6 +135,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         tempMaxPrice = ClientData.getMaxListingPrice();
         tempMaxTx = ClientData.getMaxTransactionAmount();
         tempTransferEnabled = ClientData.isTransferEnabled();
+        tempEnabledDenominations = new java.util.ArrayList<>(ClientData.getEnabledDenominations());
         tempQuick1 = Config.getQuickAmount(1);
         tempQuick2 = Config.getQuickAmount(2);
         tempQuick3 = Config.getQuickAmount(3);
@@ -149,6 +155,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         savedMaxPrice = tempMaxPrice;
         savedMaxTx = tempMaxTx;
         savedTransferEnabled = tempTransferEnabled;
+        savedEnabledDenominations = new java.util.ArrayList<>(tempEnabledDenominations);
         savedQuick1 = tempQuick1;
         savedQuick2 = tempQuick2;
         savedQuick3 = tempQuick3;
@@ -173,8 +180,8 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         int contentRows = 9 + 3;
         int sectionCount = 2;
         if (owner) {
-            contentRows += 2 + 5;   // 利息 2 行 + 市场 5 行
-            sectionCount += 2;
+            contentRows += 2 + 5 + ALL_DENOMINATIONS.length;   // 利息 2 行 + 市场 5 行 + 面额 8 行
+            sectionCount += 3;
         }
         if (owner) {
             contentRows += AdminPanel.rowCount();
@@ -270,6 +277,15 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
             y += rowHeight * AdminPanel.rowCount();
         }
 
+        // === 货币面额（仅服主）：勾选启用的面额 ===
+        if (owner) {
+            y += SECTION_HEADER_HEIGHT;
+            for (double denom : ALL_DENOMINATIONS) {
+                addDenominationToggle(y, denom);
+                y += rowHeight;
+            }
+        }
+
         // === 底部按钮 ===
         int btnY = topPos + guiHeight - BOTTOM_BAR_HEIGHT + 10;
         int btnWidth = 80;
@@ -346,6 +362,25 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
                     this.rebuildWidgets();
                 }, false, currentValue);
         this.addRenderableWidget(toggleBtn);
+    }
+
+    /** 单个面额的启用开关：点击切换，立即反映在 tempEnabledDenominations 上 */
+    private void addDenominationToggle(int y, double denom) {
+        int controlX = contentLeft + contentWidth - PADDING - TOGGLE_WIDTH;
+        int controlCenterY = y + rowHeight / 2 - controlHeight / 2;
+        boolean enabled = tempEnabledDenominations.contains(denom);
+
+        this.addRenderableWidget(new StyledButton(controlX, controlCenterY,
+                TOGGLE_WIDTH, controlHeight,
+                Component.translatable(enabled ? "gui.marketbox.config.on" : "gui.marketbox.config.off"),
+                button -> {
+                    if (tempEnabledDenominations.contains(denom)) {
+                        tempEnabledDenominations.remove(denom);
+                    } else {
+                        tempEnabledDenominations.add(denom);
+                    }
+                    this.rebuildWidgets();
+                }, false, enabled));
     }
 
     private <T extends Enum<T>> void addCycleButton(int y, String configKey, String currentValue, T[] values) {
@@ -500,6 +535,19 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
             for (int i = 0; i < AdminPanel.rowCount(); i++) {
                 ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
                         Component.translatable("gui.marketbox.admin.row" + i), y);
+                y += rowHeight;
+            }
+        }
+
+        // === 货币面额（仅服主）===
+        if (owner) {
+            ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.section.denominations"), y);
+            y += SECTION_HEADER_HEIGHT;
+            for (double denom : ALL_DENOMINATIONS) {
+                ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                        Component.translatable("gui.marketbox.config.denomination",
+                                formatAmount(denom)), y);
                 y += rowHeight;
             }
         }

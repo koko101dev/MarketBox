@@ -129,6 +129,37 @@ public class StressGameTests implements FabricGameTest {
         helper.succeed();
     }
 
+    /**
+     * 禁用某个面额后，发放时不应再拆分出该面额。
+     * 玩家手里已有的旧货币仍可正常识别，只是不再被发放。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 200)
+    public void disabledDenominationIsNotIssued(GameTestHelper helper) {
+        var original = com.koko.marketbox.Config.getEnabledDenominations();
+        try {
+            // 禁用 100 元：取 100 元应由 5 张 20 元凑出
+            com.koko.marketbox.Config.setEnabledDenominations(
+                    java.util.List.of(0.01, 0.1, 1.0, 5.0, 10.0, 20.0, 50.0));
+
+            var breakdown = com.koko.marketbox.util.MoneyUtils.calculateItemBreakdown(100.0);
+            if (breakdown.containsKey(100.0)) {
+                helper.fail("禁用后仍拆出了 100 元面额");
+                return;
+            }
+            int pieces = breakdown.values().stream().mapToInt(Integer::intValue).sum();
+            double total = breakdown.entrySet().stream()
+                    .mapToDouble(e -> e.getKey() * e.getValue()).sum();
+            if (Math.abs(total - 100.0) > 0.001) {
+                helper.fail("拆分总额不正确：" + total);
+                return;
+            }
+            System.out.println("[Stress] 禁用 100 元后拆分结果：" + breakdown + "，共 " + pieces + " 张");
+        } finally {
+            com.koko.marketbox.Config.setEnabledDenominations(original);
+        }
+        helper.succeed();
+    }
+
     /** 一千个玩家的余额数据存读耗时：决定服务器保存时的卡顿程度 */
     @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 1200)
     public void saveAndLoadThousandPlayers(GameTestHelper helper) {

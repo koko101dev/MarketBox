@@ -188,7 +188,8 @@ public final class PlayerEvents {
                 Config.getMaxListingsPerPlayer(),
                 Config.getMaxListingPrice(),
                 Config.getMaxTransactionAmount(),
-                Config.isTransferEnabled()
+                Config.isTransferEnabled(),
+                Config.getEnabledDenominations()
         ));
     }
 

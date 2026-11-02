@@ -41,6 +41,8 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
     private final double maxListingPrice;
     private final double maxTransactionAmount;
     private final boolean transferEnabled;
+    /** 当前启用的面额，管理员界面显示用 */
+    private final java.util.List<Double> enabledDenominations;
     private final List<ItemStack> returnedItems;
     private final List<PlayerBalance.Transaction> transactions;
     /** 分类累计收入/支出（分），供统计页拆分展示 */
@@ -56,7 +58,8 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
                                    java.util.Map<String, Long> expenseByCategory,
                                    int listingExpiryMinutes,
                                    int maxListings, double maxListingPrice,
-                                   double maxTransactionAmount, boolean transferEnabled) {
+                                   double maxTransactionAmount, boolean transferEnabled,
+                                   java.util.List<Double> enabledDenominations) {
         this.balance = balance;
         this.totalInterest = totalInterest;
         this.lastInterestTime = lastInterestTime;
@@ -77,6 +80,7 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         this.maxListingPrice = maxListingPrice;
         this.maxTransactionAmount = maxTransactionAmount;
         this.transferEnabled = transferEnabled;
+        this.enabledDenominations = enabledDenominations;
     }
 
     public SyncPlayerBalancePacket(RegistryFriendlyByteBuf buf) {
@@ -96,6 +100,11 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         this.maxListingPrice = buf.readDouble();
         this.maxTransactionAmount = buf.readDouble();
         this.transferEnabled = buf.readBoolean();
+        int denomCount = buf.readVarInt();
+        this.enabledDenominations = new java.util.ArrayList<>(denomCount);
+        for (int i = 0; i < denomCount; i++) {
+            this.enabledDenominations.add(buf.readDouble());
+        }
 
         int returnedSize = buf.readVarInt();
         this.returnedItems = new ArrayList<>(returnedSize);
@@ -147,6 +156,12 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         buf.writeDouble(maxListingPrice);
         buf.writeDouble(maxTransactionAmount);
         buf.writeBoolean(transferEnabled);
+        java.util.List<Double> denoms = enabledDenominations == null
+                ? java.util.List.of() : enabledDenominations;
+        buf.writeVarInt(denoms.size());
+        for (double d : denoms) {
+            buf.writeDouble(d);
+        }
 
         buf.writeVarInt(returnedItems.size());
         for (ItemStack stack : returnedItems) {
@@ -235,6 +250,10 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
 
     public boolean transferEnabled() {
         return transferEnabled;
+    }
+
+    public java.util.List<Double> enabledDenominations() {
+        return enabledDenominations;
     }
 
     public java.util.Map<String, Long> incomeByCategory() {

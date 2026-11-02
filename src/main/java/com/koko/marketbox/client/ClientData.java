@@ -47,6 +47,8 @@ public class ClientData {
     private static double maxListingPrice = 1_000_000;
     private static double maxTransactionAmount = 1_000_000_000;
     private static boolean transferEnabled = true;
+    private static java.util.List<Double> enabledDenominations =
+            new java.util.ArrayList<>(java.util.List.of(0.01, 0.1, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0));
 
     /** 管理员及以上：可查看经济页、使用管理员操作、看到黑名单入口 */
     public static boolean isAdmin() {
@@ -292,6 +294,14 @@ public class ClientData {
 
     public static boolean isTransferEnabled() {
         return transferEnabled;
+    }
+
+    public static java.util.List<Double> getEnabledDenominations() {
+        return enabledDenominations;
+    }
+
+    public static void setEnabledDenominations(java.util.List<Double> values) {
+        enabledDenominations = values == null ? new java.util.ArrayList<>() : values;
     }
 
     public static void setMarketLimits(int listings, double price, double tx, boolean transfer) {

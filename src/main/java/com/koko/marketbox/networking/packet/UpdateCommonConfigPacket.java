@@ -29,11 +29,13 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
     private final double maxListingPrice;
     private final double maxTransactionAmount;
     private final boolean transferEnabled;
+    private final java.util.List<Double> enabledDenominations;
 
     public UpdateCommonConfigPacket(double interestRate, int interestIntervalMinutes,
                                     double marketFeePercent, int maxListings,
                                     double maxListingPrice, double maxTransactionAmount,
-                                    boolean transferEnabled) {
+                                    boolean transferEnabled,
+                                    java.util.List<Double> enabledDenominations) {
         this.interestRate = interestRate;
         this.interestIntervalMinutes = interestIntervalMinutes;
         this.marketFeePercent = marketFeePercent;
@@ -41,6 +43,7 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
         this.maxListingPrice = maxListingPrice;
         this.maxTransactionAmount = maxTransactionAmount;
         this.transferEnabled = transferEnabled;
+        this.enabledDenominations = enabledDenominations;
     }
 
     public UpdateCommonConfigPacket(RegistryFriendlyByteBuf buf) {
@@ -51,6 +54,11 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
         this.maxListingPrice = buf.readDouble();
         this.maxTransactionAmount = buf.readDouble();
         this.transferEnabled = buf.readBoolean();
+        int denomCount = buf.readVarInt();
+        this.enabledDenominations = new java.util.ArrayList<>(denomCount);
+        for (int i = 0; i < denomCount; i++) {
+            this.enabledDenominations.add(buf.readDouble());
+        }
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
@@ -61,6 +69,12 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
         buf.writeDouble(maxListingPrice);
         buf.writeDouble(maxTransactionAmount);
         buf.writeBoolean(transferEnabled);
+        java.util.List<Double> denoms = enabledDenominations == null
+                ? java.util.List.of() : enabledDenominations;
+        buf.writeVarInt(denoms.size());
+        for (double d : denoms) {
+            buf.writeDouble(d);
+        }
     }
 
     @Override
@@ -109,6 +123,7 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
                 Config.setMaxListingPrice(safePrice);
                 Config.setMaxTransactionAmount(safeTx);
                 Config.setTransferEnabled(payload.transferEnabled);
+                Config.setEnabledDenominations(payload.enabledDenominations);
 
                 for (ServerPlayer p : player.getServer().getPlayerList().getPlayers()) {
                     try {

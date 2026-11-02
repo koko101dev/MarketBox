@@ -60,6 +60,13 @@ public final class Config {
         /** 禁止上架的物品 ID 列表，如 minecraft:spawner */
         public java.util.List<String> listingBlacklist = new java.util.ArrayList<>();
         /**
+         * 启用的货币面额。
+         * 禁用的面额不再被发放（取款、管理员发钱、找零），
+         * 但玩家手里已有的仍可正常存入与统计，不会变成废纸。
+         */
+        public java.util.List<Double> enabledDenominations = new java.util.ArrayList<>(
+                java.util.List.of(0.01, 0.1, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0));
+        /**
          * 手续费去向：
          * TREASURY = 进入市场金库，服主可用 /marketbox treasury withdraw 拨款（默认）
          * DESTROY  = 直接销毁，用于回收货币、抑制通胀
@@ -139,6 +146,21 @@ public final class Config {
     /** 结息周期（分钟），供界面与命令展示 */
     public static int getInterestIntervalMinutes() {
         return common.interestIntervalMinutes;
+    }
+
+    /** 启用的面额列表；空配置时回退到全部面额，避免发不出钱 */
+    public static java.util.List<Double> getEnabledDenominations() {
+        if (common.enabledDenominations == null || common.enabledDenominations.isEmpty()) {
+            return new java.util.ArrayList<>(java.util.List.of(0.01, 0.1, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0));
+        }
+        return new java.util.ArrayList<>(common.enabledDenominations);
+    }
+
+    public static void setEnabledDenominations(java.util.List<Double> values) {
+        common.enabledDenominations = values == null
+                ? new java.util.ArrayList<>()
+                : new java.util.ArrayList<>(values);
+        write(COMMON_PATH, common);
     }
 
     public static int getMaxListingsPerPlayer() {

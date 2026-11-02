@@ -40,12 +40,46 @@ public class MoneyUtils {
     /**
      * 将金额分解为最少数量的货币面值组合
      */
+    /**
+     * 当前启用的面额（面额 -> 物品）。
+     * 发放货币时只看这张表：服主禁用某个面额后，取款与找零不再产生它，
+     * 但 {@link #DENOMINATIONS} 仍保留全部面额，玩家手里的旧货币照常可用。
+     */
+    public static Map<net.minecraft.world.item.Item, Double> activeByItem() {
+        java.util.List<Double> enabled = com.koko.marketbox.Config.getEnabledDenominations();
+        Map<net.minecraft.world.item.Item, Double> map = new java.util.LinkedHashMap<>();
+        for (Map.Entry<Double, net.minecraft.world.item.Item> entry : DENOMINATIONS.entrySet()) {
+            if (enabled.contains(entry.getKey())) {
+                map.put(entry.getValue(), entry.getKey());
+            }
+        }
+        // 极端情况：全部禁用时退回完整列表，否则取款发不出钱
+        if (map.isEmpty()) {
+            DENOMINATIONS.forEach((value, item) -> map.put(item, value));
+        }
+        return map;
+    }
+
+    /** 启用的面额，按面值从大到小 */
+    public static java.util.List<Double> activeValues() {
+        java.util.List<Double> values = new java.util.ArrayList<>();
+        for (Map.Entry<Double, net.minecraft.world.item.Item> entry : DENOMINATIONS.entrySet()) {
+            if (com.koko.marketbox.Config.getEnabledDenominations().contains(entry.getKey())) {
+                values.add(entry.getKey());
+            }
+        }
+        if (values.isEmpty()) {
+            values.addAll(DENOMINATIONS.keySet());
+        }
+        return values;
+    }
+
     public static Map<Double, Integer> calculateItemBreakdown(double amount) {
         Map<Double, Integer> breakdown = new HashMap<>();
         // 使用 long 以避免浮点数精度问题 (以分位单位)
         long remainingCents = Math.round(amount * 100);
 
-        for (double value : DENOMINATIONS.keySet()) {
+        for (double value : activeValues()) {
             long valueCents = Math.round(value * 100);
             if (remainingCents >= valueCents) {
                 int count = (int) (remainingCents / valueCents);

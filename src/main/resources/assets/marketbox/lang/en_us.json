@@ -342,5 +342,7 @@
   "gui.marketbox.config.max_price": "Max listing price",
   "gui.marketbox.config.max_tx": "Max transaction",
   "gui.marketbox.config.transfer_enabled": "Player transfers",
-  "gui.marketbox.config.saved_ok": "Settings saved"
+  "gui.marketbox.config.saved_ok": "Settings saved",
+  "gui.marketbox.config.section.denominations": "Denominations",
+  "gui.marketbox.config.denomination": "%s"
 }
