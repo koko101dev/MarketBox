@@ -73,7 +73,7 @@ public class DepositMoneyPacket implements CustomPacketPayload {
             }
 
             PlayerBalance balance = PlayerBalanceAttachment.get(player);
-            balance.addBalance(cleanAmount, "gui.marketbox.transaction.deposit");
+            balance.moveBalance(cleanAmount, "gui.marketbox.transaction.deposit");
             PlayerEvents.syncPlayerBalance(player);
             player.containerMenu.broadcastChanges();
             ServerEvents.markLeaderboardDirty();

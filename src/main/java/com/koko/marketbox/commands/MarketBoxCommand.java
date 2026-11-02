@@ -281,6 +281,14 @@ public final class MarketBoxCommand {
         balance.setTotalInterest(0);
         balance.resetStatistics();
 
+        // 定期存款的本金来自余额：不清掉的话「清零」之后点一下到期就能把本息全取回来
+        for (var deposit : balance.getFixedDeposits()) {
+            balance.removeFixedDeposit(deposit.id());
+        }
+        // 待领取的市场收益同理，不清会下次上线自动到账
+        MarketManager manager = MarketManager.get(target.serverLevel());
+        manager.claimPendingPayment(target.getUUID());
+
         PlayerEvents.syncPlayerBalance(target);
         ServerEvents.markLeaderboardDirty();
         PlayerEvents.persistPlayer(target);

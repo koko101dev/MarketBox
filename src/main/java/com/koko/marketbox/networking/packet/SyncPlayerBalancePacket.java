@@ -15,6 +15,8 @@ import java.util.List;
  * 仅作数据载体，客户端处理逻辑位于 client 包，避免服务端加载客户端类。
  */
 public class SyncPlayerBalancePacket implements CustomPacketPayload {
+    /** 单包最多携带的退货物品条数：防止把 1MB 的包上限撑爆导致余额同步整体失效 */
+    private static final int MAX_RETURNED_ITEMS = 64;
     public static final CustomPacketPayload.Type<SyncPlayerBalancePacket> ID =
             new CustomPacketPayload.Type<>(MarketBox.id("sync_player_balance"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncPlayerBalancePacket> CODEC =
@@ -118,6 +120,10 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         }
 
         int returnedSize = buf.readVarInt();
+        // 与写入侧上限保持一致：异常条数会让客户端直接分配超大数组
+        if (returnedSize < 0 || returnedSize > MAX_RETURNED_ITEMS) {
+            throw new io.netty.handler.codec.DecoderException("invalid returned item count: " + returnedSize);
+        }
         this.returnedItems = new ArrayList<>(returnedSize);
         for (int i = 0; i < returnedSize; i++) {
             this.returnedItems.add(ItemStack.OPTIONAL_STREAM_CODEC.decode(buf));
@@ -185,9 +191,13 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
             buf.writeVarInt(d.days());
         }
 
-        buf.writeVarInt(returnedItems.size());
-        for (ItemStack stack : returnedItems) {
-            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, stack);
+        // 退货列表会随过期挂单无限累积，全量塞进这个包会撞上 1MB 上限，
+        // 之后该玩家的余额/流水同步会整体失效。限制条数；领取是整批领取，少显示几条不影响拿到
+        List<ItemStack> safeReturned = returnedItems == null ? java.util.List.of() : returnedItems;
+        int returnedCount = Math.min(safeReturned.size(), MAX_RETURNED_ITEMS);
+        buf.writeVarInt(returnedCount);
+        for (int i = 0; i < returnedCount; i++) {
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, safeReturned.get(i));
         }
 
         buf.writeVarInt(transactions.size());

@@ -249,8 +249,10 @@ public final class PlayerEvents {
             return;
         }
         LEADERBOARD_SUBSCRIBERS.add(player.getUUID());
-        // 立刻推一次，打开界面不用等下一轮
-        syncLeaderboard(List.of(player));
+        // 立刻推一次，打开界面不用等下一轮。
+        // 必须传全服在线玩家：只传玩家自己的话，榜单里只有自己一条，要等下一次 tick 才补全。
+        net.minecraft.server.MinecraftServer server = player.getServer();
+        syncLeaderboard(server != null ? server.getPlayerList().getPlayers() : List.of(player));
     }
 
     public static void unsubscribeLeaderboard(ServerPlayer player) {

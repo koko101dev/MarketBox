@@ -41,6 +41,13 @@ public final class ServerEvents {
             // 交易变更合并落盘：最多每 10 秒写一次玩家数据
             if (playerDataDirty && playerPersistCooldown <= 0) {
                 server.getPlayerList().saveAll();
+                // 市场数据是独立的 SavedData，默认只随世界自动保存（约 5 分钟）落盘。
+                // 两边节奏差 30 倍时，崩溃会正好落在窗口之间：买家钱已扣、卖家的待领取款还没写盘。
+                // 这里跟着玩家数据一起写一次，让跨存储的资金与物品搬运保持在同一个窗口内。
+                ServerLevel overworld = server.overworld();
+                if (overworld != null) {
+                    overworld.getDataStorage().save();
+                }
                 playerDataDirty = false;
                 playerPersistCooldown = 200;
             }

@@ -29,7 +29,8 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<BulkListMarketItemPacket> ID =
             new CustomPacketPayload.Type<>(MarketBox.id("bulk_list_market_item"));
 
-    /** 一次最多提交的条数，与单人挂单上限一致 */
+    /** 一次最多提交的条数：比单人挂单上限略宽，解码期就拒绝越界长度 */
+    private static final int MAX_ENTRIES = 64;
 
     public static final StreamCodec<RegistryFriendlyByteBuf, BulkListMarketItemPacket> CODEC =
             StreamCodec.ofMember(BulkListMarketItemPacket::write, BulkListMarketItemPacket::new);
@@ -48,6 +49,11 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
 
     public BulkListMarketItemPacket(RegistryFriendlyByteBuf buf) {
         int size = buf.readVarInt();
+        // 长度前缀完全由客户端控制，且解码早于限流与权限校验：
+        // 不设上限时 new ArrayList<>(Integer.MAX_VALUE) 会直接抛 OutOfMemoryError 打崩服务端
+        if (size < 0 || size > MAX_ENTRIES) {
+            throw new io.netty.handler.codec.DecoderException("invalid bulk entry count: " + size);
+        }
         this.entries = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             ItemStack stack = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
@@ -155,6 +161,10 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
         if (found < quantity) {
             return false;
         }
+        // 单条挂单不能超过该物品的堆叠上限，否则存档编码失败、重启后整条挂单丢失
+        if (quantity > Math.max(1, stack.getMaxStackSize())) {
+            return false;
+        }
 
         // 扣除物品
         int remaining = quantity;
@@ -185,8 +195,7 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
                 0);
         manager.addListing(listing);
 
-        // 记录成交参考价，并广播给全服
-        manager.recordDeal(listedStack, entry.price / quantity);
+        // 上架不是成交，不写成交价：否则挂 1 个物品标天价，全服「最近成交价」立刻被拉到那个数
         ModMessages.sendToAll(player.getServer(), new MarketListingAddedPacket(listing));
         return true;
     }

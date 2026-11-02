@@ -69,9 +69,17 @@ public class CloseFixedDepositPacket implements CustomPacketPayload {
             double payout = payoutCents / 100.0;
 
             balance.removeFixedDeposit(deposit.id());
-            balance.addBalance(payout, matured
+            // 本金是资产形式转换（定期 → 活期余额），只有利息算收入：
+            // 整笔走 addBalance 会让「累计收入」把本金也算成赚到的钱
+            balance.moveBalance(deposit.principalCents() / 100.0, matured
                     ? "gui.marketbox.transaction.fixed_matured"
                     : "gui.marketbox.transaction.fixed_early");
+            if (matured) {
+                long interestCents = deposit.totalCents() - deposit.principalCents();
+                if (interestCents > 0) {
+                    balance.addBalance(interestCents / 100.0, "gui.marketbox.transaction.interest");
+                }
+            }
 
             PlayerEvents.syncPlayerBalance(player);
             ServerEvents.markLeaderboardDirty();

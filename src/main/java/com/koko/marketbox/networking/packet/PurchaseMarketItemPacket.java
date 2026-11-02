@@ -107,12 +107,15 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
                 if (want <= 0) {
                     return;
                 }
+                // 一次交付不超过一个满栈，避免把超过堆叠上限的栈塞进背包（老存档里的异常挂单也能安全买）
+                want = Math.min(want, Math.max(1, listing.item().getMaxStackSize()));
 
                 double unitPrice = listing.price() / available;
+                // 按分取整后夹到挂单总价之内：整组低价挂单（例如 64 个卖 0.20 元）单价不足 1 分，
+                // 直接取整会变成 0，最后几件就永远买不动；这里至少收 1 分，且不超过挂单总价
+                long listingCents = Math.max(1, Math.round(listing.price() * 100));
                 long costCents = Math.round(unitPrice * want * 100);
-                if (costCents <= 0) {
-                    return;
-                }
+                costCents = Math.max(1, Math.min(listingCents, costCents));
                 double cost = costCents / 100.0;
 
                 PlayerBalance buyerBalance = PlayerBalanceAttachment.get(buyer);
@@ -126,8 +129,12 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
                 buyerBalance.addBalance(-cost, "gui.marketbox.transaction.market_buy_prefix:" + itemNameStr + detail);
 
                 // 卖家收款（在线直接到账，离线进入待领取）
-                double fee = cost * Config.getMarketFeePercent() / 100.0;
-                double sellerReceive = cost - fee;
+                // 手续费与卖家实收都以「分」结算，两者相加必须等于买家支出。
+                // 若对 fee 和 sellerReceive 各自四舍五入，特定金额上每笔都会凭空多出 1 分。
+                long feeCents = Math.round(costCents * Config.getMarketFeePercent() / 100.0);
+                feeCents = Math.max(0, Math.min(costCents, feeCents));
+                double fee = feeCents / 100.0;
+                double sellerReceive = (costCents - feeCents) / 100.0;
                 boolean toTreasury = Config.isFeeToTreasury();
                 if (fee > 0 && toTreasury) {
                     manager.addTreasury(fee);
@@ -176,7 +183,7 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
                     manager.clearPurchases(listing.id());
                     ModMessages.sendToAll(buyer.getServer(), new MarketListingRemovedPacket(listing.id()));
                 } else {
-                    MarketListing updated = listing.withRemaining(remaining, listing.price() - cost);
+                    MarketListing updated = listing.withRemaining(remaining, (listingCents - costCents) / 100.0);
                     manager.replaceListing(updated);
                     ModMessages.sendToAll(buyer.getServer(), new MarketListingRemovedPacket(listing.id()));
                     ModMessages.sendToAll(buyer.getServer(), new MarketListingAddedPacket(updated));
@@ -190,7 +197,9 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
                 PlayerEvents.persistPlayer(buyer);
                 ServerEvents.markLeaderboardDirty();
             } catch (Exception e) {
-                MarketBox.LOGGER.error("Purchase failed", e.getClass().getSimpleName());
+                // 带上堆栈：只打类名的话，事后完全无法定位是扣款还是发货阶段出的问题
+                MarketBox.LOGGER.error("Purchase failed: listing={}, buyer={}",
+                        payload.listingId, buyer == null ? "?" : buyer.getUUID(), e);
             }
         });
     }

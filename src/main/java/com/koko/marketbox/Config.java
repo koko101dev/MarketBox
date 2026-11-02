@@ -32,6 +32,9 @@ public final class Config {
         NONE, SHADOW, BACKGROUND
     }
 
+    /** 结息周期上限（分钟）：一年。超过它换算成秒会 int 溢出，周期退化成 60 秒 */
+    public static final int MAX_INTERVAL_MINUTES = 525_600;
+
     /** 服务端权威配置（利息相关） */
     public static final class Common {
         /** 默认 0.05%／期：0.19 会让货币一年膨胀上万倍，不适合长期运营 */
@@ -144,12 +147,15 @@ public final class Config {
 
     /** 结息周期（秒）。配置以分钟存储，这里换算后供内部计算使用 */
     public static int getInterestIntervalSeconds() {
-        return Math.max(60, common.interestIntervalMinutes * 60);
+        // 用 long 换算再裁剪：int 乘法在周期超过约 3571 万分钟时会溢出成负数，
+        // 被 Math.max(60, ...) 兜成 60 秒，等于每分钟复利一次
+        long seconds = (long) getInterestIntervalMinutes() * 60L;
+        return (int) Math.max(60L, Math.min(seconds, Integer.MAX_VALUE));
     }
 
     /** 结息周期（分钟），供界面与命令展示 */
     public static int getInterestIntervalMinutes() {
-        return common.interestIntervalMinutes;
+        return Math.max(1, Math.min(MAX_INTERVAL_MINUTES, common.interestIntervalMinutes));
     }
 
     /** 指定期限的定期日利率（%） */
@@ -258,9 +264,10 @@ public final class Config {
         write(COMMON_PATH, common);
     }
 
-    /** 更新利息参数并立即持久化，供命令与配置包调用 */
+    /** 手续费百分比。写入侧裁到 0-50，读取侧同样裁剪：
+     *  直接改配置文件填成 150 会让卖家倒扣、填成负数等于凭空造币 */
     public static double getMarketFeePercent() {
-        return common.marketFeePercent;
+        return Math.max(0, Math.min(50, common.marketFeePercent));
     }
 
     /** 手续费是否进入金库（否则销毁） */
@@ -275,8 +282,8 @@ public final class Config {
     }
 
     public static void setInterestSettings(double rate, int intervalMinutes) {
-        common.interestRate = rate;
-        common.interestIntervalMinutes = Math.max(1, intervalMinutes);
+        common.interestRate = Math.max(0, Math.min(100, rate));
+        common.interestIntervalMinutes = Math.max(1, Math.min(MAX_INTERVAL_MINUTES, intervalMinutes));
         write(COMMON_PATH, common);
     }
 

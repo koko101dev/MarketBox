@@ -118,6 +118,14 @@ public class ListMarketItemPacket implements CustomPacketPayload {
                 ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.item_not_found"));
                 return;
             }
+            // 单条挂单的物品栈不能超过该物品的堆叠上限：
+            // count 超出 ItemStack.CODEC 的 1..99 范围时编码会失败，存档写入空 tag，
+            // 重启后整条挂单被当作损坏数据跳过，物品等于凭空消失。
+            int maxStack = Math.max(1, payload.item.getMaxStackSize());
+            if (payload.quantity > maxStack) {
+                ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.invalid_quantity"));
+                return;
+            }
 
             int remaining = payload.quantity;
             for (int i = 0; i < player.getInventory().getContainerSize() && remaining > 0; i++) {

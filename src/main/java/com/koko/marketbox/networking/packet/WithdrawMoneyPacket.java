@@ -79,7 +79,7 @@ public class WithdrawMoneyPacket implements CustomPacketPayload {
                         MoneyUtils.formatValue(MoneyUtils.minEnabledDenomination()), true));
                 return;
             }
-            balance.addBalance(-cleanAmount, "gui.marketbox.transaction.withdraw");
+            balance.moveBalance(-cleanAmount, "gui.marketbox.transaction.withdraw");
             MoneyUtils.giveMoneyToInventory(player, cleanAmount);
             PlayerEvents.syncPlayerBalance(player);
             player.containerMenu.broadcastChanges();

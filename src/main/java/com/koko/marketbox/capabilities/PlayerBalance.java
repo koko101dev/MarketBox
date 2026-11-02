@@ -106,6 +106,25 @@ public class PlayerBalance {
         addBalance(amount, "gui.marketbox.transaction.unknown");
     }
 
+    /**
+     * 只在余额与流水之间搬动，不计入累计收入/支出。
+     *
+     * 存取现金是「资产形式转换」，不是赚钱或花钱：走 addBalance 的话，
+     * 反复存取就能把「累计收入」刷到任意高，排行榜的总收入维度直接失真。
+     */
+    public void moveBalance(double amount, String reason) {
+        long cents = Math.round(amount * 100);
+        if (cents == 0) {
+            return;
+        }
+        long current = balanceCents.get();
+        if (cents > 0 && current > Long.MAX_VALUE - cents) {
+            return;
+        }
+        balanceCents.addAndGet(cents);
+        addTransaction(new Transaction(System.currentTimeMillis(), cents / 100.0, reason));
+    }
+
     public double getTotalInterest() {
         return totalInterestCents.get() / 100.0;
     }

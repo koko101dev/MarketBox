@@ -60,6 +60,12 @@ public class UpdateBlacklistPacket implements CustomPacketPayload {
             if (payload.itemId == null || payload.itemId.isBlank()) {
                 return;
             }
+            // 只接受合法的注册表 ID：乱字符串会被写进配置文件，
+            // 之后打开黑名单界面解析失败，整页渲染直接抛异常
+            if (payload.itemId.length() > 128
+                    || net.minecraft.resources.ResourceLocation.tryParse(payload.itemId) == null) {
+                return;
+            }
 
             if (payload.add) {
                 Config.addToBlacklist(payload.itemId);

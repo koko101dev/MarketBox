@@ -88,7 +88,8 @@ public class OpenFixedDepositPacket implements CustomPacketPayload {
             }
 
             double cleanAmount = cents / 100.0;
-            balance.addBalance(-cleanAmount, "gui.marketbox.transaction.fixed_deposit");
+            // 余额 → 定期同样是资产形式转换，不计入累计支出
+            balance.moveBalance(-cleanAmount, "gui.marketbox.transaction.fixed_deposit");
             balance.addFixedDeposit(new FixedDeposit(
                     UUID.randomUUID(),
                     cents,
