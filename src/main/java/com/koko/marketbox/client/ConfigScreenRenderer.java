@@ -94,4 +94,110 @@ final class ConfigScreenRenderer {
                     screen.leftPos + screen.guiWidth, contentBottom, 0x77000000);
         }
     }
+
+    /** 内容区的全部配置行：利息 / HUD / 市场 / 银行 / 管理员 / 货币面额 */
+    private static final int SECTION_HEADER = 28;
+
+    static void renderConfigRows(ConfigScreen screen, GuiGraphics guiGraphics, int startY) {
+        int y = startY;
+        boolean admin = ClientData.isAdmin();
+        boolean owner = ClientData.isOwner();
+        if (admin) {
+            renderSectionHeader(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.section.interest"), y);
+            y += SECTION_HEADER;
+            renderConfigRow(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.interest_rate"), y);
+            y += screen.rowHeight;
+            renderConfigRow(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.interest_interval"), y);
+            y += screen.rowHeight;
+        }
+
+        renderSectionHeader(screen, guiGraphics,
+                Component.translatable("gui.marketbox.config.section.hud"), y);
+        y += SECTION_HEADER;
+        renderConfigRow(screen, guiGraphics,
+                Component.translatable("gui.marketbox.config.show_hud"), y);
+        y += screen.rowHeight;
+        renderConfigRow(screen, guiGraphics,
+                Component.translatable("gui.marketbox.config.show_market_price_tooltip"), y);
+        y += screen.rowHeight;
+        renderConfigRow(screen, guiGraphics,
+                Component.translatable("gui.marketbox.config.hud_position"), y);
+        y += screen.rowHeight;
+        renderConfigRow(screen, guiGraphics,
+                Component.translatable("gui.marketbox.config.hud_text_style"), y);
+        y += screen.rowHeight;
+        renderConfigRow(screen, guiGraphics,
+                Component.translatable("gui.marketbox.config.hud_scale"), y);
+        y += screen.rowHeight;
+        renderConfigRow(screen, guiGraphics,
+                Component.translatable("gui.marketbox.config.hud_x_offset"), y);
+        y += screen.rowHeight;
+        renderConfigRow(screen, guiGraphics,
+                Component.translatable("gui.marketbox.config.hud_y_offset"), y);
+        y += screen.rowHeight;
+        renderConfigRow(screen, guiGraphics,
+                Component.translatable("gui.marketbox.config.disable_menu_blur"), y);
+        y += screen.rowHeight;
+        renderConfigRow(screen, guiGraphics,
+                Component.translatable("gui.marketbox.config.keybind"), y);
+        y += screen.rowHeight;
+
+        if (owner) {
+            renderSectionHeader(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.section.market"), y);
+            y += SECTION_HEADER;
+            renderConfigRow(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.market_fee"), y);
+            y += screen.rowHeight;
+            renderConfigRow(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.max_listings"), y);
+            y += screen.rowHeight;
+            renderConfigRow(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.max_price"), y);
+            y += screen.rowHeight;
+            renderConfigRow(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.max_tx"), y);
+            y += screen.rowHeight;
+            renderConfigRow(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.transfer_enabled"), y);
+            y += screen.rowHeight;
+        }
+
+        renderSectionHeader(screen, guiGraphics,
+                Component.translatable("gui.marketbox.config.section.bank"), y);
+        y += SECTION_HEADER;
+        for (int i = 1; i <= 3; i++) {
+            renderConfigRow(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.quick_amount", String.valueOf(i)), y);
+            y += screen.rowHeight;
+        }
+
+        if (owner) {
+            renderSectionHeader(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.section.admin"), y);
+            y += SECTION_HEADER;
+            for (int i = 0; i < AdminPanel.rowCount(); i++) {
+                renderConfigRow(screen, guiGraphics,
+                        Component.translatable("gui.marketbox.admin.row" + i), y);
+                y += screen.rowHeight;
+            }
+        }
+
+        // === 货币面额（仅服主）===
+        if (owner) {
+            renderSectionHeader(screen, guiGraphics,
+                    Component.translatable("gui.marketbox.config.section.denominations"), y);
+            y += SECTION_HEADER;
+            for (double denom : ConfigScreen.ALL_DENOMINATIONS) {
+                renderConfigRow(screen, guiGraphics,
+                        Component.translatable("gui.marketbox.config.denomination",
+                                ConfigScreen.formatAmount(denom)), y);
+                y += screen.rowHeight;
+            }
+        }
+
+    }
 }

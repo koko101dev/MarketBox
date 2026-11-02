@@ -221,6 +221,7 @@ tasks.register('checkRules') {
     }
 }
 
-// 注意：暂不作为 build 的依赖，因为存量代码里还有一处超 500 行的文件待拆分。
-// 修复后应恢复 dependsOn，让违规直接阻断构建。
+tasks.named('build') {
+    dependsOn 'checkRules'
+}
 

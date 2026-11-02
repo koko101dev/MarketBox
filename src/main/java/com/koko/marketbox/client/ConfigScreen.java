@@ -22,9 +22,9 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
     /** 基准行高，实际使用 rowHeight */
     static final int ROW_HEIGHT = 28;
     private static final int SECTION_HEADER_HEIGHT = 28;
-    private static final int CONTROL_WIDTH = 140;
+    static final int CONTROL_WIDTH = 140;
     private static final int CONTROL_HEIGHT = 20;
-    private static final int TOGGLE_WIDTH = 60;
+    static final int TOGGLE_WIDTH = 60;
     static final int BOTTOM_BAR_HEIGHT = 44;
 
     int guiWidth;
@@ -68,7 +68,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
     double tempQuick3;
 
     // 控件
-    private final List<EditBox> editBoxes = new ArrayList<>();
+    final List<EditBox> editBoxes = new ArrayList<>();
     EditBox interestRateBox;
     EditBox interestIntervalBox;
     EditBox hudScaleBox;
@@ -207,10 +207,10 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         // === 利息设置（仅服主）===
         if (owner) {
             y += SECTION_HEADER_HEIGHT;
-            interestRateBox = createEditBox(y, String.format("%.2f", tempInterestRate),
+            interestRateBox = ConfigScreenWidgets.createEditBox(this, y, String.format("%.2f", tempInterestRate),
                     s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
             y += rowHeight;
-            interestIntervalBox = createEditBox(y, String.valueOf(tempInterestIntervalMinutes),
+            interestIntervalBox = ConfigScreenWidgets.createEditBox(this, y, String.valueOf(tempInterestIntervalMinutes),
                     s -> s.isEmpty() || s.matches("\\d+"));
             y += rowHeight;
         }
@@ -225,13 +225,13 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         y += rowHeight;
         addCycleButton(y, "hudTextStyle", tempHudTextStyle.name(), Config.HudTextStyle.values());
         y += rowHeight;
-        hudScaleBox = createEditBox(y, String.format("%.1f", tempHudScale),
+        hudScaleBox = ConfigScreenWidgets.createEditBox(this, y, String.format("%.1f", tempHudScale),
                 s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,1})?"));
         y += rowHeight;
-        hudXOffsetBox = createEditBox(y, String.valueOf(tempHudXOffset),
+        hudXOffsetBox = ConfigScreenWidgets.createEditBox(this, y, String.valueOf(tempHudXOffset),
                 s -> s.isEmpty() || s.matches("-?\\d+"));
         y += rowHeight;
-        hudYOffsetBox = createEditBox(y, String.valueOf(tempHudYOffset),
+        hudYOffsetBox = ConfigScreenWidgets.createEditBox(this, y, String.valueOf(tempHudYOffset),
                 s -> s.isEmpty() || s.matches("-?\\d+"));
         y += rowHeight;
         addToggleButtons(y, "disableMenuBlur", tempDisableMenuBlur);
@@ -242,16 +242,16 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         // === 市场设置（仅服主）===
         if (owner) {
             y += SECTION_HEADER_HEIGHT;
-            feeBox = createEditBox(y, String.format("%.2f", tempMarketFee),
+            feeBox = ConfigScreenWidgets.createEditBox(this, y, String.format("%.2f", tempMarketFee),
                     s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
             y += rowHeight;
-            maxListingsBox = createEditBox(y, String.valueOf((int) tempMaxListings),
+            maxListingsBox = ConfigScreenWidgets.createEditBox(this, y, String.valueOf((int) tempMaxListings),
                     s -> s.isEmpty() || s.matches("\\d{0,3}"));
             y += rowHeight;
-            maxPriceBox = createEditBox(y, formatAmount(tempMaxPrice),
+            maxPriceBox = ConfigScreenWidgets.createEditBox(this, y, formatAmount(tempMaxPrice),
                     s -> s.isEmpty() || s.matches("\\d{0,12}"));
             y += rowHeight;
-            maxTxBox = createEditBox(y, formatAmount(tempMaxTx),
+            maxTxBox = ConfigScreenWidgets.createEditBox(this, y, formatAmount(tempMaxTx),
                     s -> s.isEmpty() || s.matches("\\d{0,12}"));
             y += rowHeight;
             addToggleButtons(y, "transferEnabled", tempTransferEnabled);
@@ -260,11 +260,11 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
 
         // === 银行设置：快捷金额三档（第四个按钮固定为「全部」）===
         y += SECTION_HEADER_HEIGHT;
-        quick1Box = createEditBox(y, formatAmount(tempQuick1), s -> s.isEmpty() || s.matches("\\d+"));
+        quick1Box = ConfigScreenWidgets.createEditBox(this, y, formatAmount(tempQuick1), s -> s.isEmpty() || s.matches("\\d+"));
         y += rowHeight;
-        quick2Box = createEditBox(y, formatAmount(tempQuick2), s -> s.isEmpty() || s.matches("\\d+"));
+        quick2Box = ConfigScreenWidgets.createEditBox(this, y, formatAmount(tempQuick2), s -> s.isEmpty() || s.matches("\\d+"));
         y += rowHeight;
-        quick3Box = createEditBox(y, formatAmount(tempQuick3), s -> s.isEmpty() || s.matches("\\d+"));
+        quick3Box = ConfigScreenWidgets.createEditBox(this, y, formatAmount(tempQuick3), s -> s.isEmpty() || s.matches("\\d+"));
         y += rowHeight;
 
         // === 管理员操作（仅服主）：等价于 /marketbox set|add|reset ===
@@ -281,7 +281,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         if (owner) {
             y += SECTION_HEADER_HEIGHT;
             for (double denom : ALL_DENOMINATIONS) {
-                addDenominationToggle(y, denom);
+                ConfigScreenWidgets.addDenominationToggle(this, y, denom);
                 y += rowHeight;
             }
         }
@@ -321,6 +321,16 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
                 CONTROL_WIDTH, controlHeight));
     }
 
+    /** 供拆出去的工具类取字体（font 为 protected） */
+    net.minecraft.client.gui.Font font() {
+        return this.font;
+    }
+
+    /** 供拆出去的工具类登记控件（addRenderableWidget 为 protected） */
+    void registerWidget(net.minecraft.client.gui.components.AbstractWidget widget) {
+        this.addRenderableWidget(widget);
+    }
+
     /** 供 ConfigKeyBind 触发布局刷新（rebuildWidgets 为 protected） */
     void refreshWidgets() {
         this.rebuildWidgets();
@@ -332,19 +342,6 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    private EditBox createEditBox(int y, String defaultValue, Predicate<String> filter) {
-        int controlX = contentLeft + contentWidth - PADDING - CONTROL_WIDTH;
-        int controlCenterY = y + rowHeight / 2 - controlHeight / 2;
-        EditBox box = new EditBox(this.font, controlX, controlCenterY, CONTROL_WIDTH, controlHeight, Component.empty());
-        box.setMaxLength(10);
-        box.setFilter(filter);
-        box.setValue(defaultValue);
-        box.setCanLoseFocus(true);
-        this.addRenderableWidget(box);
-        editBoxes.add(box);
-        return box;
     }
 
     private void addToggleButtons(int y, String configKey, boolean currentValue) {
@@ -362,25 +359,6 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
                     this.rebuildWidgets();
                 }, false, currentValue);
         this.addRenderableWidget(toggleBtn);
-    }
-
-    /** 单个面额的启用开关：点击切换，立即反映在 tempEnabledDenominations 上 */
-    private void addDenominationToggle(int y, double denom) {
-        int controlX = contentLeft + contentWidth - PADDING - TOGGLE_WIDTH;
-        int controlCenterY = y + rowHeight / 2 - controlHeight / 2;
-        boolean enabled = tempEnabledDenominations.contains(denom);
-
-        this.addRenderableWidget(new StyledButton(controlX, controlCenterY,
-                TOGGLE_WIDTH, controlHeight,
-                Component.translatable(enabled ? "gui.marketbox.config.on" : "gui.marketbox.config.off"),
-                button -> {
-                    if (tempEnabledDenominations.contains(denom)) {
-                        tempEnabledDenominations.remove(denom);
-                    } else {
-                        tempEnabledDenominations.add(denom);
-                    }
-                    this.rebuildWidgets();
-                }, false, enabled));
     }
 
     private <T extends Enum<T>> void addCycleButton(int y, String configKey, String currentValue, T[] values) {
@@ -414,7 +392,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
     }
 
     /** 整数金额显示为无小数点；输入非法时回落到原值 */
-    private static String formatAmount(double value) {
+    static String formatAmount(double value) {
         return value == Math.floor(value) ? String.valueOf((long) value) : String.format("%.2f", value);
     }
 
@@ -453,104 +431,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
 
         int y = topPos + PADDING - scrollOffset;
 
-        boolean admin = ClientData.isAdmin();
-        boolean owner = ClientData.isOwner();
-        if (admin) {
-            ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.section.interest"), y);
-            y += SECTION_HEADER_HEIGHT;
-            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.interest_rate"), y);
-            y += rowHeight;
-            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.interest_interval"), y);
-            y += rowHeight;
-        }
-
-        ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.section.hud"), y);
-        y += SECTION_HEADER_HEIGHT;
-        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.show_hud"), y);
-        y += rowHeight;
-        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.show_market_price_tooltip"), y);
-        y += rowHeight;
-        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.hud_position"), y);
-        y += rowHeight;
-        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.hud_text_style"), y);
-        y += rowHeight;
-        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.hud_scale"), y);
-        y += rowHeight;
-        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.hud_x_offset"), y);
-        y += rowHeight;
-        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.hud_y_offset"), y);
-        y += rowHeight;
-        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.disable_menu_blur"), y);
-        y += rowHeight;
-        ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.keybind"), y);
-        y += rowHeight;
-
-        if (owner) {
-            ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.section.market"), y);
-            y += SECTION_HEADER_HEIGHT;
-            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.market_fee"), y);
-            y += rowHeight;
-            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.max_listings"), y);
-            y += rowHeight;
-            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.max_price"), y);
-            y += rowHeight;
-            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.max_tx"), y);
-            y += rowHeight;
-            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.transfer_enabled"), y);
-            y += rowHeight;
-        }
-
-        ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
-                Component.translatable("gui.marketbox.config.section.bank"), y);
-        y += SECTION_HEADER_HEIGHT;
-        for (int i = 1; i <= 3; i++) {
-            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.quick_amount", String.valueOf(i)), y);
-            y += rowHeight;
-        }
-
-        if (owner) {
-            ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.section.admin"), y);
-            y += SECTION_HEADER_HEIGHT;
-            for (int i = 0; i < AdminPanel.rowCount(); i++) {
-                ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                        Component.translatable("gui.marketbox.admin.row" + i), y);
-                y += rowHeight;
-            }
-        }
-
-        // === 货币面额（仅服主）===
-        if (owner) {
-            ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
-                    Component.translatable("gui.marketbox.config.section.denominations"), y);
-            y += SECTION_HEADER_HEIGHT;
-            for (double denom : ALL_DENOMINATIONS) {
-                ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
-                        Component.translatable("gui.marketbox.config.denomination",
-                                formatAmount(denom)), y);
-                y += rowHeight;
-            }
-        }
+        ConfigScreenRenderer.renderConfigRows(this, guiGraphics, topPos + PADDING - scrollOffset);
 
         // 内容区的控件也要裁剪：否则滚动时输入框会盖在底栏上。
         // 先只渲染非底栏控件，再单独渲染底栏。
