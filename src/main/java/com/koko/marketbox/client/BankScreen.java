@@ -23,7 +23,7 @@ import java.util.List;
 public class BankScreen extends Screen implements FeedbackReceiver {
 
     private static final int PADDING = 12;
-    private static final int CARD_HEIGHT = 92;
+    private static final int CARD_HEIGHT = 104;
     private static final int BUTTON_HEIGHT = 22;
     private static final int HISTORY_ROW = 12;
 
@@ -59,7 +59,8 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         int left = contentLeft + ((this.width - navWidth) - contentWidth) / 2;
         this.cardTop = 42;
         this.buttonTop = cardTop + CARD_HEIGHT + 12;
-        this.historyTop = buttonTop + BUTTON_HEIGHT + 22;
+        this.historyTop = buttonTop + BUTTON_HEIGHT
+                + (mode == Mode.NONE ? 22 : 48);
 
         Sidebar.buttons(this, Sidebar.Page.BANK).forEach(this::addRenderableWidget);
 
@@ -111,7 +112,8 @@ public class BankScreen extends Screen implements FeedbackReceiver {
                         quickW, BUTTON_HEIGHT, Component.literal(labels[i]),
                         b -> applyQuick(preset)));
             }
-            this.addRenderableWidget(new StyledButton(left + contentWidth - 64, rowY,
+            int cancelX = quickX + 4 * (quickW + 4) + 10;
+            this.addRenderableWidget(new StyledButton(cancelX, rowY,
                     64, BUTTON_HEIGHT, Component.translatable("gui.cancel"),
                     b -> switchMode(Mode.NONE)));
         }
@@ -225,16 +227,16 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         int textLeft = avatarX + avatarSize + 14;
 
         if (player != null) {
-            guiGraphics.drawString(font, player.getName(), textLeft, top + 8, 0xDDDDDD, false);
+            guiGraphics.drawString(font, player.getName(), textLeft, top + 10, 0xDDDDDD, false);
         }
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.balance.label"),
-                textLeft, top + 20, 0x777777, false);
+                textLeft, top + 24, 0x777777, false);
 
         // 余额放大两倍：整页最该被一眼看到的就是这个数字
         String amount = "¥ " + MoneyUtils.formatValue(ClientData.getPlayerBalance());
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(2.0f, 2.0f, 1.0f);
-        guiGraphics.drawString(font, amount, textLeft / 2, (top + 26) / 2, 0x55FF55, false);
+        guiGraphics.drawString(font, amount, textLeft / 2, (top + 38) / 2, 0x55FF55, false);
         guiGraphics.pose().popPose();
 
         // 左下：活期利率与年化
@@ -242,7 +244,7 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         double annual = (Math.pow(1 + dailyRate / 100.0, 365) - 1) * 100;
         String rateLine = Component.translatable("gui.marketbox.balance.rate_line",
                 String.format("%.2f", dailyRate), String.format("%.1f", annual)).getString();
-        guiGraphics.drawString(font, rateLine, textLeft, top + 70, 0x888888, false);
+        guiGraphics.drawString(font, rateLine, textLeft, top + 82, 0x888888, false);
 
         // 右下：下次结息倒计时
         long lastTime = ClientData.getLastInterestTime();
@@ -251,7 +253,7 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         String countdown = formatCountdown(remain);
         String label = Component.translatable("gui.marketbox.balance.next", countdown).getString();
         guiGraphics.drawString(font, label,
-                left + w - font.width(label) - 14, top + 66, 0x55FFFF, false);
+                left + w - font.width(label) - 14, top + 82, 0x55FFFF, false);
 
         // 右上：累计利息
         String total = Component.translatable("gui.marketbox.balance.total_interest",
