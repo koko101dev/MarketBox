@@ -31,6 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class PlayerEvents {
     private static final Map<UUID, Double> LAST_SYNCED_TOTAL = new ConcurrentHashMap<>();
+    /** 上次同步给客户端的权限等级，用于检测 /op、/deop 之类的变更 */
+    private static final Map<UUID, Integer> LAST_PERMISSION = new ConcurrentHashMap<>();
+
     /** 正在查看排行榜界面的玩家：只给他们推送榜单，避免全服广播 */
     private static final java.util.Set<UUID> LEADERBOARD_SUBSCRIBERS =
             java.util.concurrent.ConcurrentHashMap.newKeySet();
@@ -45,6 +48,7 @@ public final class PlayerEvents {
             com.koko.marketbox.networking.PacketRateLimiter.forget(handler.getPlayer().getUUID());
             LAST_SYNCED_TOTAL.remove(handler.getPlayer().getUUID());
             LEADERBOARD_SUBSCRIBERS.remove(handler.getPlayer().getUUID());
+            LAST_PERMISSION.remove(handler.getPlayer().getUUID());
             ServerEvents.markLeaderboardDirty();
         });
 
@@ -54,6 +58,32 @@ public final class PlayerEvents {
                 tickPlayer(player);
             }
         });
+    }
+
+    /** 把当前权限等级（及管理员的黑名单）推给客户端 */
+    public static void syncAdminStatus(ServerPlayer player) {
+        int level = currentPermissionLevel(player);
+        LAST_PERMISSION.put(player.getUUID(), level);
+        ModMessages.sendToPlayer(player, new SyncAdminStatusPacket(level));
+        if (level >= 2) {
+            ModMessages.sendToPlayer(player,
+                    new com.koko.marketbox.networking.packet.SyncBlacklistPacket(Config.getListingBlacklist()));
+        }
+    }
+
+    /**
+     * 定期检查权限是否变化。
+     * 单人游戏 /op、服务器控制台 op 都不会触发任何事件，
+     * 不同步的话客户端界面要等重连才更新。
+     */
+    public static void checkPermissionChanges(net.minecraft.server.MinecraftServer server) {
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            int current = currentPermissionLevel(player);
+            Integer last = LAST_PERMISSION.get(player.getUUID());
+            if (last == null || last != current) {
+                syncAdminStatus(player);
+            }
+        }
     }
 
     /** 读取玩家实际权限等级，用于客户端按级别显示设置项 */
@@ -75,13 +105,7 @@ public final class PlayerEvents {
         }
 
         // 同步管理员权限，客户端据此决定设置界面显示哪些项
-        ModMessages.sendToPlayer(player, new SyncAdminStatusPacket(currentPermissionLevel(player)));
-
-        // 管理员额外收到上架黑名单，用于黑名单界面
-        if (player.hasPermissions(2)) {
-            ModMessages.sendToPlayer(player,
-                    new com.koko.marketbox.networking.packet.SyncBlacklistPacket(Config.getListingBlacklist()));
-        }
+        syncAdminStatus(player);
 
         checkAndApplyInterest(player);
 

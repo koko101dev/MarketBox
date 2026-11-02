@@ -18,8 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class PacketRateLimiter {
 
-    /** 同一玩家两次敏感操作的最小间隔 */
-    private static final long MIN_INTERVAL_MS = 80;
+    /**
+     * 同一玩家两次敏感操作的最小间隔。
+     * 80ms 在局域网（延迟接近 0）下会吞掉快速双击的第二下，
+     * 放宽到 120ms 仍然远低于恶意客户端的请求频率，但不影响正常操作。
+     */
+    private static final long MIN_INTERVAL_MS = 120;
 
     private static final Map<UUID, Long> LAST_ACTION = new ConcurrentHashMap<>();
 

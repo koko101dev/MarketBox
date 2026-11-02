@@ -45,6 +45,11 @@ public final class ServerEvents {
                 playerPersistCooldown = 200;
             }
 
+            // 每 600 tick（30 秒）对比一次权限：/op、/deop 不会触发事件，只能轮询
+            if (server.getTickCount() % 600 == 0) {
+                PlayerEvents.checkPermissionChanges(server);
+            }
+
             // 每 100 tick（5 秒）扫描一次过期挂单
             if (server.getTickCount() % 100 == 0) {
                 ServerLevel overworld = server.overworld();
