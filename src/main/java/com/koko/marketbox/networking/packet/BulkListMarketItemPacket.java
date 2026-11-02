@@ -113,8 +113,8 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
                 if (listed > 0) {
                     PlayerEventsFacade.syncAndPersist(player);
                     String detail = listed + (failed > 0 ? (" / " + (listed + failed)) : "");
-                    ModMessages.sendToPlayer(player, new ActionFeedbackPacket(
-                            "gui.marketbox.market.bulk_done", detail, false));
+                    ModMessages.sendToPlayer(player, ActionFeedbackPacket.success(
+                            "gui.marketbox.market.bulk_done", detail));
                 } else {
                     ModMessages.sendToPlayer(player,
                             new ActionFeedbackPacket("gui.marketbox.market.bulk_all_failed"));

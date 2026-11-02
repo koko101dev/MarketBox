@@ -22,8 +22,22 @@ public class ActionFeedbackPacket implements CustomPacketPayload {
     private final boolean error;
 
     /** 错误提示：兼容既有的单参调用 */
+    /**
+     * 单参数构造默认按「错误」处理：绝大多数的单参数调用都是失败提示，
+     * 默认成功会导致真正的错误被显示成绿色。成功提示请用 {@link #success}。
+     */
     public ActionFeedbackPacket(String messageKey) {
         this(messageKey, "", true);
+    }
+
+    /** 成功提示：绿色样式 */
+    public static ActionFeedbackPacket success(String messageKey) {
+        return new ActionFeedbackPacket(messageKey, "", false);
+    }
+
+    /** 带参数的成功提示 */
+    public static ActionFeedbackPacket success(String messageKey, String arg) {
+        return new ActionFeedbackPacket(messageKey, arg, false);
     }
 
     public ActionFeedbackPacket(String messageKey, String arg, boolean error) {

@@ -119,7 +119,7 @@ public class UpdateCommonConfigPacket implements CustomPacketPayload {
                 }
                 ServerEvents.markLeaderboardDirty();
                 ModMessages.sendToPlayer(player,
-                        new ActionFeedbackPacket("gui.marketbox.config.saved_ok"));
+                        ActionFeedbackPacket.success("gui.marketbox.config.saved_ok"));
             } catch (Exception e) {
                 MarketBox.LOGGER.error("Failed to update common config", e);
             }
