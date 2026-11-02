@@ -142,7 +142,8 @@ public final class PlayerEvents {
                 returnedItems,
                 balance.getTransactions(),
                 balance.getIncomeByCategory(),
-                balance.getExpenseByCategory()
+                balance.getExpenseByCategory(),
+                Config.getListingExpiryMinutes()
         ));
     }
 

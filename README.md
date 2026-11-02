@@ -105,6 +105,7 @@
 /marketbox economy                           经济概览（等级 2）
 /marketbox treasury                          查看市场金库（所有人）
 /marketbox treasury withdraw <玩家> <金额>    金库拨款（等级 4）
+/marketbox listingexpiry [分钟]              查看或设置挂单有效期（等级 4）
 /marketbox set <玩家> <金额>                 设置余额（等级 4）
 /marketbox add <玩家> <金额>                 增加余额（等级 4）
 /marketbox reset <玩家>                      清零余额与统计（等级 4）
@@ -128,6 +129,7 @@
 | `interestRate` | `0.05` | 每周期利息百分比 |
 | `interestIntervalMinutes` | `1440` | 结息周期（分钟），默认一天 |
 | `marketFeePercent` | `2.0` | 市场成交手续费（%），从卖家实收中扣除 |
+| `listingExpiryMinutes` | `120` | 挂单有效期（分钟），服主统一设定，玩家不可选 |
 | `marketFeeMode` | `DESTROY` | 手续费去向：`DESTROY` 销毁 / `TREASURY` 进入金库 |
 
 **`marketbox-client.json`**（仅本地生效）
@@ -144,6 +146,9 @@
 > 早期版本用 `0.19% / 30 分钟`，复利会让货币一年膨胀上万倍，已不再推荐。
 >
 > **升级注意**：结息周期的字段已从 `interestIntervalSeconds`（秒）改为 `interestIntervalMinutes`（分钟）。
+
+> 挂单有效期由服主统一设定，玩家不能自行选择。若交给玩家决定，所有人都会选最长档，
+> 市场会被长期挂单占满，新挂单很难被看到。默认 120 分钟，可用 `/marketbox listingexpiry` 调整。
 > 旧配置不会自动转换，会在启动时回落到默认值（1440 分钟）。可在设置页点「恢复默认」或手动修改。
 >
 > `marketFeeMode` 只能通过配置文件修改——不放进游戏内设置，是为了避免多个管理员互相把手续费改成给自己。

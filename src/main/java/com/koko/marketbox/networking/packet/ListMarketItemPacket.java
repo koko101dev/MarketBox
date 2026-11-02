@@ -1,5 +1,6 @@
 package com.koko.marketbox.networking.packet;
 
+import com.koko.marketbox.Config;
 import com.koko.marketbox.MarketBox;
 import com.koko.marketbox.market.MarketListing;
 import com.koko.marketbox.market.MarketManager;
@@ -88,12 +89,8 @@ public class ListMarketItemPacket implements CustomPacketPayload {
                 ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.invalid_quantity"));
                 return;
             }
-            // 界面档位为 30/60/180/360 分钟，上限必须与之对齐，
-            // 否则选 3 小时、6 小时会直接报「时长无效」
-            if (payload.expiryMinutes <= 0 || payload.expiryMinutes > 360) {
-                ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.invalid_duration"));
-                return;
-            }
+            // 时长由服主统一设定，客户端传来的值一律忽略
+            int expiryMinutes = Config.getListingExpiryMinutes();
             MarketManager manager = MarketManager.get(player.serverLevel());
             if (manager.countBySeller(player.getUUID()) >= MAX_LISTINGS_PER_PLAYER) {
                 ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.too_many_listings"));

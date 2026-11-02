@@ -35,6 +35,7 @@ public final class ClientPacketHandlers {
                     ClientData.setTransactions(payload.transactions());
 
                     ClientData.setCategoryTotals(payload.incomeByCategory(), payload.expenseByCategory());
+                    ClientData.setListingExpiryMinutes(payload.listingExpiryMinutes());
                 }));
 
         ClientPlayNetworking.registerGlobalReceiver(SyncLeaderboardPacket.ID, (payload, context) ->

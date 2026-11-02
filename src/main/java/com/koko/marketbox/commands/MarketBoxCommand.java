@@ -110,6 +110,23 @@ public final class MarketBoxCommand {
                                                         EntityArgument.getPlayer(context, "target"),
                                                         DoubleArgumentType.getDouble(context, "amount")))))))
 
+                .then(Commands.literal("listingexpiry")
+                        .requires(OWNER_ONLY)
+                        .executes(context -> {
+                            int current = Config.getListingExpiryMinutes();
+                            context.getSource().sendSuccess(() -> Component.translatable(
+                                    "commands.marketbox.listingexpiry.query", current), false);
+                            return 1;
+                        })
+                        .then(Commands.argument("minutes", com.mojang.brigadier.arguments.IntegerArgumentType.integer(5, 1440))
+                                .executes(context -> {
+                                    int minutes = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "minutes");
+                                    Config.setListingExpiryMinutes(minutes);
+                                    context.getSource().sendSuccess(() -> Component.translatable(
+                                            "commands.marketbox.listingexpiry.set", Config.getListingExpiryMinutes()), true);
+                                    return 1;
+                                })))
+
                 .then(Commands.literal("help")
                         .executes(context -> showHelp(context.getSource())))
 

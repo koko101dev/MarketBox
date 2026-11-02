@@ -311,5 +311,8 @@
   "gui.marketbox.market.bulk_nothing_selected": "Tick at least one item first",
   "gui.marketbox.market.bulk_invalid_input": "Quantity or price is invalid",
   "gui.marketbox.market.bulk_skipped": "%s item(s) had invalid quantity or price, submission cancelled",
-  "gui.marketbox.market.bulk_row_invalid": "Row %s has invalid quantity or price"
+  "gui.marketbox.market.bulk_row_invalid": "Row %s has invalid quantity or price",
+  "gui.marketbox.market.expiry_fixed": "Duration %s min (server setting)",
+  "commands.marketbox.listingexpiry.query": "Listing duration is %s minutes (server-wide)",
+  "commands.marketbox.listingexpiry.set": "Listing duration set to %s minutes"
 }

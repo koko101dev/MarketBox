@@ -33,6 +33,36 @@ public class MarketDataGameTests implements FabricGameTest {
     }
 
     /**
+     * 挂单时长必须是服主配置值，且被裁剪到合理区间。
+     * 交给玩家自选时所有人都会选最长档，市场会被长期挂单占满。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 200)
+    public void listingDurationComesFromConfig(GameTestHelper helper) {
+        int original = com.koko.marketbox.Config.getListingExpiryMinutes();
+        try {
+            com.koko.marketbox.Config.setListingExpiryMinutes(240);
+            if (com.koko.marketbox.Config.getListingExpiryMinutes() != 240) {
+                helper.fail("设置 240 分钟后读取不一致");
+                return;
+            }
+            // 超出上限应被裁剪
+            com.koko.marketbox.Config.setListingExpiryMinutes(99999);
+            if (com.koko.marketbox.Config.getListingExpiryMinutes() != 1440) {
+                helper.fail("上限裁剪失败，实际 " + com.koko.marketbox.Config.getListingExpiryMinutes());
+                return;
+            }
+            com.koko.marketbox.Config.setListingExpiryMinutes(1);
+            if (com.koko.marketbox.Config.getListingExpiryMinutes() != 5) {
+                helper.fail("下限裁剪失败，实际 " + com.koko.marketbox.Config.getListingExpiryMinutes());
+                return;
+            }
+        } finally {
+            com.koko.marketbox.Config.setListingExpiryMinutes(original);
+        }
+        helper.succeed();
+    }
+
+    /**
      * 挂单价格必须是总价，单价 = 总价 / 数量。
      * 批量上架曾经把单价当总价提交，导致买家以 1/N 的价格买走整组物品。
      */

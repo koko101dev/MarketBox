@@ -44,6 +44,12 @@ public final class Config {
         /** 市场成交手续费百分比（0-100），从卖家实收中扣除 */
         public double marketFeePercent = 2.0;
         /**
+         * 挂单有效期（分钟），由服主统一设定，客户端不可选。
+         * 若交给玩家选择，所有人都会选最长档，市场会被长期挂单占满。
+         * 默认 120 分钟（2 小时）。
+         */
+        public int listingExpiryMinutes = 120;
+        /**
          * 手续费去向：
          * TREASURY = 进入市场金库，服主可用 /marketbox treasury withdraw 拨款（默认）
          * DESTROY  = 直接销毁，用于回收货币、抑制通胀
@@ -123,6 +129,17 @@ public final class Config {
     /** 结息周期（分钟），供界面与命令展示 */
     public static int getInterestIntervalMinutes() {
         return common.interestIntervalMinutes;
+    }
+
+    /** 挂单有效期（分钟），服务端权威，客户端只做展示 */
+    public static int getListingExpiryMinutes() {
+        return Math.max(5, Math.min(1440, common.listingExpiryMinutes));
+    }
+
+    /** 更新挂单有效期并落盘；裁剪到 5~1440 分钟 */
+    public static void setListingExpiryMinutes(int minutes) {
+        common.listingExpiryMinutes = Math.max(5, Math.min(1440, minutes));
+        write(COMMON_PATH, common);
     }
 
     /** 更新利息参数并立即持久化，供命令与配置包调用 */

@@ -39,10 +39,8 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
     private int contentLeft;
     private int contentWidth;
     private int listTop;
-    private int expiryMinutes = 60;
     /** 勾选的物品 ID 集合：界面重建后据此恢复勾选状态，避免填了一半全被清空 */
     private final java.util.Set<String> selectedItems = new java.util.HashSet<>();
-    private StyledButton expiryButton;
     /** 本地校验提示：未勾选、数量或价格无效时给出反馈 */
     private final Toast toast = new Toast();
 
@@ -101,27 +99,12 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
         buildRowWidgets();
 
         int bottomY = this.height - PADDING - 20;
-        this.expiryButton = new StyledButton(contentLeft + PADDING, bottomY, 90, 20,
-                expiryLabel(), b -> {
-            expiryMinutes = switch (expiryMinutes) {
-                case 30 -> 60;
-                case 60 -> 180;
-                case 180 -> 360;
-                default -> 30;
-            };
-            expiryButton.setMessage(expiryLabel());
-        });
-        this.addRenderableWidget(expiryButton);
 
         this.addRenderableWidget(new StyledButton(this.width - PADDING - 90, bottomY, 90, 20,
                 Component.translatable("gui.marketbox.market.bulk_submit"), b -> submit()));
         // 叫「返回」而不是「完成」：这个按钮只关窗口，不做提交
         this.addRenderableWidget(new StyledButton(this.width - PADDING - 90 - 64, bottomY, 60, 20,
                 Component.translatable("gui.marketbox.market.bulk_back"), b -> this.onClose()));
-    }
-
-    private Component expiryLabel() {
-        return Component.translatable("gui.marketbox.market.bulk_expiry", expiryMinutes);
     }
 
     /** 收集背包里可卖的物品，同类合并，按数量排序后取前若干条 */
@@ -259,9 +242,13 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
+        guiGraphics.drawString(font,
+                Component.translatable("gui.marketbox.market.expiry_fixed", ClientData.getListingExpiryMinutes()),
+                contentLeft + PADDING, this.height - PADDING - 14, 0x777777, false);
+
         String summary = Component.translatable("gui.marketbox.market.bulk_summary",
                 selectedCount(), MoneyUtils.formatValue(selectedTotal())).getString();
-        guiGraphics.drawString(font, summary, contentLeft + PADDING + 100,
+        guiGraphics.drawString(font, summary, contentLeft + PADDING + 140,
                 this.height - PADDING - 14, 0xAAAAAA, false);
 
         toast.render(guiGraphics, this.width, this.height);
@@ -333,7 +320,7 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
             toast.show(Component.translatable("gui.marketbox.market.bulk_row_invalid", invalidIndex + 1), true);
             return;
         }
-        ClientNetwork.send(new BulkListMarketItemPacket(entries, expiryMinutes));
+        ClientNetwork.send(new BulkListMarketItemPacket(entries, ClientData.getListingExpiryMinutes()));
         Minecraft.getInstance().setScreen(parent);
     }
 

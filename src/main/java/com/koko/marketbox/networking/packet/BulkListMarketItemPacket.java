@@ -1,5 +1,6 @@
 package com.koko.marketbox.networking.packet;
 
+import com.koko.marketbox.Config;
 import com.koko.marketbox.MarketBox;
 import com.koko.marketbox.capabilities.PlayerBalanceAttachment;
 import com.koko.marketbox.market.MarketListing;
@@ -83,11 +84,8 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
             if (player == null || payload.entries.isEmpty()) {
                 return;
             }
-            if (payload.expiryMinutes <= 0 || payload.expiryMinutes > 360) {
-                ModMessages.sendToPlayer(player,
-                        new ActionFeedbackPacket("gui.marketbox.market.error.invalid_duration"));
-                return;
-            }
+            // 时长由服主统一设定，客户端传来的值一律忽略
+            int expiryMinutes = Config.getListingExpiryMinutes();
             if (payload.entries.size() > MAX_ENTRIES) {
                 ModMessages.sendToPlayer(player,
                         new ActionFeedbackPacket("gui.marketbox.market.error.too_many_listings"));
@@ -106,7 +104,7 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
                         failed++;
                         continue;
                     }
-                    if (listItem(player, manager, entry, payload.expiryMinutes)) {
+                    if (listItem(player, manager, entry, expiryMinutes)) {
                         listed++;
                         currentCount++;
                     } else {

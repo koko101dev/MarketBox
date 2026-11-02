@@ -34,6 +34,8 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
     /** 市场金库余额，供设置界面只读展示 */
     private final double treasuryBalance;
     private final boolean feeToTreasury;
+    /** 挂单有效期（分钟），由服主设定，客户端只读 */
+    private final int listingExpiryMinutes;
     private final List<ItemStack> returnedItems;
     private final List<PlayerBalance.Transaction> transactions;
     /** 分类累计收入/支出（分），供统计页拆分展示 */
@@ -46,7 +48,8 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
                                    List<ItemStack> returnedItems,
                                    List<PlayerBalance.Transaction> transactions,
                                    java.util.Map<String, Long> incomeByCategory,
-                                   java.util.Map<String, Long> expenseByCategory) {
+                                   java.util.Map<String, Long> expenseByCategory,
+                                   int listingExpiryMinutes) {
         this.balance = balance;
         this.totalInterest = totalInterest;
         this.lastInterestTime = lastInterestTime;
@@ -62,6 +65,7 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         this.transactions = transactions;
         this.incomeByCategory = incomeByCategory;
         this.expenseByCategory = expenseByCategory;
+        this.listingExpiryMinutes = listingExpiryMinutes;
     }
 
     public SyncPlayerBalancePacket(RegistryFriendlyByteBuf buf) {
@@ -76,6 +80,7 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         this.marketFeePercent = buf.readDouble();
         this.treasuryBalance = buf.readDouble();
         this.feeToTreasury = buf.readBoolean();
+        this.listingExpiryMinutes = buf.readVarInt();
 
         int returnedSize = buf.readVarInt();
         this.returnedItems = new ArrayList<>(returnedSize);
@@ -122,6 +127,7 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         buf.writeDouble(marketFeePercent);
         buf.writeDouble(treasuryBalance);
         buf.writeBoolean(feeToTreasury);
+        buf.writeVarInt(listingExpiryMinutes);
 
         buf.writeVarInt(returnedItems.size());
         for (ItemStack stack : returnedItems) {
@@ -190,6 +196,10 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
 
     public List<ItemStack> returnedItems() {
         return returnedItems;
+    }
+
+    public int listingExpiryMinutes() {
+        return listingExpiryMinutes;
     }
 
     public java.util.Map<String, Long> incomeByCategory() {

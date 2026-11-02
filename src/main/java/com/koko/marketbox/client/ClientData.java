@@ -38,6 +38,8 @@ public class ClientData {
     private static List<PlayerBalance.Transaction> transactions = new ArrayList<>();
     private static java.util.Map<String, Long> incomeByCategory = new java.util.HashMap<>();
     private static java.util.Map<String, Long> expenseByCategory = new java.util.HashMap<>();
+    /** 挂单有效期（分钟），服主设定，界面只做展示 */
+    private static int listingExpiryMinutes = 120;
 
     public static boolean isAdmin() {
         return admin;
@@ -257,6 +259,14 @@ public class ClientData {
                                          java.util.Map<String, Long> expense) {
         incomeByCategory = income == null ? new java.util.HashMap<>() : income;
         expenseByCategory = expense == null ? new java.util.HashMap<>() : expense;
+    }
+
+    public static int getListingExpiryMinutes() {
+        return listingExpiryMinutes;
+    }
+
+    public static void setListingExpiryMinutes(int minutes) {
+        listingExpiryMinutes = minutes;
     }
 
     public static java.util.Map<String, Long> getIncomeByCategory() {

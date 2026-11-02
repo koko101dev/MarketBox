@@ -37,12 +37,10 @@ public class ListingDialogScreen extends Screen {
     private int left;
     private int top;
     private int quantity = 1;
-    private int expiryMinutes = 60;
 
     private QuantitySlider slider;
     private EditBox priceBox;
     private EditBox limitBox;
-    private StyledButton expiryButton;
 
     public ListingDialogScreen(Screen parent, ItemStack item, int maxCount) {
         super(Component.translatable("gui.marketbox.market.list_dialog_title"));
@@ -85,9 +83,6 @@ public class ListingDialogScreen extends Screen {
                 Component.translatable("gui.marketbox.market.follow_lowest"), b -> followLowest()));
 
         // 时长循环按钮
-        this.expiryButton = new StyledButton(left + PAD + 42, top + 190, 110, 16,
-                expiryLabel(), b -> cycleExpiry());
-        this.addRenderableWidget(this.expiryButton);
 
         // 每人限购（0 = 不限）
         this.limitBox = new EditBox(this.font, left + PAD + 42, top + 214, 60, 16, Component.empty());
@@ -186,17 +181,7 @@ public class ListingDialogScreen extends Screen {
     }
 
     private Component expiryLabel() {
-        return Component.translatable("gui.marketbox.market.expiry_value", String.valueOf(expiryMinutes));
-    }
-
-    private void cycleExpiry() {
-        expiryMinutes = switch (expiryMinutes) {
-            case 30 -> 60;
-            case 60 -> 180;
-            case 180 -> 360;
-            default -> 30;
-        };
-        expiryButton.setMessage(expiryLabel());
+        return Component.translatable("gui.marketbox.market.expiry_fixed", ClientData.getListingExpiryMinutes());
     }
 
     private void submit() {
@@ -219,7 +204,7 @@ public class ListingDialogScreen extends Screen {
         if (total > MAX_TOTAL_PRICE) {
             return;
         }
-        ClientNetwork.send(new ListMarketItemPacket(item, total, quantity, expiryMinutes, Math.max(0, limit)));
+        ClientNetwork.send(new ListMarketItemPacket(item, total, quantity, ClientData.getListingExpiryMinutes(), Math.max(0, limit)));
         close();
     }
 
@@ -307,9 +292,8 @@ public class ListingDialogScreen extends Screen {
         } catch (NumberFormatException ignored) {
         }
 
-        // 时长
-        guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.expiry_label"),
-                left + PAD, top + 194, 0xAAAAAA, false);
+        // 时长：由服主统一设定，这里只做说明
+        guiGraphics.drawString(font, expiryLabel(), left + PAD, top + 194, 0xAAAAAA, false);
 
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.limit_label_short"),
                 left + PAD, top + 218, 0xAAAAAA, false);
