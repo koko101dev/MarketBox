@@ -249,7 +249,7 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(2.0f, 2.0f, 1.0f);
         // 2 倍缩放：实际高度约 18，绘制在 top+62 时底部约 top+80，与头像底齐平
-        guiGraphics.drawString(font, amount, textLeft / 2, (top + 62) / 2, 0x55FF55, false);
+        guiGraphics.drawString(font, amount, textLeft / 2, (top + 58) / 2, 0x55FF55, false);
         guiGraphics.pose().popPose();
 
         // 上半部分右侧：现金与存款，填掉头像区右侧的空白
@@ -258,14 +258,13 @@ public class BankScreen extends Screen implements FeedbackReceiver {
             double cash = MoneyUtils.getInventoryMoneyTotal(player);
             double deposit = ClientData.getPlayerBalance();
             int cellW = (left + w - rightX - 14) / 2;
-            guiGraphics.drawString(font, Component.translatable("gui.marketbox.balance.cash"),
-                    rightX, top + 40, 0x777777, false);
-            guiGraphics.drawString(font, MoneyUtils.formatValue(cash),
-                    rightX, top + 54, 0xFFFF55, false);
-            guiGraphics.drawString(font, Component.translatable("gui.marketbox.balance.deposit"),
-                    rightX + cellW, top + 40, 0x777777, false);
-            guiGraphics.drawString(font, MoneyUtils.formatValue(deposit),
-                    rightX + cellW, top + 54, 0x55FF55, false);
+            // 每格内容居中，避免文字挤在格子左侧、右侧又留白
+            drawCenteredCell(guiGraphics, rightX, cellW, top + 40,
+                    Component.translatable("gui.marketbox.balance.cash"),
+                    MoneyUtils.formatValue(cash), 0x777777, 0xFFFF55);
+            drawCenteredCell(guiGraphics, rightX + cellW, cellW, top + 40,
+                    Component.translatable("gui.marketbox.balance.deposit"),
+                    MoneyUtils.formatValue(deposit), 0x777777, 0x55FF55);
         }
 
         // 横向指标栏：四格等宽，铺满卡片宽度
@@ -297,9 +296,19 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         for (int i = 0; i < 4; i++) {
             int cellX = innerLeft + i * (cellWidth + gap);
             guiGraphics.fill(cellX, metricsY, cellX + cellWidth, metricsY + metricsHeight, 0xFF1C1C1C);
-            guiGraphics.drawString(font, labels[i], cellX + 8, metricsY + 7, 0x777777, false);
-            guiGraphics.drawString(font, values[i], cellX + 8, metricsY + 22, colors[i], false);
+            // 每格内容居中，左右留白对称
+            int centerX = cellX + cellWidth / 2;
+            guiGraphics.drawCenteredString(font, labels[i], centerX, metricsY + 7, 0x777777);
+            guiGraphics.drawCenteredString(font, values[i], centerX, metricsY + 22, colors[i]);
         }
+    }
+
+    /** 在一个格子里上下两行居中绘制（标签 + 数值） */
+    private void drawCenteredCell(GuiGraphics guiGraphics, int cellX, int cellW, int y,
+                                  Component label, String value, int labelColor, int valueColor) {
+        int centerX = cellX + cellW / 2;
+        guiGraphics.drawCenteredString(this.font, label, centerX, y, labelColor);
+        guiGraphics.drawCenteredString(this.font, value, centerX, y + 14, valueColor);
     }
 
     private static String formatCountdown(long millis) {
