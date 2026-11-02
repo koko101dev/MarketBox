@@ -114,10 +114,6 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         });
         this.addRenderableWidget(this.searchBox);
 
-        this.addRenderableWidget(new StyledButton(this.width - PADDING - 70,
-                this.height - PADDING - 20, 70, 20,
-                Component.translatable("gui.marketbox.blacklist.back"), b -> this.onClose()));
-
         refreshResults();
     }
 
