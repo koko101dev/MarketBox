@@ -34,7 +34,7 @@ public final class KeyInit {
                         net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal("mb")
                                 .executes(context -> {
                                     net.minecraft.client.Minecraft.getInstance()
-                                            .setScreen(new BankScreen(null));
+                                            .setScreen(new BankScreen());
                                     return 1;
                                 })));
     }

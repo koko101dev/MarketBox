@@ -24,7 +24,7 @@ public class MarketBoxClient implements ClientModInitializer {
             // 使用 while 消费，避免同一 tick 内多次触发导致重复开界面
             while (KeyInit.OPEN_MARKETBOX_GUI.consumeClick()) {
                 if (client.screen == null && client.player != null) {
-                    client.setScreen(new BankScreen(null));
+                    client.setScreen(new BankScreen());
                 }
             }
         });

@@ -65,7 +65,6 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         return colon > 0 ? id.substring(0, colon) : "minecraft";
     }
 
-    private final Screen parent;
     private final Toast toast = new Toast();
 
     private int contentLeft;
@@ -84,9 +83,8 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
     /** 上次的搜索词，避免每帧重算 */
     private String lastQuery = "\u0000";
 
-    public BlacklistScreen(Screen parent) {
+    public BlacklistScreen() {
         super(Component.translatable("gui.marketbox.blacklist.title"));
-        this.parent = parent;
     }
 
     @Override
@@ -439,7 +437,8 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(parent);
+        // 与侧边栏其他页一致：ESC 直接关闭，不沿历次切页的来路回退
+        Minecraft.getInstance().setScreen(null);
     }
 
     @Override

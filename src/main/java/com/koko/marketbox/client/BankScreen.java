@@ -27,7 +27,6 @@ public class BankScreen extends Screen implements FeedbackReceiver {
     private static final int BUTTON_HEIGHT = 22;
     private static final int HISTORY_ROW = 12;
 
-    private final Screen parent;
     private final Toast toast = new Toast();
 
     private int contentLeft;
@@ -46,9 +45,8 @@ public class BankScreen extends Screen implements FeedbackReceiver {
     private Mode mode = Mode.NONE;
     private EditBox amountInput;
 
-    public BankScreen(Screen parent) {
+    public BankScreen() {
         super(Component.translatable("gui.marketbox.nav.bank"));
-        this.parent = parent;
     }
 
     @Override
@@ -370,7 +368,10 @@ public class BankScreen extends Screen implements FeedbackReceiver {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(parent);
+        // 侧边栏各页共用一个窗口：ESC 就是关掉整个界面。
+        // 不能回到「进入本页之前」的那个界面——每切一次页都会把当时的页面记成上一层，
+        // 于是按 ESC 会沿着这条链一页页往回退，点过几个栏目就要按几次。
+        Minecraft.getInstance().setScreen(null);
     }
 
     @Override
