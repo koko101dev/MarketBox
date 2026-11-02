@@ -336,5 +336,6 @@
   "gui.marketbox.blacklist.tag_blocked": "Blocked",
   "gui.marketbox.blacklist.prev": "Prev",
   "gui.marketbox.blacklist.next": "Next",
-  "gui.marketbox.blacklist.page": "Page %s / %s"
+  "gui.marketbox.blacklist.page": "Page %s / %s",
+  "gui.marketbox.market.bulk_back_market": "Back to market"
 }

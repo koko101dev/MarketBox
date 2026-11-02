@@ -336,5 +336,6 @@
   "gui.marketbox.blacklist.tag_blocked": "已禁止",
   "gui.marketbox.blacklist.prev": "上一页",
   "gui.marketbox.blacklist.next": "下一页",
-  "gui.marketbox.blacklist.page": "第 %s / %s 页"
+  "gui.marketbox.blacklist.page": "第 %s / %s 页",
+  "gui.marketbox.market.bulk_back_market": "返回市场"
 }

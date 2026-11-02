@@ -102,6 +102,9 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
 
         this.addRenderableWidget(new StyledButton(this.width - PADDING - 90, bottomY, 90, 20,
                 Component.translatable("gui.marketbox.market.bulk_submit"), b -> submit()));
+        // 二级页面：返回市场首页
+        this.addRenderableWidget(new StyledButton(this.width - PADDING - 90 - 74, bottomY, 70, 20,
+                Component.translatable("gui.marketbox.market.bulk_back_market"), b -> this.onClose()));
         // 叫「返回」而不是「完成」：这个按钮只关窗口，不做提交
         this.addRenderableWidget(new StyledButton(this.width - PADDING - 90 - 64, bottomY, 60, 20,
                 Component.translatable("gui.marketbox.market.bulk_back"), b -> this.onClose()));
