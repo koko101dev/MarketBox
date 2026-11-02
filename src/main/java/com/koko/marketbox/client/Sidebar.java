@@ -35,7 +35,7 @@ final class Sidebar {
 
         java.util.List<StyledButton> list = new java.util.ArrayList<>();
         list.add(nav(host, x, y, btnWidth, "bank", current == Page.BANK,
-                () -> open(host, new MarketBoxScreen())));
+                () -> open(host, new BankScreen(host))));
         list.add(nav(host, x, y + step, btnWidth, "transfer", current == Page.TRANSFER,
                 () -> open(host, new TransferScreen(host))));
         list.add(nav(host, x, y + step * 2, btnWidth, "market", current == Page.MARKET,

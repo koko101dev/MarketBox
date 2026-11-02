@@ -369,5 +369,10 @@
   "gui.marketbox.fixed.early_withdraw": "Early withdrawal: %s returned, no interest",
   "gui.marketbox.fixed.too_many": "Too many fixed deposits",
   "gui.marketbox.fixed.not_found": "Deposit not found",
-  "gui.marketbox.fixed.matured_notice": "%s fixed deposit(s) matured, %s available"
+  "gui.marketbox.fixed.matured_notice": "%s fixed deposit(s) matured, %s available",
+  "gui.marketbox.balance.label": "Balance",
+  "gui.marketbox.balance.rate_line": "Daily %s%% · about %s%%/yr",
+  "gui.marketbox.balance.next": "Next payout %s",
+  "gui.marketbox.balance.total_interest": "Total interest %s",
+  "gui.marketbox.balance.no_history": "No payouts yet"
 }
