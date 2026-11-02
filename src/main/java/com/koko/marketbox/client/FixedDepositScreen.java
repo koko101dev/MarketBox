@@ -75,6 +75,10 @@ public class FixedDepositScreen extends Screen implements FeedbackReceiver {
         this.addRenderableWidget(new StyledButton(x + 306, controlY, 60, 18,
                 Component.translatable("gui.marketbox.fixed.open"), b -> openDeposit()));
 
+        // 返回银行主页：定期是银行的二级页面
+        this.addRenderableWidget(new StyledButton(this.width - PADDING - 60, 12, 60, 18,
+                Component.translatable("gui.marketbox.fixed.back"), b -> this.onClose()));
+
         // 全部取出（到期逐笔领取在列表里点）
         this.addRenderableWidget(new StyledButton(x + 372, controlY, 72, 18,
                 Component.translatable("gui.marketbox.fixed.claim_all"), b -> claimAllMatured()));

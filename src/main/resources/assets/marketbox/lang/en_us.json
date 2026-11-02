@@ -374,5 +374,6 @@
   "gui.marketbox.balance.rate_line": "Daily %s%% · about %s%%/yr",
   "gui.marketbox.balance.next": "Next payout %s",
   "gui.marketbox.balance.total_interest": "Total interest %s",
-  "gui.marketbox.balance.no_history": "No payouts yet"
+  "gui.marketbox.balance.no_history": "No payouts yet",
+  "gui.marketbox.fixed.back": "Back"
 }

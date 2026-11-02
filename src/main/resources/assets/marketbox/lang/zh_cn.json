@@ -374,5 +374,6 @@
   "gui.marketbox.balance.rate_line": "活期日息 %s%% · 年化约 %s%%",
   "gui.marketbox.balance.next": "下次结息 %s",
   "gui.marketbox.balance.total_interest": "累计利息 %s",
-  "gui.marketbox.balance.no_history": "还没有结息记录"
+  "gui.marketbox.balance.no_history": "还没有结息记录",
+  "gui.marketbox.fixed.back": "返回银行"
 }

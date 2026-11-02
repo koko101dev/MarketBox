@@ -7,6 +7,7 @@ import com.koko.marketbox.util.MoneyUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.PlayerFaceRenderer;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -194,14 +195,34 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         guiGraphics.fill(left, top, left + w, top + CARD_HEIGHT, 0xFF151515);
         guiGraphics.renderOutline(left, top, left + w, top + CARD_HEIGHT, 0xFF3A3A3A);
 
+        // 头像：放在卡片左侧，和余额并排
+        int avatarSize = 52;
+        int avatarX = left + 14;
+        int avatarY = top + (CARD_HEIGHT - avatarSize) / 2;
+        var player = Minecraft.getInstance().player;
+        if (player != null) {
+            net.minecraft.client.multiplayer.PlayerInfo info = null;
+            if (Minecraft.getInstance().getConnection() != null) {
+                info = Minecraft.getInstance().getConnection()
+                        .getPlayerInfo(player.getGameProfile().getId());
+            }
+            var skin = info != null ? info.getSkin().texture() : MarketBoxScreen.DEFAULT_SKIN;
+            PlayerFaceRenderer.draw(guiGraphics, skin, avatarX, avatarY, avatarSize);
+        }
+
+        int textLeft = avatarX + avatarSize + 14;
+
+        if (player != null) {
+            guiGraphics.drawString(font, player.getName(), textLeft, top + 8, 0xDDDDDD, false);
+        }
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.balance.label"),
-                left + 14, top + 10, 0x777777, false);
+                textLeft, top + 20, 0x777777, false);
 
         // 余额放大两倍：整页最该被一眼看到的就是这个数字
         String amount = "¥ " + MoneyUtils.formatValue(ClientData.getPlayerBalance());
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(2.0f, 2.0f, 1.0f);
-        guiGraphics.drawString(font, amount, (left + 14) / 2, (top + 26) / 2, 0x55FF55, false);
+        guiGraphics.drawString(font, amount, textLeft / 2, (top + 26) / 2, 0x55FF55, false);
         guiGraphics.pose().popPose();
 
         // 左下：活期利率与年化
@@ -209,7 +230,7 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         double annual = (Math.pow(1 + dailyRate / 100.0, 365) - 1) * 100;
         String rateLine = Component.translatable("gui.marketbox.balance.rate_line",
                 String.format("%.2f", dailyRate), String.format("%.1f", annual)).getString();
-        guiGraphics.drawString(font, rateLine, left + 14, top + 66, 0x888888, false);
+        guiGraphics.drawString(font, rateLine, textLeft, top + 70, 0x888888, false);
 
         // 右下：下次结息倒计时
         long lastTime = ClientData.getLastInterestTime();
