@@ -35,6 +35,8 @@ public class BankScreen extends Screen implements FeedbackReceiver {
     private int cardTop;
     private int buttonTop;
     private int historyTop;
+    /** 输入模式下的控件行纵坐标 */
+    private int inputRowY;
 
     /** 输入模式：存 / 取 */
     private enum Mode { NONE, DEPOSIT, WITHDRAW }
@@ -74,21 +76,25 @@ public class BankScreen extends Screen implements FeedbackReceiver {
                     Component.translatable("gui.marketbox.fixed.entry"),
                     b -> Minecraft.getInstance().setScreen(new FixedDepositScreen(this))));
         } else {
-            // 输入模式：输入框占左侧，右侧是快捷金额与确认
-            int inputWidth = Math.max(160, contentWidth - 260);
-            this.amountInput = new EditBox(this.font, left + 6, buttonTop + 4,
-                    inputWidth - 30, BUTTON_HEIGHT - 8, Component.empty());
+            // 输入模式：左侧固定宽度输入框 + 确认，右侧快捷金额，取消贴最右
+            int inputWidth = 176;
+            int rowY = buttonTop + 18;
+            this.inputRowY = rowY;
+            this.amountInput = new EditBox(this.font, left + 8, rowY + 5,
+                    inputWidth - 16, BUTTON_HEIGHT - 10, Component.empty());
             this.amountInput.setMaxLength(12);
+            // 边框由界面自绘，关掉 EditBox 默认的白框，避免两层描边
+            this.amountInput.setBordered(false);
             this.amountInput.setFilter(s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
             this.amountInput.setFocused(true);
             this.setFocused(this.amountInput);
             this.addRenderableWidget(this.amountInput);
 
-            this.addRenderableWidget(new StyledButton(left + inputWidth - 24, buttonTop, 24, BUTTON_HEIGHT,
+            this.addRenderableWidget(new StyledButton(left + inputWidth + 6, rowY, 30, BUTTON_HEIGHT,
                     Component.literal("✓"), b -> submit()));
 
-            int quickX = left + inputWidth + 8;
-            int quickW = Math.max(42, (contentWidth - inputWidth - 8 - 36) / 4);
+            int quickX = left + inputWidth + 44;
+            int quickW = 58;
             double[] values = {
                     com.koko.marketbox.Config.getQuickAmount(1),
                     com.koko.marketbox.Config.getQuickAmount(2),
@@ -101,12 +107,12 @@ public class BankScreen extends Screen implements FeedbackReceiver {
             };
             for (int i = 0; i < 4; i++) {
                 final double preset = values[i];
-                this.addRenderableWidget(new StyledButton(quickX + i * quickW, buttonTop,
-                        quickW - 4, BUTTON_HEIGHT, Component.literal(labels[i]),
+                this.addRenderableWidget(new StyledButton(quickX + i * (quickW + 4), rowY,
+                        quickW, BUTTON_HEIGHT, Component.literal(labels[i]),
                         b -> applyQuick(preset)));
             }
-            this.addRenderableWidget(new StyledButton(this.width - PADDING - 48, buttonTop,
-                    48, BUTTON_HEIGHT, Component.translatable("gui.cancel"),
+            this.addRenderableWidget(new StyledButton(left + contentWidth - 64, rowY,
+                    64, BUTTON_HEIGHT, Component.translatable("gui.cancel"),
                     b -> switchMode(Mode.NONE)));
         }
     }
@@ -175,9 +181,15 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         renderBalanceCard(guiGraphics, left);
 
         if (mode != Mode.NONE) {
-            // 输入框底衬
-            guiGraphics.fill(left, buttonTop, left + Math.max(160, contentWidth - 260), buttonTop + BUTTON_HEIGHT, 0xFF050505);
-            guiGraphics.renderOutline(left, buttonTop, Math.max(160, contentWidth - 260), BUTTON_HEIGHT, 0xFF555555);
+            // 说明当前是存还是取
+            Component action = Component.translatable(mode == Mode.DEPOSIT
+                    ? "gui.marketbox.button.feature1" : "gui.marketbox.button.feature2");
+            guiGraphics.drawString(font, Component.translatable("gui.marketbox.balance.input_hint", action),
+                    left, buttonTop - 2, 0xAAAAAA, false);
+
+            // 输入框底衬与边框
+            guiGraphics.fill(left, inputRowY, left + 176, inputRowY + BUTTON_HEIGHT, 0xFF050505);
+            guiGraphics.renderOutline(left, inputRowY, 176, BUTTON_HEIGHT, 0xFF666666);
         }
 
         renderHistory(guiGraphics, left);

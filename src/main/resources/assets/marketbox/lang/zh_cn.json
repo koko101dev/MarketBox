@@ -375,5 +375,6 @@
   "gui.marketbox.balance.next": "下次结息 %s",
   "gui.marketbox.balance.total_interest": "累计利息 %s",
   "gui.marketbox.balance.no_history": "还没有结息记录",
-  "gui.marketbox.fixed.back": "返回银行"
+  "gui.marketbox.fixed.back": "返回银行",
+  "gui.marketbox.balance.input_hint": "%s金额"
 }
