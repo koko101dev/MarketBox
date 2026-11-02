@@ -50,7 +50,7 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         int navWidth = Sidebar.width(this.width);
         this.contentLeft = navWidth;
         this.contentWidth = this.width - navWidth;
-        this.resultsTop = 70;
+        this.resultsTop = 88;
         this.resultsHeight = this.height - resultsTop - PADDING - 26;
 
         Sidebar.buttons(this, Sidebar.Page.BLACKLIST).forEach(this::addRenderableWidget);
@@ -116,7 +116,8 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
                 Component.translatable("gui.marketbox.blacklist.hint"),
                 contentLeft + PADDING, 28, 0x777777, false);
 
-        guiGraphics.fill(contentLeft + PADDING, 66, this.width - PADDING, 67, 0xFF3A3A3A);
+        // 分隔线放在搜索框下方，避免与输入框边框重叠
+        guiGraphics.fill(contentLeft + PADDING, 70, this.width - PADDING, 71, 0xFF3A3A3A);
 
         int x = contentLeft + PADDING;
         int w = contentWidth - PADDING * 2;
@@ -142,7 +143,7 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
 
         guiGraphics.drawString(font,
                 Component.translatable("gui.marketbox.blacklist.result_count", results.size()),
-                x, resultsTop - 12, 0x888888, false);
+                x, resultsTop - 14, 0x888888, false);
 
         int maxRows = Math.max(1, resultsHeight / ROW_HEIGHT);
         for (int i = 0; i < Math.min(results.size(), maxRows); i++) {
@@ -186,7 +187,7 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
 
         guiGraphics.drawString(font,
                 Component.translatable("gui.marketbox.blacklist.count", ids.size()),
-                x, resultsTop - 12, 0x888888, false);
+                x, resultsTop - 14, 0x888888, false);
 
         int maxRows = Math.max(1, resultsHeight / ROW_HEIGHT);
         for (int i = 0; i < Math.min(ids.size(), maxRows); i++) {
