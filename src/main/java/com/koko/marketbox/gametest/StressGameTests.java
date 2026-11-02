@@ -98,6 +98,37 @@ public class StressGameTests implements FabricGameTest {
         helper.succeed();
     }
 
+    /**
+     * 物品注册表必须包含所有已加载模组的物品。
+     * 黑名单搜索依赖这张表，若只遍历到原版物品，模组物品就无法被禁止。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 200)
+    public void itemRegistryCoversAllLoadedMods(GameTestHelper helper) {
+        int total = 0;
+        java.util.Set<String> namespaces = new java.util.HashSet<>();
+        for (var item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
+            total++;
+            namespaces.add(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getNamespace());
+        }
+
+        if (total < 1000) {
+            helper.fail("物品总数异常偏少：" + total);
+            return;
+        }
+        if (!namespaces.contains("minecraft")) {
+            helper.fail("注册表里没有原版物品");
+            return;
+        }
+        // 开发环境装了 fabric-api，应能看到原版之外的命名空间
+        if (namespaces.size() < 2) {
+            helper.fail("只看到 " + namespaces.size() + " 个命名空间，模组物品未进入注册表");
+            return;
+        }
+        System.out.println("[Stress] 物品注册表共 " + total + " 项，命名空间 "
+                + namespaces.size() + " 个：" + namespaces);
+        helper.succeed();
+    }
+
     /** 一千个玩家的余额数据存读耗时：决定服务器保存时的卡顿程度 */
     @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 1200)
     public void saveAndLoadThousandPlayers(GameTestHelper helper) {

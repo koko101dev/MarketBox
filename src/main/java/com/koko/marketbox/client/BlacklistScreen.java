@@ -24,7 +24,46 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
 
     private static final int PADDING = 10;
     private static final int ROW_HEIGHT = 24;
-    private static final int SEARCH_MAX_RESULTS = 200;
+    private static final int SEARCH_MAX_RESULTS = 500;
+
+    /** 搜索索引：物品注册表在启动后固定，只需构建一次 */
+    private record IndexEntry(Item item, String id, String name) {
+    }
+
+    private static List<IndexEntry> INDEX;
+
+    private static List<IndexEntry> index() {
+        if (INDEX == null) {
+            List<IndexEntry> list = new ArrayList<>();
+            for (Item item : BuiltInRegistries.ITEM) {
+                String id = BuiltInRegistries.ITEM.getKey(item).toString();
+                String name = new ItemStack(item).getHoverName().getString();
+                list.add(new IndexEntry(item, id.toLowerCase(), name.toLowerCase()));
+            }
+            INDEX = list;
+        }
+        return INDEX;
+    }
+
+    /** 相关性打分：越小越靠前，完全匹配优先，其次是名称前缀、名称包含、ID 包含 */
+    private static int relevance(IndexEntry entry, String query) {
+        if (entry.name.equals(query)) {
+            return 0;
+        }
+        if (entry.name.startsWith(query)) {
+            return 1;
+        }
+        if (entry.name.contains(query)) {
+            return 2;
+        }
+        return 3;
+    }
+
+    /** 物品所属命名空间，用于标出模组来源 */
+    private static String namespace(String id) {
+        int colon = id.indexOf(':');
+        return colon > 0 ? id.substring(0, colon) : "minecraft";
+    }
 
     private final Screen parent;
     private final Toast toast = new Toast();
@@ -83,16 +122,12 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
             return;
         }
 
-        for (Item item : BuiltInRegistries.ITEM) {
-            String id = BuiltInRegistries.ITEM.getKey(item).toString();
-            String name = new ItemStack(item).getHoverName().getString().toLowerCase();
-            if (id.contains(query) || name.contains(query)) {
-                results.add(item);
-                if (results.size() >= SEARCH_MAX_RESULTS) {
-                    break;
-                }
-            }
-        }
+        results.clear();
+        index().stream()
+                .filter(e -> e.id.contains(query) || e.name.contains(query))
+                .sorted((a, b) -> Integer.compare(relevance(a, query), relevance(b, query)))
+                .limit(SEARCH_MAX_RESULTS)
+                .forEach(e -> results.add(e.item()));
     }
 
     private boolean searching() {
@@ -162,7 +197,16 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
 
             guiGraphics.renderItem(stack, x + 6, rowY + 3);
             guiGraphics.drawString(font, stack.getHoverName().getString(), x + 28, rowY + 3, 0xEEEEEE, false);
-            guiGraphics.drawString(font, id, x + 28, rowY + 13, 0x666666, false);
+
+            // 非原版物品标出来源模组，便于区分同名的模组物品
+            String ns = namespace(id);
+            if (!"minecraft".equals(ns)) {
+                String tag = "[" + ns + "]";
+                guiGraphics.drawString(font, tag, x + 28, rowY + 13, 0x7A9CC6, false);
+                guiGraphics.drawString(font, id, x + 34 + font.width(tag), rowY + 13, 0x666666, false);
+            } else {
+                guiGraphics.drawString(font, id, x + 28, rowY + 13, 0x666666, false);
+            }
 
             boolean blocked = ClientData.getBlacklist().contains(id);
             String action = blocked
