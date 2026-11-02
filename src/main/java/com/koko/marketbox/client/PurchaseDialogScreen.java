@@ -145,6 +145,22 @@ public class PurchaseDialogScreen extends Screen {
                 MoneyUtils.formatValue(unitPrice() * quantity)).getString();
         guiGraphics.drawString(font, total, left + PAD, top + 150, 0xFFCC66, false);
 
+        // 可用余额：拖数量时就能看出买到第几个会超支，不用等服务端回「余额不足」
+        double balance = ClientData.getPlayerBalance();
+        double cost = unitPrice() * quantity;
+        String balanceValue = MoneyUtils.formatValue(balance);
+        String balanceText = Component.translatable("gui.marketbox.market.available_balance",
+                balanceValue).getString();
+        // 与合计同一行右对齐；两者都长时退化成纯数值，避免截出半截金额
+        int balanceMax = W - PAD * 2 - font.width(total) - 8;
+        if (font.width(balanceText) > balanceMax) {
+            balanceText = balanceValue;
+        }
+        if (font.width(balanceText) <= balanceMax) {
+            guiGraphics.drawString(font, balanceText, left + W - PAD - font.width(balanceText),
+                    top + 150, cost > balance ? 0xFF5555 : 0x888888, false);
+        }
+
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 

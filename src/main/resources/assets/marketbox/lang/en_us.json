@@ -243,6 +243,7 @@
   "gui.marketbox.market.purchase_success_detail": "Purchased %s",
   "gui.marketbox.market.buy_dialog_title": "Buy Item",
   "gui.marketbox.market.buy_total": "Total %s",
+  "gui.marketbox.market.available_balance": "Balance %s",
   "gui.marketbox.market.buy_confirm": "Buy",
   "gui.marketbox.market.limit_label": "Limit %s per player",
   "gui.marketbox.market.remaining": "%s remaining",

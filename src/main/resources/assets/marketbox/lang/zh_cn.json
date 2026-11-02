@@ -243,6 +243,7 @@
   "gui.marketbox.market.purchase_success_detail": "已购买 %s",
   "gui.marketbox.market.buy_dialog_title": "购买物品",
   "gui.marketbox.market.buy_total": "合计 %s",
+  "gui.marketbox.market.available_balance": "可用余额 %s",
   "gui.marketbox.market.buy_confirm": "购买",
   "gui.marketbox.market.limit_label": "每人限购 %s 个",
   "gui.marketbox.market.remaining": "剩余 %s 个",
