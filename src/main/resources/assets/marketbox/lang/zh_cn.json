@@ -333,5 +333,8 @@
   "gui.marketbox.blacklist.no_match": "没有匹配的物品",
   "gui.marketbox.blacklist.tag_add": "+ 添加",
   "gui.marketbox.blacklist.tag_remove": "移除",
-  "gui.marketbox.blacklist.tag_blocked": "已禁止"
+  "gui.marketbox.blacklist.tag_blocked": "已禁止",
+  "gui.marketbox.blacklist.prev": "上一页",
+  "gui.marketbox.blacklist.next": "下一页",
+  "gui.marketbox.blacklist.page": "第 %s / %s 页"
 }

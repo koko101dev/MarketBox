@@ -74,8 +74,10 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
     private int resultsHeight;
 
     private EditBox searchBox;
-    /** 列表滚动位置（像素），搜索结果与黑名单共用 */
-    private float scrollOffset = 0;
+    /** 每页条数：按可视高度计算，最多 20 条 */
+    private static final int MAX_PAGE_SIZE = 20;
+    /** 当前页，从 0 开始 */
+    private int pageIndex = 0;
     private final List<Item> results = new ArrayList<>();
     /** 上次的搜索词，避免每帧重算 */
     private String lastQuery = "\u0000";
@@ -104,7 +106,7 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         this.searchBox.setResponder(text -> {
             if (!text.equals(lastQuery)) {
                 lastQuery = text;
-                scrollOffset = 0;
+                pageIndex = 0;
                 refreshResults();
             }
         });
@@ -133,20 +135,24 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
                 .forEach(e -> results.add(e.item()));
     }
 
-    /** 当前列表可滚动的最大距离 */
-    private int maxScroll() {
-        int size = searching() ? results.size() : ClientData.getBlacklist().size();
-        return Math.max(0, size * ROW_HEIGHT - resultsHeight);
+    /** 当前列表总条数 */
+    private int totalSize() {
+        return searching() ? results.size() : ClientData.getBlacklist().size();
     }
 
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        int max = maxScroll();
-        if (max > 0) {
-            scrollOffset = Math.max(0, Math.min(max, scrollOffset - (float) (scrollY * ROW_HEIGHT)));
-            return true;
-        }
-        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    /** 每页条数：受可视高度与 20 条上限双重约束 */
+    private int pageSize() {
+        return Math.min(MAX_PAGE_SIZE, Math.max(1, resultsHeight / ROW_HEIGHT));
+    }
+
+    private int totalPages() {
+        int size = totalSize();
+        int per = pageSize();
+        return Math.max(1, (size + per - 1) / per);
+    }
+
+    private int pageStart() {
+        return pageIndex * pageSize();
     }
 
     private boolean searching() {
@@ -184,16 +190,7 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         }
         guiGraphics.disableScissor();
 
-        // 滚动条
-        int max = maxScroll();
-        if (max > 0) {
-            int barX = this.width - PADDING - 4;
-            int viewH = resultsHeight;
-            int barH = Math.max(20, viewH * viewH / (viewH + max));
-            int barY = resultsTop + (int) ((viewH - barH) * (scrollOffset / max));
-            guiGraphics.fill(barX, resultsTop, barX + 4, resultsTop + viewH, 0x33FFFFFF);
-            guiGraphics.fill(barX, barY, barX + 4, barY + barH, 0xFFCCCCCC);
-        }
+        renderPager(guiGraphics);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         toast.render(guiGraphics, this.width, this.height);
@@ -212,14 +209,13 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
                 Component.translatable("gui.marketbox.blacklist.result_count", results.size()),
                 x, resultsTop - 14, 0x888888, false);
 
-        int maxRows = Math.max(1, resultsHeight / ROW_HEIGHT);
-        int first = (int) (scrollOffset / ROW_HEIGHT);
-        int last = Math.min(results.size(), first + maxRows + 1);
-        for (int i = first; i < last; i++) {
+        int start = pageStart();
+        int last = Math.min(results.size(), start + pageSize());
+        for (int i = start; i < last; i++) {
             Item item = results.get(i);
             ItemStack stack = new ItemStack(item);
             String id = BuiltInRegistries.ITEM.getKey(item).toString();
-            int rowY = resultsTop + i * ROW_HEIGHT - (int) scrollOffset;
+            int rowY = resultsTop + (i - start) * ROW_HEIGHT;
 
             boolean hovered = mouseX >= x && mouseX <= x + w
                     && mouseY >= rowY && mouseY <= rowY + ROW_HEIGHT - 2;
@@ -267,12 +263,11 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
                 Component.translatable("gui.marketbox.blacklist.count", ids.size()),
                 x, resultsTop - 14, 0x888888, false);
 
-        int maxRows = Math.max(1, resultsHeight / ROW_HEIGHT);
-        int first = (int) (scrollOffset / ROW_HEIGHT);
-        int last = Math.min(ids.size(), first + maxRows + 1);
-        for (int i = first; i < last; i++) {
+        int start = pageStart();
+        int last = Math.min(ids.size(), start + pageSize());
+        for (int i = start; i < last; i++) {
             String id = ids.get(i);
-            int rowY = resultsTop + i * ROW_HEIGHT - (int) scrollOffset;
+            int rowY = resultsTop + (i - start) * ROW_HEIGHT;
 
             boolean hoverRemove = mouseX >= x + w - 60 && mouseX <= x + w
                     && mouseY >= rowY && mouseY <= rowY + ROW_HEIGHT - 2;
@@ -295,11 +290,15 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0 && handlePagerClick(mouseX, mouseY)) {
+            return true;
+        }
+
         int x = contentLeft + PADDING;
         int w = contentWidth - PADDING * 2;
 
         if (button == 0 && mouseX >= x && mouseX <= x + w && mouseY >= resultsTop) {
-            int index = (int) ((mouseY - resultsTop + scrollOffset) / ROW_HEIGHT);
+            int index = pageStart() + (int) ((mouseY - resultsTop) / ROW_HEIGHT);
             int maxRows = Math.max(1, resultsHeight / ROW_HEIGHT);
             if (index >= 0 && index < maxRows) {
                 if (searching()) {
@@ -333,6 +332,60 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
     private void removeItem(String id) {
         ClientNetwork.send(new UpdateBlacklistPacket(id, false));
         toast.show(Component.translatable("gui.marketbox.blacklist.removed"), false);
+    }
+
+    /** 底部翻页控件：上一页 / 页码 / 下一页 */
+    private void renderPager(GuiGraphics guiGraphics) {
+        int pages = totalPages();
+        if (pages <= 1) {
+            return;
+        }
+
+        var font = this.font;
+        int y = this.height - PADDING - 20;
+        int leftX = contentLeft + PADDING;
+        int rightX = contentLeft + PADDING + 84;
+
+        boolean canPrev = pageIndex > 0;
+        boolean canNext = pageIndex < pages - 1;
+
+        drawPagerButton(guiGraphics, leftX, y, 76, Component.translatable("gui.marketbox.blacklist.prev"), canPrev);
+        drawPagerButton(guiGraphics, rightX, y, 76, Component.translatable("gui.marketbox.blacklist.next"), canNext);
+
+        String label = Component.translatable("gui.marketbox.blacklist.page",
+                pageIndex + 1, pages).getString();
+        guiGraphics.drawString(font, label, rightX + 84, y + 6, 0xAAAAAA, false);
+    }
+
+    private void drawPagerButton(GuiGraphics guiGraphics, int x, int y, int w, Component label, boolean enabled) {
+        guiGraphics.fill(x, y, x + w, y + 20, enabled ? 0xFF2A2A2A : 0xFF1A1A1A);
+        guiGraphics.renderOutline(x, y, w, 20, enabled ? 0xFF666666 : 0xFF333333);
+        guiGraphics.drawCenteredString(this.font, label, x + w / 2, y + 6,
+                enabled ? 0xDDDDDD : 0x555555);
+    }
+
+    /** 翻页按钮的点击区域：返回 true 表示已处理 */
+    private boolean handlePagerClick(double mouseX, double mouseY) {
+        int pages = totalPages();
+        if (pages <= 1) {
+            return false;
+        }
+        int y = this.height - PADDING - 20;
+        int leftX = contentLeft + PADDING;
+        int rightX = contentLeft + PADDING + 84;
+
+        if (mouseY < y || mouseY > y + 20) {
+            return false;
+        }
+        if (mouseX >= leftX && mouseX <= leftX + 76 && pageIndex > 0) {
+            pageIndex--;
+            return true;
+        }
+        if (mouseX >= rightX && mouseX <= rightX + 76 && pageIndex < pages - 1) {
+            pageIndex++;
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -333,5 +333,8 @@
   "gui.marketbox.blacklist.no_match": "No matching items",
   "gui.marketbox.blacklist.tag_add": "+ Add",
   "gui.marketbox.blacklist.tag_remove": "Remove",
-  "gui.marketbox.blacklist.tag_blocked": "Blocked"
+  "gui.marketbox.blacklist.tag_blocked": "Blocked",
+  "gui.marketbox.blacklist.prev": "Prev",
+  "gui.marketbox.blacklist.next": "Next",
+  "gui.marketbox.blacklist.page": "Page %s / %s"
 }
