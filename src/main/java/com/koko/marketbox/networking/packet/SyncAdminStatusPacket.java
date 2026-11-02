@@ -16,22 +16,23 @@ public class SyncAdminStatusPacket implements CustomPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncAdminStatusPacket> CODEC =
             StreamCodec.ofMember(SyncAdminStatusPacket::write, SyncAdminStatusPacket::new);
 
-    private final boolean admin;
+    /** 玩家的权限等级：0 普通玩家，1~2 管理员，4 服主 */
+    private final int permissionLevel;
 
-    public SyncAdminStatusPacket(boolean admin) {
-        this.admin = admin;
+    public SyncAdminStatusPacket(int permissionLevel) {
+        this.permissionLevel = permissionLevel;
     }
 
     public SyncAdminStatusPacket(RegistryFriendlyByteBuf buf) {
-        this.admin = buf.readBoolean();
+        this.permissionLevel = buf.readVarInt();
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeBoolean(admin);
+        buf.writeVarInt(permissionLevel);
     }
 
-    public boolean admin() {
-        return admin;
+    public int permissionLevel() {
+        return permissionLevel;
     }
 
     @Override

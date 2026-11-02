@@ -167,9 +167,19 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         this.contentLeft = this.leftPos + (this.guiWidth - this.contentWidth) / 2;
 
         // 金钱相关项仅管理员可见：利息 2 行 + 手续费 1 行为管理区块，其余所有人可见
+        // 两档权限：等级 2 起可用管理员操作，等级 4（服主）才能改全服经济参数
         boolean admin = ClientData.isAdmin();
-        int contentRows = admin ? (2 + 9 + 5 + 3 + AdminPanel.rowCount()) : (9 + 3);
-        int sectionCount = admin ? 5 : 2;
+        boolean owner = ClientData.isOwner();
+        int contentRows = 9 + 3;
+        int sectionCount = 2;
+        if (owner) {
+            contentRows += 2 + 5;   // 利息 2 行 + 市场 5 行
+            sectionCount += 2;
+        }
+        if (owner) {
+            contentRows += AdminPanel.rowCount();
+            sectionCount += 1;
+        }
 
         // 面板铺满整屏；底部按钮栏固定在底部，中间内容区可滚动
         this.guiHeight = this.height;
@@ -187,8 +197,8 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         // 内容起点包含滚动偏移，滚动时通过 rebuildWidgets 重排控件
         int y = topPos + PADDING - scrollOffset;
 
-        // === 利息设置（仅管理员）===
-        if (admin) {
+        // === 利息设置（仅服主）===
+        if (owner) {
             y += SECTION_HEADER_HEIGHT;
             interestRateBox = createEditBox(y, String.format("%.2f", tempInterestRate),
                     s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
@@ -222,8 +232,8 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         addKeyBindRow(y);
         y += rowHeight;
 
-        // === 市场设置（仅管理员）===
-        if (admin) {
+        // === 市场设置（仅服主）===
+        if (owner) {
             y += SECTION_HEADER_HEIGHT;
             feeBox = createEditBox(y, String.format("%.2f", tempMarketFee),
                     s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
@@ -250,8 +260,9 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         quick3Box = createEditBox(y, formatAmount(tempQuick3), s -> s.isEmpty() || s.matches("\\d+"));
         y += rowHeight;
 
-        // === 管理员操作（仅管理员）：等价于 /marketbox set|add|reset ===
-        if (admin) {
+        // === 管理员操作（仅服主）：等价于 /marketbox set|add|reset ===
+        // 服务端 AdminBalancePacket 要求权限 4，界面对齐，避免显示了却保存失败
+        if (owner) {
             y += SECTION_HEADER_HEIGHT;
             AdminPanel.build(this, y, rowHeight, controlHeight,
                     contentLeft + contentWidth - PADDING - CONTROL_WIDTH, CONTROL_WIDTH,
@@ -408,6 +419,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         int y = topPos + PADDING - scrollOffset;
 
         boolean admin = ClientData.isAdmin();
+        boolean owner = ClientData.isOwner();
         if (admin) {
             ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
                     Component.translatable("gui.marketbox.config.section.interest"), y);
@@ -451,7 +463,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
                 Component.translatable("gui.marketbox.config.keybind"), y);
         y += rowHeight;
 
-        if (admin) {
+        if (owner) {
             ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
                     Component.translatable("gui.marketbox.config.section.market"), y);
             y += SECTION_HEADER_HEIGHT;
@@ -481,7 +493,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
             y += rowHeight;
         }
 
-        if (admin) {
+        if (owner) {
             ConfigScreenRenderer.renderSectionHeader(this, guiGraphics,
                     Component.translatable("gui.marketbox.config.section.admin"), y);
             y += SECTION_HEADER_HEIGHT;

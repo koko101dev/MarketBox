@@ -16,8 +16,8 @@ public class ClientData {
     private static double totalIncome;
     private static double totalExpense;
     private static double pendingPayment;
-    /** 当前玩家是否为管理员 */
-    private static boolean admin = false;
+    /** 当前玩家权限等级：0 普通，1~2 管理员，4 服主 */
+    private static int permissionLevel = 0;
     /** 市场成交手续费百分比（服务端同步） */
     private static double marketFeePercent = 0;
     private static double treasuryBalance = 0;
@@ -48,12 +48,22 @@ public class ClientData {
     private static double maxTransactionAmount = 1_000_000_000;
     private static boolean transferEnabled = true;
 
+    /** 管理员及以上：可查看经济页、使用管理员操作、看到黑名单入口 */
     public static boolean isAdmin() {
-        return admin;
+        return permissionLevel >= 2;
     }
 
-    public static void setAdmin(boolean value) {
-        admin = value;
+    /** 服主级：可修改利率、手续费等全服经济参数 */
+    public static boolean isOwner() {
+        return permissionLevel >= 4;
+    }
+
+    public static int getPermissionLevel() {
+        return permissionLevel;
+    }
+
+    public static void setPermissionLevel(int level) {
+        permissionLevel = level;
     }
 
     public static void setDealPrices(java.util.Map<String, Double> prices) {

@@ -47,7 +47,7 @@ public class EconomyScreen extends Screen implements FeedbackReceiver {
                 b -> ClientNetwork.send(new com.koko.marketbox.networking.packet.RequestEconomyPacket())));
 
         // 金库操作仅服主（等级 4）可见
-        if (ClientData.isAdmin() && this.minecraft != null && this.minecraft.player != null
+        if (ClientData.isOwner() && this.minecraft != null && this.minecraft.player != null
                 && this.minecraft.player.hasPermissions(4)) {
             buildAdminControls();
         }
@@ -178,7 +178,7 @@ public class EconomyScreen extends Screen implements FeedbackReceiver {
         guiGraphics.drawString(font, hint, x, y, net > 0 ? 0xCC8844 : 0x777777, false);
 
         // 金库操作区（仅服主可见）
-        if (ClientData.isAdmin() && this.minecraft != null && this.minecraft.player != null
+        if (ClientData.isOwner() && this.minecraft != null && this.minecraft.player != null
                 && this.minecraft.player.hasPermissions(4)) {
             int boxTop = contentHeight - 120;
             guiGraphics.fill(x, boxTop, x + w, boxTop + 108, 0x22FFFFFF);

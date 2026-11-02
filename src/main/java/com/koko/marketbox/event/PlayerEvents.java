@@ -56,6 +56,17 @@ public final class PlayerEvents {
         });
     }
 
+    /** 读取玩家实际权限等级，用于客户端按级别显示设置项 */
+    private static int currentPermissionLevel(ServerPlayer player) {
+        // 逐级探测：hasPermissions(4) 为真时游戏内就是服主级
+        for (int level = 4; level >= 1; level--) {
+            if (player.hasPermissions(level)) {
+                return level;
+            }
+        }
+        return 0;
+    }
+
     private static void handleJoin(ServerPlayer player) {
         // 诊断用：确认玩家加入时从存档中恢复到了多少余额
         if (com.koko.marketbox.MarketBox.LOGGER.isDebugEnabled()) {
@@ -64,7 +75,7 @@ public final class PlayerEvents {
         }
 
         // 同步管理员权限，客户端据此决定设置界面显示哪些项
-        ModMessages.sendToPlayer(player, new SyncAdminStatusPacket(player.hasPermissions(2)));
+        ModMessages.sendToPlayer(player, new SyncAdminStatusPacket(currentPermissionLevel(player)));
 
         // 管理员额外收到上架黑名单，用于黑名单界面
         if (player.hasPermissions(2)) {

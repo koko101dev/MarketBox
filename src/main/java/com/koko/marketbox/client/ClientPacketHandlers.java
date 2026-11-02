@@ -53,7 +53,7 @@ public final class ClientPacketHandlers {
                         ClientData.acceptListingChunk(payload.page(), payload.totalPages(), payload.listings())));
 
         ClientPlayNetworking.registerGlobalReceiver(SyncAdminStatusPacket.ID, (payload, context) ->
-                context.client().execute(() -> ClientData.setAdmin(payload.admin())));
+                context.client().execute(() -> ClientData.setPermissionLevel(payload.permissionLevel())));
 
         ClientPlayNetworking.registerGlobalReceiver(SyncDealPricesPacket.ID, (payload, context) ->
                 context.client().execute(() -> ClientData.setDealPrices(payload.prices())));
