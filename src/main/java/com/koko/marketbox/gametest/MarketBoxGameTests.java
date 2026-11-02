@@ -189,4 +189,38 @@ public class MarketBoxGameTests implements FabricGameTest {
         }
         helper.succeed();
     }
+
+    /**
+     * 银行页「全部」按钮的取值规则。
+     *
+     * 存入时该填背包里的现金，取出时该填银行余额。
+     * 重写银行界面时这两者一度混用，导致手上有现金点「全部」显示 0。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 200)
+    public void bankQuickAllAmount(GameTestHelper helper) {
+        // 手上有 6400 现金、银行余额 0：存入的全额应是 6400
+        double depositAll = com.koko.marketbox.util.BankMath.quickAllAmount(true, 0, 6400);
+        if (Math.abs(depositAll - 6400) > 0.001) {
+            helper.fail("存入全部应为 6400，实际 " + depositAll);
+            return;
+        }
+        // 同一状态下取出的全额应是余额 0
+        double withdrawAll = com.koko.marketbox.util.BankMath.quickAllAmount(false, 0, 6400);
+        if (Math.abs(withdrawAll) > 0.001) {
+            helper.fail("取出全部应为 0，实际 " + withdrawAll);
+            return;
+        }
+        // 反向：余额 500、现金 0，取出全额 500
+        if (Math.abs(com.koko.marketbox.util.BankMath.quickAllAmount(false, 500, 0) - 500) > 0.001) {
+            helper.fail("取出全部应取银行余额");
+            return;
+        }
+        // 负值不应外泄
+        if (com.koko.marketbox.util.BankMath.quickAllAmount(true, 0, -10) < 0) {
+            helper.fail("金额不应为负");
+            return;
+        }
+        System.out.println("[Stress] 银行全部按钮取值正确：存入=" + depositAll + " 取出=" + withdrawAll);
+        helper.succeed();
+    }
 }

@@ -139,22 +139,16 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         return value == Math.floor(value) ? String.valueOf((long) value) : String.format("%.2f", value);
     }
 
-    /**
-     * 快捷金额：存入的「全部」是背包里的现金，取出的「全部」才是银行余额。
-     * 这两者完全不同——存入时余额还没增加，用余额会导致显示 0。
-     */
     private void applyQuick(double preset) {
         if (amountInput == null) {
             return;
         }
         double amount = preset;
         if (preset < 0) {
-            if (mode == Mode.DEPOSIT) {
-                var player = Minecraft.getInstance().player;
-                amount = player != null ? MoneyUtils.getInventoryMoneyTotal(player) : 0;
-            } else {
-                amount = ClientData.getPlayerBalance();
-            }
+            var player = Minecraft.getInstance().player;
+            double cash = player != null ? MoneyUtils.getInventoryMoneyTotal(player) : 0;
+            amount = com.koko.marketbox.util.BankMath.quickAllAmount(
+                    mode == Mode.DEPOSIT, ClientData.getPlayerBalance(), cash);
         }
         if (amount <= 0) {
             toast.show(Component.translatable("gui.marketbox.error.invalid_amount"), true);
