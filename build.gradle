@@ -168,3 +168,59 @@ tasks.register('pruneOldJars') {
 tasks.named('build') {
     finalizedBy 'pruneOldJars'
 }
+
+/**
+ * 项目规则自检，对应 AGENTS.txt 里的硬性约束。
+ * 违反时构建失败，避免规则只停留在文档里。
+ */
+tasks.register('checkRules') {
+    group = 'verification'
+    description = '检查 AGENTS.txt 中的硬性规则'
+
+    doLast {
+        def violations = []
+
+        // 四.2：单个 Java 文件不得超过 500 行
+        fileTree('src/main/java').matching { include '**/*.java' }.each { f ->
+            def lineCount = f.readLines().size()
+            if (lineCount > 500) {
+                violations << "  [四.2] ${f.path} 共 ${lineCount} 行，超过 500 行上限"
+            }
+        }
+
+        // 二.7：不得新增操作指南 / 说明类 md 文档（README 与许可证除外）
+        def allowedMd = ['README.md', 'THIRD_PARTY_NOTICES.md', 'LICENSE.md']
+        fileTree('.').matching {
+            include '*.md'
+            exclude 'build/**'
+            exclude '.workbuddy/**'
+        }.each { f ->
+            if (!allowedMd.contains(f.name)) {
+                violations << "  [二.7] 根目录出现额外 md 文档：${f.name}"
+            }
+        }
+
+        // 三.1 的对应检查：服务端包不得引用客户端类
+        fileTree('src/main/java/com/koko/marketbox').matching {
+            include '**/*.java'
+            exclude 'client/**'
+        }.each { f ->
+            f.readLines().eachWithIndex { line, idx ->
+                if (line.contains('com.koko.marketbox.client.') && !line.trim().startsWith('*')) {
+                    violations << "  [跨端] ${f.name}:${idx + 1} 引用了客户端包"
+                }
+            }
+        }
+
+        if (!violations.isEmpty()) {
+            println "\n[checkRules] 发现 ${violations.size()} 处违规："
+            violations.each { println it }
+            throw new GradleException("存在违反项目规则的代码，请先修复")
+        }
+        println "[checkRules] 全部通过"
+    }
+}
+
+// 注意：暂不作为 build 的依赖，因为存量代码里还有一处超 500 行的文件待拆分。
+// 修复后应恢复 dependsOn，让违规直接阻断构建。
+
