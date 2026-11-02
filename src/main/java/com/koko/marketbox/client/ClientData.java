@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class ClientData {
+    /** 1.21 默认皮肤贴图（宽版 Steve），玩家信息尚未加载时的头像占位 */
+    public static final net.minecraft.resources.ResourceLocation DEFAULT_SKIN =
+            net.minecraft.resources.ResourceLocation.withDefaultNamespace("textures/entity/player/wide/steve.png");
+
     private static double playerBalance;
     private static double totalInterest;
     private static long lastInterestTime;
@@ -176,8 +180,18 @@ public class ClientData {
     public static void acceptListingChunk(int page, int totalPages, List<MarketListing> chunk) {
         if (totalPages <= 1) {
             setMarketListings(chunk);
+            clearListingChunks();
             return;
         }
+        long now = System.currentTimeMillis();
+        // 上一轮还没收齐就断了连接：超过 10 秒的残留分块直接丢弃，
+        // 否则下次连接可能用旧分块补齐缺页，出现点了购买却提示挂单不存在
+        if (lastChunkAt != 0 && now - lastChunkAt > CHUNK_TIMEOUT_MS) {
+            listingChunks.clear();
+            expectedChunkCount = 0;
+        }
+        lastChunkAt = now;
+
         if (expectedChunkCount != totalPages) {
             listingChunks.clear();
             expectedChunkCount = totalPages;
@@ -189,9 +203,15 @@ public class ClientData {
                 merged.addAll(listingChunks.getOrDefault(i, List.of()));
             }
             setMarketListings(merged);
-            listingChunks.clear();
-            expectedChunkCount = 0;
+            clearListingChunks();
         }
+    }
+
+    /** 丢弃半成品分块；断开连接时调用，避免跨连接残留 */
+    public static void clearListingChunks() {
+        listingChunks.clear();
+        expectedChunkCount = 0;
+        lastChunkAt = 0;
     }
 
     /** 增量：新增一条挂单 */
