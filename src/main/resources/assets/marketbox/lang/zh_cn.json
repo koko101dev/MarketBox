@@ -326,5 +326,12 @@
   "gui.marketbox.blacklist.added": "已加入黑名单：%s",
   "gui.marketbox.blacklist.removed": "已移出黑名单",
   "gui.marketbox.market.error.blocked_item": "该物品不允许上架",
-  "gui.marketbox.error.transfer_disabled": "本服已关闭玩家之间的转账"
+  "gui.marketbox.error.transfer_disabled": "本服已关闭玩家之间的转账",
+  "gui.marketbox.blacklist.search": "搜索物品名称或 ID",
+  "gui.marketbox.blacklist.result_count": "找到 %s 个物品，点击添加",
+  "gui.marketbox.blacklist.count": "已禁止 %s 个物品，点击右侧移除",
+  "gui.marketbox.blacklist.no_match": "没有匹配的物品",
+  "gui.marketbox.blacklist.tag_add": "+ 添加",
+  "gui.marketbox.blacklist.tag_remove": "移除",
+  "gui.marketbox.blacklist.tag_blocked": "已禁止"
 }

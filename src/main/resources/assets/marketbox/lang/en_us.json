@@ -326,5 +326,12 @@
   "gui.marketbox.blacklist.added": "Blocked: %s",
   "gui.marketbox.blacklist.removed": "Removed from blacklist",
   "gui.marketbox.market.error.blocked_item": "This item cannot be listed",
-  "gui.marketbox.error.transfer_disabled": "Player-to-player transfers are disabled"
+  "gui.marketbox.error.transfer_disabled": "Player-to-player transfers are disabled",
+  "gui.marketbox.blacklist.search": "Search by name or ID",
+  "gui.marketbox.blacklist.result_count": "%s items found, click to add",
+  "gui.marketbox.blacklist.count": "%s blocked, click the right side to remove",
+  "gui.marketbox.blacklist.no_match": "No matching items",
+  "gui.marketbox.blacklist.tag_add": "+ Add",
+  "gui.marketbox.blacklist.tag_remove": "Remove",
+  "gui.marketbox.blacklist.tag_blocked": "Blocked"
 }
