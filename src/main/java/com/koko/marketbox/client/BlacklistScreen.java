@@ -74,6 +74,8 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
     private int resultsHeight;
 
     private EditBox searchBox;
+    /** 列表滚动位置（像素），搜索结果与黑名单共用 */
+    private float scrollOffset = 0;
     private final List<Item> results = new ArrayList<>();
     /** 上次的搜索词，避免每帧重算 */
     private String lastQuery = "\u0000";
@@ -102,6 +104,7 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         this.searchBox.setResponder(text -> {
             if (!text.equals(lastQuery)) {
                 lastQuery = text;
+                scrollOffset = 0;
                 refreshResults();
             }
         });
@@ -128,6 +131,22 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
                 .sorted((a, b) -> Integer.compare(relevance(a, query), relevance(b, query)))
                 .limit(SEARCH_MAX_RESULTS)
                 .forEach(e -> results.add(e.item()));
+    }
+
+    /** 当前列表可滚动的最大距离 */
+    private int maxScroll() {
+        int size = searching() ? results.size() : ClientData.getBlacklist().size();
+        return Math.max(0, size * ROW_HEIGHT - resultsHeight);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        int max = maxScroll();
+        if (max > 0) {
+            scrollOffset = Math.max(0, Math.min(max, scrollOffset - (float) (scrollY * ROW_HEIGHT)));
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     private boolean searching() {
@@ -157,10 +176,23 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         int x = contentLeft + PADDING;
         int w = contentWidth - PADDING * 2;
 
+        guiGraphics.enableScissor(contentLeft, resultsTop - 16, this.width, resultsTop + resultsHeight);
         if (searching()) {
             renderSearchResults(guiGraphics, x, w, mouseX, mouseY);
         } else {
             renderBlacklist(guiGraphics, x, w, mouseX, mouseY);
+        }
+        guiGraphics.disableScissor();
+
+        // 滚动条
+        int max = maxScroll();
+        if (max > 0) {
+            int barX = this.width - PADDING - 4;
+            int viewH = resultsHeight;
+            int barH = Math.max(20, viewH * viewH / (viewH + max));
+            int barY = resultsTop + (int) ((viewH - barH) * (scrollOffset / max));
+            guiGraphics.fill(barX, resultsTop, barX + 4, resultsTop + viewH, 0x33FFFFFF);
+            guiGraphics.fill(barX, barY, barX + 4, barY + barH, 0xFFCCCCCC);
         }
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -181,11 +213,13 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
                 x, resultsTop - 14, 0x888888, false);
 
         int maxRows = Math.max(1, resultsHeight / ROW_HEIGHT);
-        for (int i = 0; i < Math.min(results.size(), maxRows); i++) {
+        int first = (int) (scrollOffset / ROW_HEIGHT);
+        int last = Math.min(results.size(), first + maxRows + 1);
+        for (int i = first; i < last; i++) {
             Item item = results.get(i);
             ItemStack stack = new ItemStack(item);
             String id = BuiltInRegistries.ITEM.getKey(item).toString();
-            int rowY = resultsTop + i * ROW_HEIGHT;
+            int rowY = resultsTop + i * ROW_HEIGHT - (int) scrollOffset;
 
             boolean hovered = mouseX >= x && mouseX <= x + w
                     && mouseY >= rowY && mouseY <= rowY + ROW_HEIGHT - 2;
@@ -234,9 +268,11 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
                 x, resultsTop - 14, 0x888888, false);
 
         int maxRows = Math.max(1, resultsHeight / ROW_HEIGHT);
-        for (int i = 0; i < Math.min(ids.size(), maxRows); i++) {
+        int first = (int) (scrollOffset / ROW_HEIGHT);
+        int last = Math.min(ids.size(), first + maxRows + 1);
+        for (int i = first; i < last; i++) {
             String id = ids.get(i);
-            int rowY = resultsTop + i * ROW_HEIGHT;
+            int rowY = resultsTop + i * ROW_HEIGHT - (int) scrollOffset;
 
             boolean hoverRemove = mouseX >= x + w - 60 && mouseX <= x + w
                     && mouseY >= rowY && mouseY <= rowY + ROW_HEIGHT - 2;
@@ -263,17 +299,17 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         int w = contentWidth - PADDING * 2;
 
         if (button == 0 && mouseX >= x && mouseX <= x + w && mouseY >= resultsTop) {
-            int index = (int) ((mouseY - resultsTop) / ROW_HEIGHT);
+            int index = (int) ((mouseY - resultsTop + scrollOffset) / ROW_HEIGHT);
             int maxRows = Math.max(1, resultsHeight / ROW_HEIGHT);
             if (index >= 0 && index < maxRows) {
                 if (searching()) {
-                    if (index < results.size()) {
+                    if (index >= 0 && index < results.size()) {
                         addItem(results.get(index));
                     }
                 } else {
                     List<String> ids = ClientData.getBlacklist();
                     // 只在右侧区域响应移除，避免误触
-                    if (index < ids.size() && mouseX >= x + w - 60) {
+                    if (index >= 0 && index < ids.size() && mouseX >= x + w - 60) {
                         removeItem(ids.get(index));
                     }
                 }
