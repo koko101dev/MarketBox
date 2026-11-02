@@ -197,6 +197,46 @@ public class StressGameTests implements FabricGameTest {
         helper.succeed();
     }
 
+    /**
+     * 定期存款的利息计算与到期判断。
+     * 利率按日单利，到期一次性给付；提前取出只退本金。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 200)
+    public void fixedDepositMath(GameTestHelper helper) {
+        long now = System.currentTimeMillis();
+        // 本金 100 元（10000 分），日息 0.10%，7 天
+        var deposit = new com.koko.marketbox.capabilities.FixedDeposit(
+                UUID.randomUUID(), 10_000L, 0.10, now, 7);
+
+        long expectedInterest = 70L;   // 100 元 × 0.1% × 7 = 0.7 元 = 70 分
+        if (deposit.interestCents() != expectedInterest) {
+            helper.fail("利息应为 " + expectedInterest + " 分，实际 " + deposit.interestCents());
+            return;
+        }
+        if (deposit.totalCents() != 10_070L) {
+            helper.fail("到期总额应为 10070 分，实际 " + deposit.totalCents());
+            return;
+        }
+        if (deposit.isMatured(now)) {
+            helper.fail("刚存入不应判定为到期");
+            return;
+        }
+        // 七天后应到期
+        long afterSevenDays = now + 7L * 86_400_000L;
+        if (!deposit.isMatured(afterSevenDays)) {
+            helper.fail("满七天后应判定为到期");
+            return;
+        }
+        // 剩余时间应为正数
+        if (deposit.remainingMillis(now) <= 0) {
+            helper.fail("剩余时间应为正");
+            return;
+        }
+        System.out.println("[Stress] 定期存款利息：" + expectedInterest + " 分 / 到期总额 "
+                + deposit.totalCents() + " 分");
+        helper.succeed();
+    }
+
     /** 一千个玩家的余额数据存读耗时：决定服务器保存时的卡顿程度 */
     @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 1200)
     public void saveAndLoadThousandPlayers(GameTestHelper helper) {

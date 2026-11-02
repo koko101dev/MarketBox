@@ -47,6 +47,8 @@ public class ClientData {
     private static double maxListingPrice = 1_000_000;
     private static double maxTransactionAmount = 1_000_000_000;
     private static boolean transferEnabled = true;
+    private static java.util.List<com.koko.marketbox.capabilities.FixedDeposit> fixedDeposits =
+            new java.util.ArrayList<>();
     private static java.util.List<Double> enabledDenominations =
             new java.util.ArrayList<>(java.util.List.of(0.01, 0.1, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0));
 
@@ -294,6 +296,15 @@ public class ClientData {
 
     public static boolean isTransferEnabled() {
         return transferEnabled;
+    }
+
+    public static java.util.List<com.koko.marketbox.capabilities.FixedDeposit> getFixedDeposits() {
+        return fixedDeposits;
+    }
+
+    public static void setFixedDeposits(
+            java.util.List<com.koko.marketbox.capabilities.FixedDeposit> list) {
+        fixedDeposits = list == null ? new java.util.ArrayList<>() : list;
     }
 
     public static java.util.List<Double> getEnabledDenominations() {

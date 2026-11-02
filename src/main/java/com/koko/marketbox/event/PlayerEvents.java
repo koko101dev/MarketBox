@@ -189,7 +189,8 @@ public final class PlayerEvents {
                 Config.getMaxListingPrice(),
                 Config.getMaxTransactionAmount(),
                 Config.isTransferEnabled(),
-                Config.getEnabledDenominations()
+                Config.getEnabledDenominations(),
+                balance.getFixedDeposits()
         ));
     }
 

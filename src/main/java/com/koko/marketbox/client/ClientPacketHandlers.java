@@ -39,6 +39,7 @@ public final class ClientPacketHandlers {
                     ClientData.setMarketLimits(payload.maxListings(), payload.maxListingPrice(),
                             payload.maxTransactionAmount(), payload.transferEnabled());
                     ClientData.setEnabledDenominations(payload.enabledDenominations());
+                    ClientData.setFixedDeposits(payload.fixedDeposits());
                 }));
 
         ClientPlayNetworking.registerGlobalReceiver(

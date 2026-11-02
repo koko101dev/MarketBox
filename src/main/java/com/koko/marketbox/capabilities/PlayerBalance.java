@@ -6,6 +6,7 @@ import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -18,6 +19,9 @@ public class PlayerBalance {
     private final AtomicLong totalIncomeCents = new AtomicLong(0);
     private final AtomicLong totalExpenseCents = new AtomicLong(0);
     
+    /** 定期存款：每笔独立锁定利率与期限 */
+    private final java.util.List<FixedDeposit> fixedDeposits = new java.util.concurrent.CopyOnWriteArrayList<>();
+
     /** 按用途分类的累计收入/支出（分），供统计页拆分展示 */
     private final java.util.Map<String, Long> incomeByCategory = new java.util.concurrent.ConcurrentHashMap<>();
     private final java.util.Map<String, Long> expenseByCategory = new java.util.concurrent.ConcurrentHashMap<>();
@@ -188,6 +192,20 @@ public class PlayerBalance {
             list.add(tTag);
         }
         nbt.put("transactions", list);
+        if (!fixedDeposits.isEmpty()) {
+            ListTag deposits = new ListTag();
+            for (FixedDeposit d : fixedDeposits) {
+                CompoundTag tag = new CompoundTag();
+                tag.putUUID("id", d.id());
+                tag.putLong("principal", d.principalCents());
+                tag.putDouble("rate", d.dailyRatePercent());
+                tag.putLong("start", d.startTime());
+                tag.putInt("days", d.days());
+                deposits.add(tag);
+            }
+            nbt.put("fixedDeposits", deposits);
+        }
+
         nbt.put("incomeByCategory", writeLongMap(incomeByCategory));
         nbt.put("expenseByCategory", writeLongMap(expenseByCategory));
     }
@@ -204,6 +222,20 @@ public class PlayerBalance {
         totalIncomeCents.set(nbt.getLong("totalIncomeCents"));
         totalExpenseCents.set(nbt.getLong("totalExpenseCents"));
         
+        fixedDeposits.clear();
+        if (nbt.contains("fixedDeposits", Tag.TAG_LIST)) {
+            ListTag deposits = nbt.getList("fixedDeposits", Tag.TAG_COMPOUND);
+            for (int i = 0; i < deposits.size(); i++) {
+                CompoundTag tag = deposits.getCompound(i);
+                fixedDeposits.add(new FixedDeposit(
+                        tag.getUUID("id"),
+                        tag.getLong("principal"),
+                        tag.getDouble("rate"),
+                        tag.getLong("start"),
+                        tag.getInt("days")));
+            }
+        }
+
         incomeByCategory.clear();
         expenseByCategory.clear();
         readLongMap(nbt.getCompound("incomeByCategory"), incomeByCategory);
@@ -294,6 +326,28 @@ public class PlayerBalance {
         for (String key : tag.getAllKeys()) {
             target.put(key, tag.getLong(key));
         }
+    }
+
+    public java.util.List<FixedDeposit> getFixedDeposits() {
+        return new java.util.ArrayList<>(fixedDeposits);
+    }
+
+    /** 存入一笔定期：本金从余额扣除由调用方负责 */
+    public void addFixedDeposit(FixedDeposit deposit) {
+        fixedDeposits.add(deposit);
+    }
+
+    public void removeFixedDeposit(UUID id) {
+        fixedDeposits.removeIf(d -> d.id().equals(id));
+    }
+
+    public FixedDeposit findFixedDeposit(UUID id) {
+        for (FixedDeposit d : fixedDeposits) {
+            if (d.id().equals(id)) {
+                return d;
+            }
+        }
+        return null;
     }
 
     /** 分类收入（分），key 见 {@link #categoryOf} */

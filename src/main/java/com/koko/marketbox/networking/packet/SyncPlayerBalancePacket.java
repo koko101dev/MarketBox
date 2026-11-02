@@ -43,6 +43,8 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
     private final boolean transferEnabled;
     /** 当前启用的面额，管理员界面显示用 */
     private final java.util.List<Double> enabledDenominations;
+    /** 该玩家的定期存款，客户端银行页展示用 */
+    private final java.util.List<com.koko.marketbox.capabilities.FixedDeposit> fixedDeposits;
     private final List<ItemStack> returnedItems;
     private final List<PlayerBalance.Transaction> transactions;
     /** 分类累计收入/支出（分），供统计页拆分展示 */
@@ -59,7 +61,8 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
                                    int listingExpiryMinutes,
                                    int maxListings, double maxListingPrice,
                                    double maxTransactionAmount, boolean transferEnabled,
-                                   java.util.List<Double> enabledDenominations) {
+                                   java.util.List<Double> enabledDenominations,
+                                   java.util.List<com.koko.marketbox.capabilities.FixedDeposit> fixedDeposits) {
         this.balance = balance;
         this.totalInterest = totalInterest;
         this.lastInterestTime = lastInterestTime;
@@ -81,6 +84,7 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         this.maxTransactionAmount = maxTransactionAmount;
         this.transferEnabled = transferEnabled;
         this.enabledDenominations = enabledDenominations;
+        this.fixedDeposits = fixedDeposits;
     }
 
     public SyncPlayerBalancePacket(RegistryFriendlyByteBuf buf) {
@@ -104,6 +108,13 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         this.enabledDenominations = new java.util.ArrayList<>(denomCount);
         for (int i = 0; i < denomCount; i++) {
             this.enabledDenominations.add(buf.readDouble());
+        }
+
+        int depositCount = buf.readVarInt();
+        this.fixedDeposits = new java.util.ArrayList<>(depositCount);
+        for (int i = 0; i < depositCount; i++) {
+            this.fixedDeposits.add(new com.koko.marketbox.capabilities.FixedDeposit(
+                    buf.readUUID(), buf.readLong(), buf.readDouble(), buf.readLong(), buf.readVarInt()));
         }
 
         int returnedSize = buf.readVarInt();
@@ -161,6 +172,17 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         buf.writeVarInt(denoms.size());
         for (double d : denoms) {
             buf.writeDouble(d);
+        }
+
+        java.util.List<com.koko.marketbox.capabilities.FixedDeposit> deposits =
+                fixedDeposits == null ? java.util.List.of() : fixedDeposits;
+        buf.writeVarInt(deposits.size());
+        for (var d : deposits) {
+            buf.writeUUID(d.id());
+            buf.writeLong(d.principalCents());
+            buf.writeDouble(d.dailyRatePercent());
+            buf.writeLong(d.startTime());
+            buf.writeVarInt(d.days());
         }
 
         buf.writeVarInt(returnedItems.size());
@@ -254,6 +276,10 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
 
     public java.util.List<Double> enabledDenominations() {
         return enabledDenominations;
+    }
+
+    public java.util.List<com.koko.marketbox.capabilities.FixedDeposit> fixedDeposits() {
+        return fixedDeposits;
     }
 
     public java.util.Map<String, Long> incomeByCategory() {

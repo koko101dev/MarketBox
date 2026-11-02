@@ -84,6 +84,13 @@ public class MarketBoxScreen extends Screen implements FeedbackReceiver {
 
         // 存入 / 取出：未进入输入模式时是两个按钮；
         // 进入后该区域变为「输入框 + 快捷金额行」，不额外占用版面
+        // 定期存款入口：独立子界面，避免银行页中栏过挤
+        this.addRenderableWidget(new StyledButton(buttonX, buttonYStart - 24,
+                buttonWidth, buttonHeight,
+                Component.translatable("gui.marketbox.fixed.entry"),
+                b -> net.minecraft.client.Minecraft.getInstance()
+                        .setScreen(new FixedDepositScreen(this))));
+
         boolean editing = currentMode == MenuMode.DEPOSIT || currentMode == MenuMode.WITHDRAW;
         if (editing) {
             setupInputField(buttonX, buttonYStart, buttonWidth, buttonHeight);
