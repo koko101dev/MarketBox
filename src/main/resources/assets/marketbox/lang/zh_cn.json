@@ -194,6 +194,7 @@
   "commands.marketbox.help.reset": "/marketbox reset <玩家> — 清零余额与统计（管理员）",
   "commands.marketbox.help.market_list": "/marketbox market list — 查看挂单数量（管理员）",
   "commands.marketbox.help.market_clear": "/marketbox market clear — 清空挂单并退还物品（管理员）",
+  "commands.marketbox.help.listingexpiry": "/marketbox listingexpiry [分钟] — 查看或设置挂单有效期（等级 4）",
   "commands.marketbox.help.reload": "/marketbox reload — 重新载入配置文件（管理员）",
   "gui.marketbox.market.fee_hint": "成交手续费 %s%%",
   "gui.marketbox.market.list_dialog_title": "上架物品",

@@ -158,7 +158,7 @@ public final class MarketBoxCommand {
     private static int showHelp(CommandSourceStack source) {
         source.sendSuccess(() -> Component.translatable("commands.marketbox.help.header"), false);
         for (String key : new String[]{"balance", "set", "add", "reset",
-                "market_list", "market_clear", "treasury", "economy", "reload"}) {
+                "market_list", "market_clear", "listingexpiry", "treasury", "economy", "reload"}) {
             source.sendSuccess(() -> Component.translatable("commands.marketbox.help." + key), false);
         }
         return 1;

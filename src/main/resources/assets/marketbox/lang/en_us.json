@@ -194,6 +194,7 @@
   "commands.marketbox.help.reset": "/marketbox reset <player> — reset balance and stats (admin)",
   "commands.marketbox.help.market_list": "/marketbox market list — count listings (admin)",
   "commands.marketbox.help.market_clear": "/marketbox market clear — clear listings and refund (admin)",
+  "commands.marketbox.help.listingexpiry": "/marketbox listingexpiry [minutes] — view or set listing expiry (level 4)",
   "commands.marketbox.help.reload": "/marketbox reload — reload config files (admin)",
   "gui.marketbox.market.fee_hint": "Sale fee %s%%",
   "gui.marketbox.market.list_dialog_title": "List Item",
