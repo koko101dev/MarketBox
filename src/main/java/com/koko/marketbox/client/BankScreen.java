@@ -139,17 +139,29 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         return value == Math.floor(value) ? String.valueOf((long) value) : String.format("%.2f", value);
     }
 
+    /**
+     * 快捷金额：存入的「全部」是背包里的现金，取出的「全部」才是银行余额。
+     * 这两者完全不同——存入时余额还没增加，用余额会导致显示 0。
+     */
     private void applyQuick(double preset) {
         if (amountInput == null) {
             return;
         }
         double amount = preset;
         if (preset < 0) {
-            amount = mode == Mode.DEPOSIT
-                    ? ClientData.getPlayerBalance()
-                    : Math.min(ClientData.getPlayerBalance(), 1_000_000);
+            if (mode == Mode.DEPOSIT) {
+                var player = Minecraft.getInstance().player;
+                amount = player != null ? MoneyUtils.getInventoryMoneyTotal(player) : 0;
+            } else {
+                amount = ClientData.getPlayerBalance();
+            }
+        }
+        if (amount <= 0) {
+            toast.show(Component.translatable("gui.marketbox.error.invalid_amount"), true);
+            return;
         }
         amountInput.setValue(formatAmount(amount));
+        amountInput.setFocused(true);
     }
 
     private void submit() {
@@ -170,6 +182,11 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         if (mode == Mode.DEPOSIT) {
             ClientNetwork.send(new com.koko.marketbox.networking.packet.DepositMoneyPacket(amount));
         } else if (mode == Mode.WITHDRAW) {
+            // 取款前先看余额，避免白跑一次服务端请求
+            if (ClientData.getPlayerBalance() < amount) {
+                toast.show(Component.translatable("gui.marketbox.error.not_enough_balance"), true);
+                return;
+            }
             ClientNetwork.send(new com.koko.marketbox.networking.packet.WithdrawMoneyPacket(amount));
         }
         switchMode(Mode.NONE);
