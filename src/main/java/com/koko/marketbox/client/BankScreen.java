@@ -96,9 +96,6 @@ public class BankScreen extends Screen implements FeedbackReceiver {
             this.amountInput.setMaxLength(12);
             // 边框由界面自绘，关掉 EditBox 默认的白框，避免两层描边
             this.amountInput.setBordered(false);
-            this.amountInput.setHint(Component.translatable("gui.marketbox.balance.input_hint",
-                    Component.translatable(mode == Mode.DEPOSIT
-                            ? "gui.marketbox.button.feature1" : "gui.marketbox.button.feature2")));
             this.amountInput.setFilter(s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
             this.amountInput.setFocused(true);
             this.setFocused(this.amountInput);
@@ -199,8 +196,10 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         if (mode != Mode.NONE) {
             // 当前操作由输入框占位符说明，不再单独占一行
             // 输入框底衬与边框
+            // 存入绿色、取出红色：不占额外空间也能一眼看出当前在做什么
+            int borderColor = mode == Mode.DEPOSIT ? 0xFF55AA55 : 0xFFAA5555;
             guiGraphics.fill(innerLeft, inputRowY, innerLeft + 176, inputRowY + BUTTON_HEIGHT, 0xFF050505);
-            guiGraphics.renderOutline(innerLeft, inputRowY, 176, BUTTON_HEIGHT, 0xFF666666);
+            guiGraphics.renderOutline(innerLeft, inputRowY, 176, BUTTON_HEIGHT, borderColor);
         }
 
         renderHistory(guiGraphics, innerLeft);
