@@ -263,21 +263,6 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         guiGraphics.drawString(font, amount, textLeft / 2, (top + 58) / 2, 0x55FF55, false);
         guiGraphics.pose().popPose();
 
-        // 上半部分右侧：现金与存款，填掉头像区右侧的空白
-        int rightX = left + w / 2 + 40;
-        if (player != null) {
-            double cash = MoneyUtils.getInventoryMoneyTotal(player);
-            double deposit = ClientData.getPlayerBalance();
-            int cellW = (left + w - rightX - 14) / 2;
-            // 每格内容居中，避免文字挤在格子左侧、右侧又留白
-            drawCenteredCell(guiGraphics, rightX, cellW, top + 40,
-                    Component.translatable("gui.marketbox.balance.cash"),
-                    MoneyUtils.formatValue(cash), 0x777777, 0xFFFF55);
-            drawCenteredCell(guiGraphics, rightX + cellW, cellW, top + 40,
-                    Component.translatable("gui.marketbox.balance.deposit"),
-                    MoneyUtils.formatValue(deposit), 0x777777, 0x55FF55);
-        }
-
         // 横向指标栏：四格等宽，铺满卡片宽度
         int metricsY = top + 96;
         int metricsHeight = 40;
