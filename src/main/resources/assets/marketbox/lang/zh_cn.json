@@ -380,5 +380,7 @@
   "gui.marketbox.balance.metric_rate": "活期日息",
   "gui.marketbox.balance.metric_annual": "年化收益",
   "gui.marketbox.balance.metric_interest": "累计利息",
-  "gui.marketbox.balance.metric_next": "下次结息"
+  "gui.marketbox.balance.metric_next": "下次结息",
+  "gui.marketbox.balance.cash": "现金",
+  "gui.marketbox.balance.deposit": "银行存款"
 }

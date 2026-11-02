@@ -380,5 +380,7 @@
   "gui.marketbox.balance.metric_rate": "Daily rate",
   "gui.marketbox.balance.metric_annual": "Yearly",
   "gui.marketbox.balance.metric_interest": "Earned",
-  "gui.marketbox.balance.metric_next": "Next payout"
+  "gui.marketbox.balance.metric_next": "Next payout",
+  "gui.marketbox.balance.cash": "Cash",
+  "gui.marketbox.balance.deposit": "Deposited"
 }

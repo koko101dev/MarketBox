@@ -238,17 +238,35 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         }
 
         int textLeft = avatarX + avatarSize + 14;
+        // 头像 top+24 ~ top+80（56 高）；文字块与它上下对齐
         if (player != null) {
-            guiGraphics.drawString(font, player.getName(), textLeft, top + 18, 0xDDDDDD, false);
+            guiGraphics.drawString(font, player.getName(), textLeft, top + 24, 0xDDDDDD, false);
         }
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.balance.label"),
-                textLeft, top + 32, 0x777777, false);
+                textLeft, top + 38, 0x777777, false);
 
         String amount = "¥ " + MoneyUtils.formatValue(ClientData.getPlayerBalance());
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(2.0f, 2.0f, 1.0f);
-        guiGraphics.drawString(font, amount, textLeft / 2, (top + 46) / 2, 0x55FF55, false);
+        // 2 倍缩放：实际高度约 18，绘制在 top+62 时底部约 top+80，与头像底齐平
+        guiGraphics.drawString(font, amount, textLeft / 2, (top + 62) / 2, 0x55FF55, false);
         guiGraphics.pose().popPose();
+
+        // 上半部分右侧：现金与存款，填掉头像区右侧的空白
+        int rightX = left + w / 2 + 40;
+        if (player != null) {
+            double cash = MoneyUtils.getInventoryMoneyTotal(player);
+            double deposit = ClientData.getPlayerBalance();
+            int cellW = (left + w - rightX - 14) / 2;
+            guiGraphics.drawString(font, Component.translatable("gui.marketbox.balance.cash"),
+                    rightX, top + 40, 0x777777, false);
+            guiGraphics.drawString(font, MoneyUtils.formatValue(cash),
+                    rightX, top + 54, 0xFFFF55, false);
+            guiGraphics.drawString(font, Component.translatable("gui.marketbox.balance.deposit"),
+                    rightX + cellW, top + 40, 0x777777, false);
+            guiGraphics.drawString(font, MoneyUtils.formatValue(deposit),
+                    rightX + cellW, top + 54, 0x55FF55, false);
+        }
 
         // 横向指标栏：四格等宽，铺满卡片宽度
         int metricsY = top + 96;
