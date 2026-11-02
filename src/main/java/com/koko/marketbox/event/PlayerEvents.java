@@ -66,6 +66,12 @@ public final class PlayerEvents {
         // 同步管理员权限，客户端据此决定设置界面显示哪些项
         ModMessages.sendToPlayer(player, new SyncAdminStatusPacket(player.hasPermissions(2)));
 
+        // 管理员额外收到上架黑名单，用于黑名单界面
+        if (player.hasPermissions(2)) {
+            ModMessages.sendToPlayer(player,
+                    new com.koko.marketbox.networking.packet.SyncBlacklistPacket(Config.getListingBlacklist()));
+        }
+
         checkAndApplyInterest(player);
 
         MarketManager manager = MarketManager.get(player.serverLevel());

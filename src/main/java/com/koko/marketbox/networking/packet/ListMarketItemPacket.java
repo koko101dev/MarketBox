@@ -27,9 +27,7 @@ public class ListMarketItemPacket implements CustomPacketPayload {
             StreamCodec.ofMember(ListMarketItemPacket::write, ListMarketItemPacket::new);
 
     /** 单人最多同时挂单数量，避免刷屏与同步包膨胀 */
-    private static final int MAX_LISTINGS_PER_PLAYER = 20;
     /** 单价上限（分），防止金额溢出 */
-    private static final long MAX_PRICE_CENTS = 100_000_000L;
 
     private final ItemStack item;
     private final double price;
@@ -81,7 +79,7 @@ public class ListMarketItemPacket implements CustomPacketPayload {
                 ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.invalid_price"));
                 return;
             }
-            if (Math.round(payload.price * 100) > MAX_PRICE_CENTS) {
+            if (payload.price > Config.getMaxListingPrice()) {
                 ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.price_too_high"));
                 return;
             }
@@ -92,12 +90,18 @@ public class ListMarketItemPacket implements CustomPacketPayload {
             // 时长由服主统一设定，客户端传来的值一律忽略
             int expiryMinutes = Config.getListingExpiryMinutes();
             MarketManager manager = MarketManager.get(player.serverLevel());
-            if (manager.countBySeller(player.getUUID()) >= MAX_LISTINGS_PER_PLAYER) {
+            if (manager.countBySeller(player.getUUID()) >= Config.getMaxListingsPerPlayer()) {
                 ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.too_many_listings"));
                 return;
             }
             if (MoneyUtils.isCurrency(payload.item)) {
                 ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.cannot_list_currency"));
+                return;
+            }
+            if (Config.isListingBlocked(
+                    net.minecraft.core.registries.BuiltInRegistries.ITEM
+                            .getKey(payload.item.getItem()).toString())) {
+                ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.blocked_item"));
                 return;
             }
 

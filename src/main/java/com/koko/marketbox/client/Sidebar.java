@@ -13,7 +13,7 @@ final class Sidebar {
 
     /** 当前所在页面，用于高亮 */
     enum Page {
-        BANK, TRANSFER, MARKET, STATS, RANKING, ECONOMY, SETTINGS
+        BANK, TRANSFER, MARKET, STATS, RANKING, ECONOMY, SETTINGS, BLACKLIST
     }
 
     private Sidebar() {
@@ -33,22 +33,28 @@ final class Sidebar {
         int y = 52;
         int step = 22;
 
-        return java.util.List.of(
-                nav(host, x, y, btnWidth, "bank", current == Page.BANK,
-                        () -> open(host, new MarketBoxScreen())),
-                nav(host, x, y + step, btnWidth, "transfer", current == Page.TRANSFER,
-                        () -> open(host, new TransferScreen(host))),
-                nav(host, x, y + step * 2, btnWidth, "market", current == Page.MARKET,
-                        () -> open(host, new MarketScreen(host))),
-                nav(host, x, y + step * 3, btnWidth, "stats", current == Page.STATS,
-                        () -> open(host, new StatsScreen(host))),
-                nav(host, x, y + step * 4, btnWidth, "ranking", current == Page.RANKING,
-                        () -> open(host, new RankingScreen(host))),
-                nav(host, x, y + step * 5, btnWidth, "economy", current == Page.ECONOMY,
-                        () -> open(host, new EconomyScreen(host))),
-                nav(host, x, y + step * 6, btnWidth, "settings", current == Page.SETTINGS,
-                        () -> open(host, new ConfigScreen(host)))
-        );
+        java.util.List<StyledButton> list = new java.util.ArrayList<>();
+        list.add(nav(host, x, y, btnWidth, "bank", current == Page.BANK,
+                () -> open(host, new MarketBoxScreen())));
+        list.add(nav(host, x, y + step, btnWidth, "transfer", current == Page.TRANSFER,
+                () -> open(host, new TransferScreen(host))));
+        list.add(nav(host, x, y + step * 2, btnWidth, "market", current == Page.MARKET,
+                () -> open(host, new MarketScreen(host))));
+        list.add(nav(host, x, y + step * 3, btnWidth, "stats", current == Page.STATS,
+                () -> open(host, new StatsScreen(host))));
+        list.add(nav(host, x, y + step * 4, btnWidth, "ranking", current == Page.RANKING,
+                () -> open(host, new RankingScreen(host))));
+        list.add(nav(host, x, y + step * 5, btnWidth, "economy", current == Page.ECONOMY,
+                () -> open(host, new EconomyScreen(host))));
+        list.add(nav(host, x, y + step * 6, btnWidth, "settings", current == Page.SETTINGS,
+                () -> open(host, new ConfigScreen(host))));
+
+        // 黑名单只有管理员可见，普通玩家看不到这一项
+        if (ClientData.isAdmin()) {
+            list.add(nav(host, x, y + step * 7, btnWidth, "blacklist", current == Page.BLACKLIST,
+                    () -> open(host, new BlacklistScreen(host))));
+        }
+        return list;
     }
 
     private static StyledButton nav(Screen host, int x, int y, int width, String key,

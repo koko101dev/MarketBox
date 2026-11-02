@@ -50,6 +50,9 @@
 
 `银行` · `转账` · `市场` · `统计` · `排行` · `经济` · `设置`
 
+管理员额外看到第八项 `黑名单`，用于禁止特定物品上架（如刷怪笼、附魔金苹果）。
+该入口对普通玩家不可见。
+
 | 页面 | 内容 |
 |---|---|
 | **银行** | 存入 / 取出、快捷金额、每日收益预估、下次结息倒计时 |
@@ -130,6 +133,11 @@
 | `interestIntervalMinutes` | `1440` | 结息周期（分钟），默认一天 |
 | `marketFeePercent` | `2.0` | 市场成交手续费（%），从卖家实收中扣除 |
 | `listingExpiryMinutes` | `120` | 挂单有效期（分钟），服主统一设定，玩家不可选 |
+| `maxListingsPerPlayer` | `20` | 单人同时挂单数量上限（1~200） |
+| `maxListingPrice` | `1000000` | 单条挂单价格上限（总价） |
+| `maxTransactionAmount` | `1000000000` | 单笔存入、取出、转账上限 |
+| `transferEnabled` | `true` | 是否允许玩家之间互相转账 |
+| `listingBlacklist` | `[]` | 禁止上架的物品 ID 列表 |
 | `marketFeeMode` | `DESTROY` | 手续费去向：`DESTROY` 销毁 / `TREASURY` 进入金库 |
 
 **`marketbox-client.json`**（仅本地生效）

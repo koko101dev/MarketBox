@@ -40,6 +40,8 @@ public class ClientData {
     private static java.util.Map<String, Long> expenseByCategory = new java.util.HashMap<>();
     /** 挂单有效期（分钟），服主设定，界面只做展示 */
     private static int listingExpiryMinutes = 120;
+    /** 禁止上架的物品 ID，管理员界面用 */
+    private static java.util.List<String> blacklist = new java.util.ArrayList<>();
 
     public static boolean isAdmin() {
         return admin;
@@ -259,6 +261,14 @@ public class ClientData {
                                          java.util.Map<String, Long> expense) {
         incomeByCategory = income == null ? new java.util.HashMap<>() : income;
         expenseByCategory = expense == null ? new java.util.HashMap<>() : expense;
+    }
+
+    public static java.util.List<String> getBlacklist() {
+        return blacklist;
+    }
+
+    public static void setBlacklist(java.util.List<String> list) {
+        blacklist = list == null ? new java.util.ArrayList<>() : list;
     }
 
     public static int getListingExpiryMinutes() {

@@ -49,6 +49,16 @@ public final class Config {
          * 默认 120 分钟（2 小时）。
          */
         public int listingExpiryMinutes = 120;
+        /** 单人同时挂单数量上限 */
+        public int maxListingsPerPlayer = 20;
+        /** 单条挂单的价格上限（总价，单位：元） */
+        public double maxListingPrice = 1_000_000;
+        /** 单笔存入、取出、转账的金额上限（单位：元） */
+        public double maxTransactionAmount = 1_000_000_000;
+        /** 是否允许玩家之间互相转账（关闭后只能与系统交互） */
+        public boolean transferEnabled = true;
+        /** 禁止上架的物品 ID 列表，如 minecraft:spawner */
+        public java.util.List<String> listingBlacklist = new java.util.ArrayList<>();
         /**
          * 手续费去向：
          * TREASURY = 进入市场金库，服主可用 /marketbox treasury withdraw 拨款（默认）
@@ -129,6 +139,49 @@ public final class Config {
     /** 结息周期（分钟），供界面与命令展示 */
     public static int getInterestIntervalMinutes() {
         return common.interestIntervalMinutes;
+    }
+
+    public static int getMaxListingsPerPlayer() {
+        return Math.max(1, Math.min(200, common.maxListingsPerPlayer));
+    }
+
+    public static double getMaxListingPrice() {
+        return Math.max(1, Math.min(1_000_000_000, common.maxListingPrice));
+    }
+
+    public static double getMaxTransactionAmount() {
+        return Math.max(1, Math.min(1_000_000_000, common.maxTransactionAmount));
+    }
+
+    public static boolean isTransferEnabled() {
+        return common.transferEnabled;
+    }
+
+    /** 物品 ID 是否在禁止上架名单里 */
+    public static boolean isListingBlocked(String itemId) {
+        return common.listingBlacklist != null && common.listingBlacklist.contains(itemId);
+    }
+
+    public static java.util.List<String> getListingBlacklist() {
+        return common.listingBlacklist == null
+                ? new java.util.ArrayList<>()
+                : new java.util.ArrayList<>(common.listingBlacklist);
+    }
+
+    public static void addToBlacklist(String itemId) {
+        if (common.listingBlacklist == null) {
+            common.listingBlacklist = new java.util.ArrayList<>();
+        }
+        if (!common.listingBlacklist.contains(itemId)) {
+            common.listingBlacklist.add(itemId);
+            write(COMMON_PATH, common);
+        }
+    }
+
+    public static void removeFromBlacklist(String itemId) {
+        if (common.listingBlacklist != null && common.listingBlacklist.remove(itemId)) {
+            write(COMMON_PATH, common);
+        }
     }
 
     /** 挂单有效期（分钟），服务端权威，客户端只做展示 */

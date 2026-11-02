@@ -1,5 +1,6 @@
 package com.koko.marketbox.networking.packet;
 
+import com.koko.marketbox.Config;
 import com.koko.marketbox.MarketBox;
 import com.koko.marketbox.capabilities.PlayerBalance;
 import com.koko.marketbox.capabilities.PlayerBalanceAttachment;
@@ -24,7 +25,6 @@ public class WithdrawMoneyPacket implements CustomPacketPayload {
             StreamCodec.ofMember(WithdrawMoneyPacket::write, WithdrawMoneyPacket::new);
 
     /** 单笔金额上限（分），防止 long 溢出 */
-    private static final long MAX_CENTS = 100_000_000_000L;
 
     private final double amount;
 
@@ -60,7 +60,7 @@ public class WithdrawMoneyPacket implements CustomPacketPayload {
             if (cents <= 0) {
                 return;
             }
-            if (cents > MAX_CENTS) {
+            if (amount > Config.getMaxTransactionAmount()) {
                 ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.error.amount_too_large"));
                 return;
             }

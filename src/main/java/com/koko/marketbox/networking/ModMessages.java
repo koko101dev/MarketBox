@@ -41,6 +41,13 @@ public final class ModMessages {
         ServerPlayNetworking.registerGlobalReceiver(TreasuryGrantPacket.ID, TreasuryGrantPacket::handle);
 
         PayloadTypeRegistry.playC2S().register(
+                com.koko.marketbox.networking.packet.UpdateBlacklistPacket.ID,
+                com.koko.marketbox.networking.packet.UpdateBlacklistPacket.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(
+                com.koko.marketbox.networking.packet.UpdateBlacklistPacket.ID,
+                com.koko.marketbox.networking.packet.UpdateBlacklistPacket::handle);
+
+        PayloadTypeRegistry.playC2S().register(
                 com.koko.marketbox.networking.packet.BulkListMarketItemPacket.ID,
                 com.koko.marketbox.networking.packet.BulkListMarketItemPacket.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(
@@ -87,6 +94,10 @@ public final class ModMessages {
         // ---- 服务端 -> 客户端 ----
         PayloadTypeRegistry.playS2C().register(SyncPlayerBalancePacket.ID, SyncPlayerBalancePacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SyncLeaderboardPacket.ID, SyncLeaderboardPacket.CODEC);
+
+        PayloadTypeRegistry.playS2C().register(
+                com.koko.marketbox.networking.packet.SyncBlacklistPacket.ID,
+                com.koko.marketbox.networking.packet.SyncBlacklistPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SyncMarketListingsPacket.ID, SyncMarketListingsPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SyncAdminStatusPacket.ID, SyncAdminStatusPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SyncEconomyPacket.ID, SyncEconomyPacket.CODEC);

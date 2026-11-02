@@ -314,5 +314,17 @@
   "gui.marketbox.market.bulk_row_invalid": "第 %s 行的数量或价格无效，请修正后重试",
   "gui.marketbox.market.expiry_fixed": "有效期 %s 分钟（服主设定）",
   "commands.marketbox.listingexpiry.query": "挂单有效期为 %s 分钟（服主统一设定，玩家不可选）",
-  "commands.marketbox.listingexpiry.set": "挂单有效期已设为 %s 分钟"
+  "commands.marketbox.listingexpiry.set": "挂单有效期已设为 %s 分钟",
+  "gui.marketbox.nav.blacklist": "黑名单",
+  "gui.marketbox.blacklist.title": "上架黑名单",
+  "gui.marketbox.blacklist.hint": "名单内的物品无法上架市场，点击右侧移除",
+  "gui.marketbox.blacklist.add_held": "添加手持物品",
+  "gui.marketbox.blacklist.back": "返回",
+  "gui.marketbox.blacklist.empty": "名单为空，所有物品都可上架",
+  "gui.marketbox.blacklist.empty_hand": "请先手持要禁止的物品",
+  "gui.marketbox.blacklist.already": "该物品已在名单中",
+  "gui.marketbox.blacklist.added": "已加入黑名单：%s",
+  "gui.marketbox.blacklist.removed": "已移出黑名单",
+  "gui.marketbox.market.error.blocked_item": "该物品不允许上架",
+  "gui.marketbox.error.transfer_disabled": "本服已关闭玩家之间的转账"
 }

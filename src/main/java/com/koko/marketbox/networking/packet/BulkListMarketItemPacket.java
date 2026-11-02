@@ -30,8 +30,6 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
             new CustomPacketPayload.Type<>(MarketBox.id("bulk_list_market_item"));
 
     /** 一次最多提交的条数，与单人挂单上限一致 */
-    private static final int MAX_ENTRIES = 20;
-    private static final long MAX_PRICE_CENTS = 100_000_000L;
 
     public static final StreamCodec<RegistryFriendlyByteBuf, BulkListMarketItemPacket> CODEC =
             StreamCodec.ofMember(BulkListMarketItemPacket::write, BulkListMarketItemPacket::new);
@@ -86,7 +84,7 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
             }
             // 时长由服主统一设定，客户端传来的值一律忽略
             int expiryMinutes = Config.getListingExpiryMinutes();
-            if (payload.entries.size() > MAX_ENTRIES) {
+            if (payload.entries.size() > Config.getMaxListingsPerPlayer()) {
                 ModMessages.sendToPlayer(player,
                         new ActionFeedbackPacket("gui.marketbox.market.error.too_many_listings"));
                 return;
@@ -100,7 +98,7 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
                 int currentCount = manager.countBySeller(player.getUUID());
 
                 for (Entry entry : payload.entries) {
-                    if (currentCount >= 20) {
+                    if (currentCount >= Config.getMaxListingsPerPlayer()) {
                         failed++;
                         continue;
                     }
@@ -135,10 +133,14 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
         if (stack.isEmpty() || quantity <= 0) {
             return false;
         }
-        if (entry.price <= 0 || Math.round(entry.price * 100) > MAX_PRICE_CENTS) {
+        if (entry.price <= 0 || entry.price > Config.getMaxListingPrice()) {
             return false;
         }
         if (MoneyUtils.isCurrency(stack)) {
+            return false;
+        }
+        if (Config.isListingBlocked(
+                net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString())) {
             return false;
         }
 

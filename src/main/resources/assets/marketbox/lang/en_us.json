@@ -314,5 +314,17 @@
   "gui.marketbox.market.bulk_row_invalid": "Row %s has invalid quantity or price",
   "gui.marketbox.market.expiry_fixed": "Duration %s min (server setting)",
   "commands.marketbox.listingexpiry.query": "Listing duration is %s minutes (server-wide)",
-  "commands.marketbox.listingexpiry.set": "Listing duration set to %s minutes"
+  "commands.marketbox.listingexpiry.set": "Listing duration set to %s minutes",
+  "gui.marketbox.nav.blacklist": "Blacklist",
+  "gui.marketbox.blacklist.title": "Listing blacklist",
+  "gui.marketbox.blacklist.hint": "Items here cannot be listed; click the right side to remove",
+  "gui.marketbox.blacklist.add_held": "Add held item",
+  "gui.marketbox.blacklist.back": "Back",
+  "gui.marketbox.blacklist.empty": "Empty — every item can be listed",
+  "gui.marketbox.blacklist.empty_hand": "Hold the item you want to block",
+  "gui.marketbox.blacklist.already": "Already in the list",
+  "gui.marketbox.blacklist.added": "Blocked: %s",
+  "gui.marketbox.blacklist.removed": "Removed from blacklist",
+  "gui.marketbox.market.error.blocked_item": "This item cannot be listed",
+  "gui.marketbox.error.transfer_disabled": "Player-to-player transfers are disabled"
 }

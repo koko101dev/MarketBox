@@ -38,6 +38,11 @@ public final class ClientPacketHandlers {
                     ClientData.setListingExpiryMinutes(payload.listingExpiryMinutes());
                 }));
 
+        ClientPlayNetworking.registerGlobalReceiver(
+                com.koko.marketbox.networking.packet.SyncBlacklistPacket.ID,
+                (payload, context) -> context.client().execute(
+                        () -> ClientData.setBlacklist(payload.itemIds())));
+
         ClientPlayNetworking.registerGlobalReceiver(SyncLeaderboardPacket.ID, (payload, context) ->
                 context.client().execute(() -> ClientData.setLeaderboard(payload.entries())));
 
