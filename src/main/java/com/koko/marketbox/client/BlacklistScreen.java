@@ -310,11 +310,17 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
                 guiGraphics.fill(x, rowY, x + w, rowY + ROW_HEIGHT - 2, 0x12FFFFFF);
             }
 
-            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
-            ItemStack stack = new ItemStack(item);
-            guiGraphics.renderItem(stack, x + 6, rowY + 3);
-            guiGraphics.drawString(font, stack.getHoverName().getString(), x + 28, rowY + 3, 0xEEEEEE, false);
-            guiGraphics.drawString(font, id, x + 28, rowY + 13, 0x666666, false);
+            ResourceLocation key = ResourceLocation.tryParse(id);
+            Item item = key == null ? null : BuiltInRegistries.ITEM.get(key);
+            if (item != null && item != net.minecraft.world.item.Items.AIR) {
+                ItemStack stack = new ItemStack(item);
+                guiGraphics.renderItem(stack, x + 6, rowY + 3);
+                guiGraphics.drawString(font, stack.getHoverName().getString(), x + 28, rowY + 3, 0xEEEEEE, false);
+                guiGraphics.drawString(font, id, x + 28, rowY + 13, 0x666666, false);
+            } else {
+                // 物品已不存在（模组被卸载，或 ID 手写错）：只把 ID 标红，避免整页渲染抛异常
+                guiGraphics.drawString(font, id, x + 28, rowY + 6, 0xFF7777, false);
+            }
 
             String remove = Component.translatable("gui.marketbox.blacklist.tag_remove").getString();
             guiGraphics.drawString(font, remove, x + w - font.width(remove) - 8, rowY + 8, 0xFF7777, false);
@@ -331,9 +337,12 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         int w = contentWidth - PADDING * 2;
 
         if (button == 0 && mouseX >= x && mouseX <= x + w && mouseY >= resultsTop) {
-            int index = pageStart() + (int) ((mouseY - resultsTop + scrollOffset) / ROW_HEIGHT);
+            // row 是页内行号，index 是全局索引：用全局索引和「一页能显示几行」比较，
+            // 会让第 2 页起的每一行都判为越界，整页点不动
+            int row = (int) ((mouseY - resultsTop + scrollOffset) / ROW_HEIGHT);
             int maxRows = Math.max(1, resultsHeight / ROW_HEIGHT);
-            if (index >= 0 && index < maxRows) {
+            if (row >= 0 && row < maxRows) {
+                int index = pageStart() + row;
                 if (searching()) {
                     if (index >= 0 && index < results.size()) {
                         addItem(results.get(index));

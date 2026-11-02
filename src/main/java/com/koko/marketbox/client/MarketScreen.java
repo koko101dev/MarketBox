@@ -197,26 +197,33 @@ public class MarketScreen extends Screen implements FeedbackReceiver {
         int dividerX = leftPos + sidebarWidth;
         guiGraphics.fill(dividerX, topPos + PADDING, dividerX + 1, topPos + guiHeight - PADDING, 0x44FFFFFF);
         
-        // Title - Centered in the market (right) section
+        // 标题居中，但给右侧搜索框让位：窄窗口下截断，避免标题与搜索框叠在一起
+        int titleMax = Math.max(40, mainWidth - 100);
+        Component title = this.font.width(this.title) > titleMax
+                ? Component.literal(this.font.plainSubstrByWidth(this.title.getString(), titleMax))
+                : this.title;
         int titleX = leftPos + sidebarWidth + mainWidth / 2;
-        guiGraphics.drawCenteredString(this.font, this.title, titleX, topPos + 5, 0xFFFFFF);
+        guiGraphics.drawCenteredString(this.font, title, titleX, topPos + 5, 0xFFFFFF);
 
         // 成交手续费提示：成交额从卖家实收中扣除
         double feePercent = ClientData.getMarketFeePercent();
         if (feePercent > 0) {
             String feeHint = Component.translatable("gui.marketbox.market.fee_hint",
                     String.format("%.1f", feePercent)).getString();
-            int fx = titleX + this.font.width(this.title) / 2 + 12;
             int fw = this.font.width(feeHint);
             int boxPadX = 5;
-            int boxH = this.font.lineHeight + 6;
-            // 与标题文字垂直居中对齐：标题基线在 topPos+5，行高 9，中心约 topPos+9.5
-            int boxY = topPos + 5 + this.font.lineHeight / 2 - boxH / 2;
-            int textY = boxY + (boxH - this.font.lineHeight) / 2 + 1;
+            int fx = titleX + this.font.width(title) / 2 + 12;
+            // 右侧放不下就整条省略，别把文字和边框画到屏幕外
+            if (fx + fw + boxPadX <= this.width - 6) {
+                int boxH = this.font.lineHeight + 6;
+                // 与标题文字垂直居中对齐：标题基线在 topPos+5，行高 9，中心约 topPos+9.5
+                int boxY = topPos + 5 + this.font.lineHeight / 2 - boxH / 2;
+                int textY = boxY + (boxH - this.font.lineHeight) / 2 + 1;
 
-            guiGraphics.fill(fx - boxPadX, boxY, fx + fw + boxPadX, boxY + boxH, 0x66000000);
-            guiGraphics.renderOutline(fx - boxPadX, boxY, fw + boxPadX * 2, boxH, 0x88FFAA00);
-            guiGraphics.drawString(this.font, feeHint, fx, textY, 0xFFCC66, false);
+                guiGraphics.fill(fx - boxPadX, boxY, fx + fw + boxPadX, boxY + boxH, 0x66000000);
+                guiGraphics.renderOutline(fx - boxPadX, boxY, fw + boxPadX * 2, boxH, 0x88FFAA00);
+                guiGraphics.drawString(this.font, feeHint, fx, textY, 0xFFCC66, false);
+            }
         }
         
         MarketScreenRenderer.renderLeftSection(this, guiGraphics, mouseX, mouseY);
@@ -401,8 +408,10 @@ public class MarketScreen extends Screen implements FeedbackReceiver {
                         }
                     }
                 }
-            } else {
-                // Clicked outside market cards and widgets - return to default state (clear search)
+            } else if (mouseX >= leftPos + sidebarWidth
+                    && mouseY >= searchBox.getY() + searchBox.getHeight()) {
+                // 只有点在右侧卡片区的空白处才清空搜索：
+                // 原先只要落在卡片外就清空，点左栏或标题栏也会把正在输入的内容清掉
                 if (!this.searchBox.getValue().isEmpty()) {
                     this.searchBox.setValue("");
                 }

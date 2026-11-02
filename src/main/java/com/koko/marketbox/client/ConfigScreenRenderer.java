@@ -100,9 +100,9 @@ final class ConfigScreenRenderer {
 
     static void renderConfigRows(ConfigScreen screen, GuiGraphics guiGraphics, int startY) {
         int y = startY;
-        boolean admin = ClientData.isAdmin();
+        // 必须与 ConfigScreen.init 用同一个判定：利息区块的行是 owner 才画的
         boolean owner = ClientData.isOwner();
-        if (admin) {
+        if (owner) {
             renderSectionHeader(screen, guiGraphics,
                     Component.translatable("gui.marketbox.config.section.interest"), y);
             y += SECTION_HEADER;

@@ -52,8 +52,9 @@ public class ListingDialogScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.left = (this.width - W) / 2;
-        this.top = (this.height - H) / 2;
+        this.left = Math.max(2, (this.width - W) / 2);
+        // 窗口比弹窗还矮时，至少保证顶部（标题与数量滑条）可见，不被推到屏幕外
+        this.top = Math.max(2, (this.height - H) / 2);
 
         // 只有 1 个可卖时，滑条与步进按钮都没有意义，直接留白
         if (maxCount > 1) {

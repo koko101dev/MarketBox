@@ -368,6 +368,7 @@
   "gui.marketbox.fixed.opened": "Deposited: %s",
   "gui.marketbox.fixed.claimed": "Matured, received %s",
   "gui.marketbox.fixed.early_withdraw": "Early withdrawal: %s returned, no interest",
+  "gui.marketbox.fixed.early_confirm": "Early withdrawal refunds principal only — click again to confirm",
   "gui.marketbox.fixed.too_many": "Too many fixed deposits",
   "gui.marketbox.fixed.not_found": "Deposit not found",
   "gui.marketbox.fixed.matured_notice": "%s fixed deposit(s) matured, %s available",
@@ -383,5 +384,7 @@
   "gui.marketbox.balance.metric_interest": "Earned",
   "gui.marketbox.balance.metric_next": "Next payout",
   "gui.marketbox.balance.cash": "Cash",
-  "gui.marketbox.balance.deposit": "Deposited"
+  "gui.marketbox.balance.deposit": "Deposited",
+  "gui.marketbox.balance.hint.deposit": "Enter deposit amount",
+  "gui.marketbox.balance.hint.withdraw": "Enter withdraw amount"
 }

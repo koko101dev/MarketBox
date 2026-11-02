@@ -33,18 +33,16 @@ final class MarketScreenActions {
                 // Keep everything visible but control active state
                 btn.visible = true;
                 // 侧边栏导航始终可用，其余按钮跟随选择状态
-                if (!isNavButton(btn.getMessage())) {
+                if (!isNavButton(screen, btn)) {
                     btn.active = active;
                 }
             }
         });
     }
 
-    /** 判断按钮是否为侧边栏导航项（这些按钮不随物品选择状态禁用） */
-    private static boolean isNavButton(Component message) {
-        return message.equals(Component.translatable("gui.marketbox.nav.bank"))
-                || message.equals(Component.translatable("gui.marketbox.nav.market"))
-                || message.equals(Component.translatable("gui.marketbox.nav.settings"));
+    /** 侧边栏导航项：按坐标判断（位于左侧导航区内），新增页面时不会漏 */
+    private static boolean isNavButton(MarketScreen screen, StyledButton btn) {
+        return btn.getX() < screen.leftPos;
     }
 
 }

@@ -169,7 +169,8 @@ public class StatsScreen extends Screen {
                 String detailText = mc.font.plainSubstrByWidth(detail.getString(), w - 170);
                 guiGraphics.drawString(mc.font, detailText, x + 76, rowY + 5, 0xDDDDDD, false);
 
-                String amount = (t.amount() > 0 ? "+" : "") + String.format("%.2f", t.amount());
+                // 与其他页面统一走 formatValue：大额自动带 K/M，不会再出现小数位风格不一致
+                String amount = (t.amount() > 0 ? "+" : "") + MoneyUtils.formatValue(t.amount());
                 guiGraphics.drawString(mc.font, amount, x + w - mc.font.width(amount), rowY + 5,
                         t.amount() > 0 ? 0x55FF55 : 0xFF5555, false);
             }

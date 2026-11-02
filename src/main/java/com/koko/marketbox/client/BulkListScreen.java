@@ -99,14 +99,23 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
         buildRowWidgets();
 
         int bottomY = this.height - PADDING - 20;
+        // 三个按钮从右往左依次排开，每个都扣掉前一个的宽度：
+        // 之前后两个共用同一个基准点，导致「返回市场」和「返回」完全重叠
+        int submitW = 90;
+        int backMarketW = 70;
+        int backW = 60;
+        int gap = 8;
+        int submitX = this.width - PADDING - submitW;
+        int backMarketX = submitX - gap - backMarketW;
+        int backX = backMarketX - gap - backW;
 
-        this.addRenderableWidget(new StyledButton(this.width - PADDING - 90, bottomY, 90, 20,
+        this.addRenderableWidget(new StyledButton(submitX, bottomY, submitW, 20,
                 Component.translatable("gui.marketbox.market.bulk_submit"), b -> submit()));
         // 二级页面：返回市场首页
-        this.addRenderableWidget(new StyledButton(this.width - PADDING - 90 - 74, bottomY, 70, 20,
+        this.addRenderableWidget(new StyledButton(backMarketX, bottomY, backMarketW, 20,
                 Component.translatable("gui.marketbox.market.bulk_back_market"), b -> this.onClose()));
         // 叫「返回」而不是「完成」：这个按钮只关窗口，不做提交
-        this.addRenderableWidget(new StyledButton(this.width - PADDING - 90 - 64, bottomY, 60, 20,
+        this.addRenderableWidget(new StyledButton(backX, bottomY, backW, 20,
                 Component.translatable("gui.marketbox.market.bulk_back"), b -> this.onClose()));
     }
 

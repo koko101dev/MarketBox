@@ -86,7 +86,15 @@ public class BankScreen extends Screen implements FeedbackReceiver {
                     b -> Minecraft.getInstance().setScreen(new FixedDepositScreen(this))));
         } else {
             // 输入模式：左侧固定宽度输入框 + 确认，右侧快捷金额，取消贴最右
+            // 小窗口自适应：输入框 + 确认 + 四个快捷档 + 取消，
+            // 原布局在逻辑宽 427 时需要约 542px，「全部」和「取消」会被挤出屏幕
             int inputWidth = 176;
+            int quickW = 58;
+            int reserved = 44 + 10 + 64;
+            if (inputWidth + reserved + 4 * (quickW + 4) > innerWidth) {
+                quickW = Math.max(32, (innerWidth - inputWidth - reserved - 16) / 4);
+                inputWidth = Math.max(80, innerWidth - reserved - 4 * (quickW + 4));
+            }
             // 与普通模式的按钮行保持同一水平线，切换时界面不跳动
             int rowY = buttonTop;
             this.inputRowY = rowY;
@@ -98,6 +106,11 @@ public class BankScreen extends Screen implements FeedbackReceiver {
                     inputWidth - 16, BUTTON_HEIGHT, Component.empty());
             this.amountInput.setMaxLength(12);
             this.amountInput.setFilter(s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
+            // 用占位符说明当前是存还是取：输入模式下没有其他文字提示，
+            // 只留一个 ✓ 的话很容易点错方向
+            this.amountInput.setHint(Component.translatable(this.mode == Mode.DEPOSIT
+                    ? "gui.marketbox.balance.hint.deposit"
+                    : "gui.marketbox.balance.hint.withdraw"));
             this.amountInput.setFocused(true);
             this.setFocused(this.amountInput);
             this.addRenderableWidget(this.amountInput);
@@ -106,7 +119,6 @@ public class BankScreen extends Screen implements FeedbackReceiver {
                     Component.literal("✓"), b -> submit()));
 
             int quickX = innerLeft + inputWidth + 44;
-            int quickW = 58;
             double[] values = {
                     com.koko.marketbox.Config.getQuickAmount(1),
                     com.koko.marketbox.Config.getQuickAmount(2),
@@ -205,10 +217,7 @@ public class BankScreen extends Screen implements FeedbackReceiver {
 
         renderBalanceCard(guiGraphics, left);
 
-        if (mode != Mode.NONE) {
-            // 当前操作由输入框占位符说明，不再单独占一行
-            // 输入框底衬与边框
-        }
+        // 输入模式下不再单独占一行：操作类型由输入框占位符说明
 
         renderHistory(guiGraphics, innerLeft);
 
@@ -231,7 +240,8 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         int innerWidth = w - 28;
 
         guiGraphics.fill(left, top, left + w, top + CARD_HEIGHT, 0xFF151515);
-        guiGraphics.renderOutline(left, top, left + w, top + CARD_HEIGHT, 0xFF3A3A3A);
+        // renderOutline 收的是宽高，不是右下角坐标
+        guiGraphics.renderOutline(left, top, w, CARD_HEIGHT, 0xFF3A3A3A);
 
         // 头像
         int avatarSize = 56;
@@ -244,7 +254,7 @@ public class BankScreen extends Screen implements FeedbackReceiver {
                 info = Minecraft.getInstance().getConnection()
                         .getPlayerInfo(player.getGameProfile().getId());
             }
-            var skin = info != null ? info.getSkin().texture() : MarketBoxScreen.DEFAULT_SKIN;
+            var skin = info != null ? info.getSkin().texture() : ClientData.DEFAULT_SKIN;
             PlayerFaceRenderer.draw(guiGraphics, skin, avatarX, avatarY, avatarSize);
         }
 
@@ -256,7 +266,7 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.balance.label"),
                 textLeft, top + 38, 0x777777, false);
 
-        String amount = "¥ " + MoneyUtils.formatValue(ClientData.getPlayerBalance());
+        String amount = MoneyUtils.formatValue(ClientData.getPlayerBalance());
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(2.0f, 2.0f, 1.0f);
         // 2 倍缩放：实际高度约 18，绘制在 top+62 时底部约 top+80，与头像底齐平

@@ -23,6 +23,10 @@ public final class ClientEvents {
     }
 
     public static void register() {
+        // 断开连接时丢弃未收齐的市场分块，避免残留数据被下一次连接误当成完整列表
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT
+                .register((handler, client) -> ClientData.clearListingChunks());
+
         ItemTooltipCallback.EVENT.register((stack, context, tooltipType, lines) -> {
             if (!Config.isShowMarketPriceTooltip() || stack.isEmpty()) {
                 return;

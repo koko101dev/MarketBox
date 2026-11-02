@@ -130,7 +130,7 @@ public class PlayerSelectScreen extends Screen implements FeedbackReceiver {
                 int x = panelLeft + 8;
                 PlayerInfo info = this.minecraft != null && this.minecraft.getConnection() != null
                         ? this.minecraft.getConnection().getPlayerInfo(entry.uuid()) : null;
-                ResourceLocation skin = info != null ? info.getSkin().texture() : MarketBoxScreen.DEFAULT_SKIN;
+                ResourceLocation skin = info != null ? info.getSkin().texture() : ClientData.DEFAULT_SKIN;
                 PlayerFaceRenderer.draw(guiGraphics, skin, x, rowY + (ROW_HEIGHT - AVATAR_SIZE) / 2, AVATAR_SIZE);
 
                 int textY = rowY + (ROW_HEIGHT - 8) / 2;

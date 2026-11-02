@@ -368,6 +368,7 @@
   "gui.marketbox.fixed.opened": "已存入定期：%s",
   "gui.marketbox.fixed.claimed": "定期到期，到账 %s",
   "gui.marketbox.fixed.early_withdraw": "提前取出，退回本金 %s（不计利息）",
+  "gui.marketbox.fixed.early_confirm": "提前取出只退本金，再点一次确认",
   "gui.marketbox.fixed.too_many": "定期笔数已达上限",
   "gui.marketbox.fixed.not_found": "找不到该笔定期",
   "gui.marketbox.fixed.matured_notice": "你有 %s 笔定期已到期，共可领取 %s 元",
@@ -383,5 +384,7 @@
   "gui.marketbox.balance.metric_interest": "累计利息",
   "gui.marketbox.balance.metric_next": "下次结息",
   "gui.marketbox.balance.cash": "现金",
-  "gui.marketbox.balance.deposit": "银行存款"
+  "gui.marketbox.balance.deposit": "银行存款",
+  "gui.marketbox.balance.hint.deposit": "输入存入金额",
+  "gui.marketbox.balance.hint.withdraw": "输入取出金额"
 }

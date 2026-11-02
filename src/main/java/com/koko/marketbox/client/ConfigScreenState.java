@@ -50,6 +50,49 @@ final class ConfigScreenState {
         screen.showStatus(Component.translatable("gui.marketbox.config.reset_done"), false);
     }
 
+    /**
+     * 把输入框的当前值写回临时字段。
+     *
+     * 界面每次 rebuildWidgets 都会按 temp* 重建输入框，
+     * 不先回收的话，改完数值一点开关或滚一下滚轮，刚敲的内容就被旧值覆盖了。
+     */
+    static void captureEdits(ConfigScreen screen) {
+        screen.tempInterestRate = readDouble(screen.interestRateBox, screen.tempInterestRate);
+        screen.tempInterestIntervalMinutes = readInt(screen.interestIntervalBox, screen.tempInterestIntervalMinutes);
+        screen.tempHudScale = readDouble(screen.hudScaleBox, screen.tempHudScale);
+        screen.tempHudXOffset = readInt(screen.hudXOffsetBox, screen.tempHudXOffset);
+        screen.tempHudYOffset = readInt(screen.hudYOffsetBox, screen.tempHudYOffset);
+        screen.tempMarketFee = readDouble(screen.feeBox, screen.tempMarketFee);
+        screen.tempMaxListings = readDouble(screen.maxListingsBox, screen.tempMaxListings);
+        screen.tempMaxPrice = readDouble(screen.maxPriceBox, screen.tempMaxPrice);
+        screen.tempMaxTx = readDouble(screen.maxTxBox, screen.tempMaxTx);
+        screen.tempQuick1 = readDouble(screen.quick1Box, screen.tempQuick1);
+        screen.tempQuick2 = readDouble(screen.quick2Box, screen.tempQuick2);
+        screen.tempQuick3 = readDouble(screen.quick3Box, screen.tempQuick3);
+    }
+
+    private static double readDouble(EditBox box, double fallback) {
+        if (box == null || box.getValue().isEmpty()) {
+            return fallback;
+        }
+        try {
+            return Double.parseDouble(box.getValue());
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
+    private static int readInt(EditBox box, int fallback) {
+        if (box == null || box.getValue().isEmpty()) {
+            return fallback;
+        }
+        try {
+            return Integer.parseInt(box.getValue());
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
     static boolean isDirty(ConfigScreen screen) {
         // 开关与循环按钮
         if (screen.tempShowHud != screen.savedShowHud) return true;
@@ -143,15 +186,21 @@ final class ConfigScreenState {
         return false;
     }
 
+    /**
+     * 保存。
+     *
+     * 服务端经济的输入框只在服主（权限 4）时才创建，这里必须按同一条件分支取值：
+     * 否则权限 2/3 的管理员或普通玩家只要改了 HUD 开关再点保存，就会解引用 null 崩溃。
+     */
     static void save(ConfigScreen screen) {
-        double rate;
-        int interval;
+        boolean owner = ClientData.isOwner();
+        // 非服主没有这些输入框，沿用已保存的基线值
+        double rate = screen.savedInterestRate;
+        int interval = screen.savedInterestIntervalMinutes;
         double scale;
         int xOffset;
         int yOffset;
         try {
-            rate = Double.parseDouble(screen.interestRateBox.getValue());
-            interval = Integer.parseInt(screen.interestIntervalBox.getValue());
             scale = Double.parseDouble(screen.hudScaleBox.getValue());
             xOffset = Integer.parseInt(screen.hudXOffsetBox.getValue());
             yOffset = Integer.parseInt(screen.hudYOffsetBox.getValue());
@@ -160,13 +209,22 @@ final class ConfigScreenState {
             return;
         }
 
-        if (rate < 0.0 || rate > 100.0) {
-            screen.showStatus(Component.translatable("gui.marketbox.config.error.rate_range", "0", "100"), true);
-            return;
-        }
-        if (interval < 1) {
-            screen.showStatus(Component.translatable("gui.marketbox.config.error.interval_min", "1"), true);
-            return;
+        if (owner) {
+            try {
+                rate = Double.parseDouble(screen.interestRateBox.getValue());
+                interval = Integer.parseInt(screen.interestIntervalBox.getValue());
+            } catch (NumberFormatException e) {
+                screen.showStatus(Component.translatable("gui.marketbox.config.error.invalid_number"), true);
+                return;
+            }
+            if (rate < 0.0 || rate > 100.0) {
+                screen.showStatus(Component.translatable("gui.marketbox.config.error.rate_range", "0", "100"), true);
+                return;
+            }
+            if (interval < 1) {
+                screen.showStatus(Component.translatable("gui.marketbox.config.error.interval_min", "1"), true);
+                return;
+            }
         }
         if (scale < 0.5) {
             screen.showStatus(Component.translatable("gui.marketbox.config.error.scale_min", "0.5"), true);
@@ -177,9 +235,9 @@ final class ConfigScreenState {
             return;
         }
 
-        // 利息属于服务端权威配置：联机时交给服务端处理，单机/标题界面直接写本地
+        // 利息属于服务端权威配置：只有服主联机时才同步给服务端
         boolean inGame = Minecraft.getInstance().getConnection() != null;
-        if (inGame) {
+        if (inGame && owner) {
             try {
                 screen.savedMaxListings = parseOrDefault(screen.maxListingsBox, screen.savedMaxListings);
                 screen.savedMaxPrice = parseOrDefault(screen.maxPriceBox, screen.savedMaxPrice);
@@ -195,7 +253,7 @@ final class ConfigScreenState {
                 screen.showStatus(Component.translatable("gui.marketbox.config.error.network"), true);
                 return;
             }
-        } else {
+        } else if (!inGame) {
             try {
                 Config.setInterestSettings(rate, interval);
             } catch (Exception e) {
@@ -238,6 +296,10 @@ final class ConfigScreenState {
     }
 
     private static double parseOrDefault(EditBox box, double fallback) {
+        // 控件可能不存在（非服主没有市场相关的输入框）
+        if (box == null) {
+            return fallback;
+        }
         try {
             double v = Double.parseDouble(box.getValue());
             return v > 0 ? v : fallback;

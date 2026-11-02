@@ -22,7 +22,8 @@ enum Category {
     }),
     TOOLS("tools", s -> {
         Item i = s.getItem();
-        return i instanceof DiggerItem || // 包含 镐、铲、锄、斧
+        // 斧同时属于 DiggerItem 与 AxeItem：这里排除掉，否则「武器」和「工具」两个页签会出现同一批货
+        return (i instanceof DiggerItem && !(i instanceof AxeItem)) || // 镐、铲、锄
                i instanceof ShearsItem || 
                i instanceof FishingRodItem ||
                i instanceof BucketItem ||

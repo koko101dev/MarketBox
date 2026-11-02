@@ -159,6 +159,11 @@ public class TransferScreen extends Screen implements FeedbackReceiver {
     }
 
     private void doTransfer() {
+        if (!ClientData.isTransferEnabled()) {
+            // 服主关闭转账后，界面不该还能填能提交，等服务端回错误太晚了
+            toast.show(Component.translatable("gui.marketbox.error.transfer_disabled"), true);
+            return;
+        }
         if (selected == null) {
             toast.show(Component.translatable("gui.marketbox.transfer.error.no_target"), true);
             return;
@@ -181,7 +186,8 @@ public class TransferScreen extends Screen implements FeedbackReceiver {
         ClientNetwork.send(new TransferMoneyPacket(selected.uuid(), amount));
         amountInput.setValue("");
         this.selected = null;
-        this.scrollOffset = Math.max(0, scrollOffset);
+        // 转完后回到列表顶部，避免停在已失效的滚动位置上
+        this.scrollOffset = 0;
     }
 
     private static String formatAmount(double value) {
@@ -245,7 +251,7 @@ public class TransferScreen extends Screen implements FeedbackReceiver {
                 }
 
                 PlayerInfo info = mc.getConnection() != null ? mc.getConnection().getPlayerInfo(entry.uuid()) : null;
-                ResourceLocation skin = info != null ? info.getSkin().texture() : MarketBoxScreen.DEFAULT_SKIN;
+                ResourceLocation skin = info != null ? info.getSkin().texture() : ClientData.DEFAULT_SKIN;
                 PlayerFaceRenderer.draw(guiGraphics, skin, x, rowY + (ROW_HEIGHT - AVATAR_SIZE) / 2, AVATAR_SIZE);
 
                 int textY = rowY + (ROW_HEIGHT - 8) / 2;

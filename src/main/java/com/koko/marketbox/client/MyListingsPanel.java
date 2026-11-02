@@ -54,6 +54,18 @@ final class MyListingsPanel {
         return screen.topPos + 66 + HEADER_HEIGHT;
     }
 
+    /**
+     * 可见行数：按列表顶部到底部按钮之间的可用高度算。
+     * 固定 9 行时，窗口矮于 480 的常见设置下最后几行会压在「领取」按钮上。
+     */
+    private static int visibleRows(MarketScreen screen) {
+        int top = listTop(screen);
+        // 领取按钮固定在 height-146，上方留 8px，再给底部提示行留 14px
+        int bottom = screen.height - 168;
+        int rows = (bottom - top) / ROW_HEIGHT;
+        return Math.max(1, Math.min(MAX_ROWS, rows));
+    }
+
     static void render(MarketScreen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
         var font = Minecraft.getInstance().font;
         int x = listLeft(screen);
@@ -80,7 +92,7 @@ final class MyListingsPanel {
             return;
         }
 
-        int shown = Math.min(mine.size(), MAX_ROWS);
+        int shown = Math.min(mine.size(), visibleRows(screen));
         for (int i = 0; i < shown; i++) {
             MarketListing listing = mine.get(i);
             int rowY = top + i * ROW_HEIGHT;
@@ -121,14 +133,17 @@ final class MyListingsPanel {
             }
         }
 
-        if (mine.size() > MAX_ROWS) {
+        int hintY = top + shown * ROW_HEIGHT + 4;
+        if (mine.size() > shown) {
             String more = Component.translatable("gui.marketbox.market.more_listings",
-                    String.valueOf(mine.size() - MAX_ROWS)).getString();
-            guiGraphics.drawString(font, more, x, top + MAX_ROWS * ROW_HEIGHT + 2, 0x777777, false);
+                    String.valueOf(mine.size() - shown)).getString();
+            guiGraphics.drawString(font, more, x, hintY, 0x777777, false);
+            // 「还有 N 条」与操作提示错开一行，否则两行文字会叠在一起
+            hintY += 12;
         }
 
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.list_hint").getString(),
-                x, top + shown * ROW_HEIGHT + 4, 0x666666, false);
+                x, hintY, 0x666666, false);
     }
 
     /** 单击选中；点中选中行的 × 才下架 */
@@ -137,7 +152,7 @@ final class MyListingsPanel {
         int x = listLeft(screen);
         int w = listWidth(screen);
         int top = listTop(screen);
-        int shown = Math.min(mine.size(), MAX_ROWS);
+        int shown = Math.min(mine.size(), visibleRows(screen));
 
         for (int i = 0; i < shown; i++) {
             int rowY = top + i * ROW_HEIGHT;

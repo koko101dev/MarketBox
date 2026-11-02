@@ -175,7 +175,6 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
 
         // 金钱相关项仅管理员可见：利息 2 行 + 手续费 1 行为管理区块，其余所有人可见
         // 两档权限：等级 2 起可用管理员操作，等级 4（服主）才能改全服经济参数
-        boolean admin = ClientData.isAdmin();
         boolean owner = ClientData.isOwner();
         int contentRows = 9 + 3;
         int sectionCount = 2;
@@ -333,6 +332,10 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
 
     /** 供 ConfigKeyBind 触发布局刷新（rebuildWidgets 为 protected） */
     void refreshWidgets() {
+        // 重建前先回收输入框里的内容：init 是按 temp* 重建的，
+        // 不先写回的话，改完数值再点开关/滚一下滚轮，刚敲的值就没了。
+        // 具体逻辑放在 ConfigScreenState，本文件要控制在 500 行以内
+        ConfigScreenState.captureEdits(this);
         this.rebuildWidgets();
     }
 
@@ -356,7 +359,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
                     else if (configKey.equals("showMarketPriceTooltip")) tempShowMarketPriceTooltip = newVal;
                     else if (configKey.equals("disableMenuBlur")) tempDisableMenuBlur = newVal;
                     else if (configKey.equals("transferEnabled")) tempTransferEnabled = newVal;
-                    this.rebuildWidgets();
+                    this.refreshWidgets();
                 }, false, currentValue);
         this.addRenderableWidget(toggleBtn);
     }
@@ -382,7 +385,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
 
             if (configKey.equals("hudPosition")) tempHudPosition = (Config.HudPosition) next;
             else if (configKey.equals("hudTextStyle")) tempHudTextStyle = (Config.HudTextStyle) next;
-            this.rebuildWidgets();
+            this.refreshWidgets();
         });
         this.addRenderableWidget(cycleBtn);
     }
@@ -470,8 +473,8 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
             int newOffset = Math.max(0, Math.min(maxScroll, scrollOffset + delta));
             if (newOffset != scrollOffset) {
                 scrollOffset = newOffset;
-                // 控件位置依赖滚动偏移，重排一次
-                this.rebuildWidgets();
+                // 控件位置依赖滚动偏移，重排一次（先回收输入框内容）
+                this.refreshWidgets();
                 return true;
             }
         }

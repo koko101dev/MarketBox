@@ -167,7 +167,7 @@ public class RankingScreen extends Screen {
 
                 // 头像
                 PlayerInfo info = mc.getConnection() != null ? mc.getConnection().getPlayerInfo(entry.uuid()) : null;
-                ResourceLocation skin = info != null ? info.getSkin().texture() : MarketBoxScreen.DEFAULT_SKIN;
+                ResourceLocation skin = info != null ? info.getSkin().texture() : ClientData.DEFAULT_SKIN;
                 PlayerFaceRenderer.draw(guiGraphics, skin, x + 24, rowY + (ROW_HEIGHT - AVATAR_SIZE) / 2, AVATAR_SIZE);
 
                 // 名字
@@ -236,8 +236,15 @@ public class RankingScreen extends Screen {
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
+        // 侧边栏切页走 setScreen，只会触发 removed 而不会触发 onClose：
+        // 退订放在这里，否则从排行榜点去别的页面后，服务端会一直给这个玩家推榜单
         ClientNetwork.send(new com.koko.marketbox.networking.packet.RequestLeaderboardPacket(false));
+        super.removed();
+    }
+
+    @Override
+    public void onClose() {
         if (this.minecraft != null) {
             // 侧边栏各页共用一个窗口，ESC 直接关闭到游戏，而不是退回上一个页面
             this.minecraft.setScreen(null);

@@ -32,6 +32,8 @@ public class FixedDepositScreen extends Screen implements FeedbackReceiver {
 
     private EditBox amountBox;
     private int selectedDays = 7;
+    /** 已提示过一次、等待二次确认的提前取出目标 */
+    private java.util.UUID pendingEarlyId = null;
     private final StyledButton[] dayButtons = new StyledButton[3];
 
     public FixedDepositScreen(Screen parent) {
@@ -51,6 +53,17 @@ public class FixedDepositScreen extends Screen implements FeedbackReceiver {
         int x = contentLeft + PADDING;
         int controlY = 78;
 
+        // 右侧控件从右边界往左排：原先写死 x+210 / x+306 / x+372，
+        // 逻辑宽 427 时「全部取出」会跑到屏幕外
+        int right = contentLeft + contentWidth - PADDING;
+        int claimAllW = 72;
+        int openW = 60;
+        int gap = 6;
+        int claimAllX = right - claimAllW;
+        int openX = claimAllX - gap - openW;
+        int boxW = Math.max(60, Math.min(90, openX - gap - (x + 200)));
+        int boxX = openX - gap - boxW;
+
         // 期限按钮
         int[] options = OpenFixedDepositPacket.ALLOWED_DAYS;
         for (int i = 0; i < options.length; i++) {
@@ -65,14 +78,14 @@ public class FixedDepositScreen extends Screen implements FeedbackReceiver {
         }
 
         // 金额输入
-        this.amountBox = new EditBox(this.font, x + 210, controlY, 90, 18,
+        this.amountBox = new EditBox(this.font, boxX, controlY, boxW, 18,
                 Component.translatable("gui.marketbox.fixed.amount"));
         this.amountBox.setMaxLength(12);
         this.amountBox.setFilter(s -> s.isEmpty() || s.matches("\\d{0,12}(\\.\\d{0,2})?"));
         this.addRenderableWidget(this.amountBox);
 
         // 存入
-        this.addRenderableWidget(new StyledButton(x + 306, controlY, 60, 18,
+        this.addRenderableWidget(new StyledButton(openX, controlY, openW, 18,
                 Component.translatable("gui.marketbox.fixed.open"), b -> openDeposit()));
 
         // 返回银行主页：定期是银行的二级页面
@@ -80,7 +93,7 @@ public class FixedDepositScreen extends Screen implements FeedbackReceiver {
                 Component.translatable("gui.marketbox.fixed.back"), b -> this.onClose()));
 
         // 全部取出（到期逐笔领取在列表里点）
-        this.addRenderableWidget(new StyledButton(x + 372, controlY, 72, 18,
+        this.addRenderableWidget(new StyledButton(claimAllX, controlY, claimAllW, 18,
                 Component.translatable("gui.marketbox.fixed.claim_all"), b -> claimAllMatured()));
     }
 
@@ -235,7 +248,16 @@ public class FixedDepositScreen extends Screen implements FeedbackReceiver {
             int index = (int) ((mouseY - LIST_TOP) / ROW_HEIGHT);
             List<FixedDeposit> deposits = ClientData.getFixedDeposits();
             if (index >= 0 && index < deposits.size()) {
-                ClientNetwork.send(new CloseFixedDepositPacket(deposits.get(index).id()));
+                FixedDeposit deposit = deposits.get(index);
+                // 提前取出只退本金：第一次点击先提示，再点一次才执行，避免误点白存
+                if (!deposit.isMatured(System.currentTimeMillis())
+                        && !deposit.id().equals(pendingEarlyId)) {
+                    pendingEarlyId = deposit.id();
+                    toast.show(Component.translatable("gui.marketbox.fixed.early_confirm"), true);
+                    return true;
+                }
+                pendingEarlyId = null;
+                ClientNetwork.send(new CloseFixedDepositPacket(deposit.id()));
                 return true;
             }
         }
