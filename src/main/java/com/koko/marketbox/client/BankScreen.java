@@ -37,6 +37,9 @@ public class BankScreen extends Screen implements FeedbackReceiver {
     private int historyTop;
     /** 输入模式下的控件行纵坐标 */
     private int inputRowY;
+    /** 内容区内边距后的左边界与可用宽度 */
+    private int innerLeft;
+    private int innerWidth;
 
     /** 输入模式：存 / 取 */
     private enum Mode { NONE, DEPOSIT, WITHDRAW }
@@ -63,16 +66,22 @@ public class BankScreen extends Screen implements FeedbackReceiver {
 
         Sidebar.buttons(this, Sidebar.Page.BANK).forEach(this::addRenderableWidget);
 
+        // 与卡片内容同一条内边距，避免按钮顶在边框上
+        int innerLeft = left + 14;
+        int innerWidth = contentWidth - 28;
+        this.innerLeft = innerLeft;
+        this.innerWidth = innerWidth;
+
         if (mode == Mode.NONE) {
-            int w = (contentWidth - PADDING * 2) / 3;
             int gap = 8;
-            this.addRenderableWidget(new StyledButton(left, buttonTop, w - gap, BUTTON_HEIGHT,
+            int w = (innerWidth - gap * 2) / 3;
+            this.addRenderableWidget(new StyledButton(innerLeft, buttonTop, w, BUTTON_HEIGHT,
                     Component.translatable("gui.marketbox.button.feature1"),
                     b -> switchMode(Mode.DEPOSIT)));
-            this.addRenderableWidget(new StyledButton(left + w, buttonTop, w - gap, BUTTON_HEIGHT,
+            this.addRenderableWidget(new StyledButton(innerLeft + w + gap, buttonTop, w, BUTTON_HEIGHT,
                     Component.translatable("gui.marketbox.button.feature2"),
                     b -> switchMode(Mode.WITHDRAW)));
-            this.addRenderableWidget(new StyledButton(left + w * 2, buttonTop, w - gap, BUTTON_HEIGHT,
+            this.addRenderableWidget(new StyledButton(innerLeft + (w + gap) * 2, buttonTop, w, BUTTON_HEIGHT,
                     Component.translatable("gui.marketbox.fixed.entry"),
                     b -> Minecraft.getInstance().setScreen(new FixedDepositScreen(this))));
         } else {
@@ -81,7 +90,7 @@ public class BankScreen extends Screen implements FeedbackReceiver {
             // 与普通模式的按钮行保持同一水平线，切换时界面不跳动
             int rowY = buttonTop;
             this.inputRowY = rowY;
-            this.amountInput = new EditBox(this.font, left + 8, rowY + 5,
+            this.amountInput = new EditBox(this.font, innerLeft + 8, rowY + 5,
                     inputWidth - 16, BUTTON_HEIGHT - 10, Component.empty());
             this.amountInput.setMaxLength(12);
             // 边框由界面自绘，关掉 EditBox 默认的白框，避免两层描边
@@ -94,10 +103,10 @@ public class BankScreen extends Screen implements FeedbackReceiver {
             this.setFocused(this.amountInput);
             this.addRenderableWidget(this.amountInput);
 
-            this.addRenderableWidget(new StyledButton(left + inputWidth + 6, rowY, 30, BUTTON_HEIGHT,
+            this.addRenderableWidget(new StyledButton(innerLeft + inputWidth + 6, rowY, 30, BUTTON_HEIGHT,
                     Component.literal("✓"), b -> submit()));
 
-            int quickX = left + inputWidth + 44;
+            int quickX = innerLeft + inputWidth + 44;
             int quickW = 58;
             double[] values = {
                     com.koko.marketbox.Config.getQuickAmount(1),
@@ -181,18 +190,19 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         int left = contentLeft + ((this.width - contentLeft) - contentWidth) / 2;
         var font = this.font;
 
-        guiGraphics.drawString(font, this.title, left, 16, 0xFFAA00, false);
+        int innerLeft = left + 14;
+        guiGraphics.drawString(font, this.title, innerLeft, 16, 0xFFAA00, false);
 
         renderBalanceCard(guiGraphics, left);
 
         if (mode != Mode.NONE) {
             // 当前操作由输入框占位符说明，不再单独占一行
             // 输入框底衬与边框
-            guiGraphics.fill(left, inputRowY, left + 176, inputRowY + BUTTON_HEIGHT, 0xFF050505);
-            guiGraphics.renderOutline(left, inputRowY, 176, BUTTON_HEIGHT, 0xFF666666);
+            guiGraphics.fill(innerLeft, inputRowY, innerLeft + 176, inputRowY + BUTTON_HEIGHT, 0xFF050505);
+            guiGraphics.renderOutline(innerLeft, inputRowY, 176, BUTTON_HEIGHT, 0xFF666666);
         }
 
-        renderHistory(guiGraphics, left);
+        renderHistory(guiGraphics, innerLeft);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         toast.render(guiGraphics, this.width, this.height);
