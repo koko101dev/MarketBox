@@ -78,6 +78,8 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
     private static final int MAX_PAGE_SIZE = 20;
     /** 当前页，从 0 开始 */
     private int pageIndex = 0;
+    /** 页内滚动偏移（像素）：一页 20 条可能超出一屏，需要在页内滚动 */
+    private float scrollOffset = 0;
     private final List<Item> results = new ArrayList<>();
     /** 上次的搜索词，避免每帧重算 */
     private String lastQuery = "\u0000";
@@ -140,9 +142,25 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         return searching() ? results.size() : ClientData.getBlacklist().size();
     }
 
-    /** 每页条数：受可视高度与 20 条上限双重约束 */
+    /** 每页固定 20 条；显示不下时靠页内滚动查看 */
     private int pageSize() {
-        return Math.min(MAX_PAGE_SIZE, Math.max(1, resultsHeight / ROW_HEIGHT));
+        return MAX_PAGE_SIZE;
+    }
+
+    /** 当前页内容的可滚动距离 */
+    private int maxScroll() {
+        int rows = Math.min(pageSize(), Math.max(0, totalSize() - pageStart()));
+        return Math.max(0, rows * ROW_HEIGHT - resultsHeight);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        int max = maxScroll();
+        if (max > 0) {
+            scrollOffset = Math.max(0, Math.min(max, scrollOffset - (float) (scrollY * ROW_HEIGHT)));
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     private int totalPages() {
@@ -190,6 +208,16 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         }
         guiGraphics.disableScissor();
 
+        // 页内滚动条：一页 20 条超出可视高度时出现
+        int max = maxScroll();
+        if (max > 0) {
+            int barX = this.width - PADDING - 4;
+            int barH = Math.max(20, resultsHeight * resultsHeight / (resultsHeight + max));
+            int barY = resultsTop + (int) ((resultsHeight - barH) * (scrollOffset / max));
+            guiGraphics.fill(barX, resultsTop, barX + 4, resultsTop + resultsHeight, 0x33FFFFFF);
+            guiGraphics.fill(barX, barY, barX + 4, barY + barH, 0xFFCCCCCC);
+        }
+
         renderPager(guiGraphics);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -211,11 +239,16 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
 
         int start = pageStart();
         int last = Math.min(results.size(), start + pageSize());
+        int visibleFirst = start + (int) (scrollOffset / ROW_HEIGHT);
         for (int i = start; i < last; i++) {
+            int rowY = resultsTop + (i - start) * ROW_HEIGHT - (int) scrollOffset;
+            // 只渲染可见范围，滚到页外的一律跳过
+            if (i < visibleFirst - 1 || rowY + ROW_HEIGHT < resultsTop || rowY > resultsTop + resultsHeight) {
+                continue;
+            }
             Item item = results.get(i);
             ItemStack stack = new ItemStack(item);
             String id = BuiltInRegistries.ITEM.getKey(item).toString();
-            int rowY = resultsTop + (i - start) * ROW_HEIGHT;
 
             boolean hovered = mouseX >= x && mouseX <= x + w
                     && mouseY >= rowY && mouseY <= rowY + ROW_HEIGHT - 2;
@@ -265,9 +298,13 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
 
         int start = pageStart();
         int last = Math.min(ids.size(), start + pageSize());
+        int visibleFirst = start + (int) (scrollOffset / ROW_HEIGHT);
         for (int i = start; i < last; i++) {
+            int rowY = resultsTop + (i - start) * ROW_HEIGHT - (int) scrollOffset;
+            if (i < visibleFirst - 1 || rowY + ROW_HEIGHT < resultsTop || rowY > resultsTop + resultsHeight) {
+                continue;
+            }
             String id = ids.get(i);
-            int rowY = resultsTop + (i - start) * ROW_HEIGHT;
 
             boolean hoverRemove = mouseX >= x + w - 60 && mouseX <= x + w
                     && mouseY >= rowY && mouseY <= rowY + ROW_HEIGHT - 2;
@@ -298,7 +335,7 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         int w = contentWidth - PADDING * 2;
 
         if (button == 0 && mouseX >= x && mouseX <= x + w && mouseY >= resultsTop) {
-            int index = pageStart() + (int) ((mouseY - resultsTop) / ROW_HEIGHT);
+            int index = pageStart() + (int) ((mouseY - resultsTop + scrollOffset) / ROW_HEIGHT);
             int maxRows = Math.max(1, resultsHeight / ROW_HEIGHT);
             if (index >= 0 && index < maxRows) {
                 if (searching()) {
@@ -379,10 +416,12 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         }
         if (mouseX >= leftX && mouseX <= leftX + 76 && pageIndex > 0) {
             pageIndex--;
+            scrollOffset = 0;
             return true;
         }
         if (mouseX >= rightX && mouseX <= rightX + 76 && pageIndex < pages - 1) {
             pageIndex++;
+            scrollOffset = 0;
             return true;
         }
         return false;
