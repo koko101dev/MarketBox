@@ -92,8 +92,11 @@ public class BankScreen extends Screen implements FeedbackReceiver {
             this.inputRowY = rowY;
             // 无边框的 EditBox 固定把文字画在 y+4 处，不会按高度居中（原版行为）。
             // 因此控件本身只给文字高度，靠 +3 的偏移把文字推到框的垂直中心附近。
-            this.amountInput = new EditBox(this.font, innerLeft + 8, rowY + 3,
-                    inputWidth - 16, 16, Component.empty());
+            this.amountInput = new EditBox(this.font, innerLeft + 8, rowY,
+                    inputWidth - 16, BUTTON_HEIGHT, Component.empty());
+            // 文字由界面自己按精确坐标绘制：EditBox 在无边框模式下
+            // 把文字固定在 y+4，无法随控件高度居中
+            this.amountInput.setTextColor(0x00000000);
             this.amountInput.setMaxLength(12);
             // 边框由界面自绘，关掉 EditBox 默认的白框，避免两层描边
             this.amountInput.setBordered(false);
@@ -206,6 +209,21 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         renderHistory(guiGraphics, innerLeft);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        // 输入内容按控件高度垂直居中绘制
+        if (mode != Mode.NONE && amountInput != null) {
+            String value = amountInput.getValue();
+            int textY = inputRowY + (BUTTON_HEIGHT - 8) / 2;
+            if (!value.isEmpty()) {
+                guiGraphics.drawString(font, value, innerLeft + 10, textY, 0xFFFFFF, false);
+            }
+            // 光标：每 500ms 闪一次，跟随输入末尾
+            if (amountInput.isFocused() && (System.currentTimeMillis() / 500) % 2 == 0) {
+                int cursorX = innerLeft + 10 + font.width(value);
+                guiGraphics.fill(cursorX, textY - 1, cursorX + 1, textY + 9, 0xFFFFFFFF);
+            }
+        }
+
         toast.render(guiGraphics, this.width, this.height);
     }
 
