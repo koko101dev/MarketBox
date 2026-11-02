@@ -376,5 +376,9 @@
   "gui.marketbox.balance.total_interest": "Total interest %s",
   "gui.marketbox.balance.no_history": "No payouts yet",
   "gui.marketbox.fixed.back": "Back",
-  "gui.marketbox.balance.input_hint": "%s amount"
+  "gui.marketbox.balance.input_hint": "%s amount",
+  "gui.marketbox.balance.metric_rate": "Daily rate",
+  "gui.marketbox.balance.metric_annual": "Yearly",
+  "gui.marketbox.balance.metric_interest": "Earned",
+  "gui.marketbox.balance.metric_next": "Next payout"
 }
