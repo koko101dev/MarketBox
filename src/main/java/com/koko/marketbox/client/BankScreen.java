@@ -59,8 +59,7 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         int left = contentLeft + ((this.width - navWidth) - contentWidth) / 2;
         this.cardTop = 42;
         this.buttonTop = cardTop + CARD_HEIGHT + 12;
-        this.historyTop = buttonTop + BUTTON_HEIGHT
-                + (mode == Mode.NONE ? 22 : 48);
+        this.historyTop = buttonTop + BUTTON_HEIGHT + 22;
 
         Sidebar.buttons(this, Sidebar.Page.BANK).forEach(this::addRenderableWidget);
 
@@ -79,13 +78,17 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         } else {
             // 输入模式：左侧固定宽度输入框 + 确认，右侧快捷金额，取消贴最右
             int inputWidth = 176;
-            int rowY = buttonTop + 18;
+            // 与普通模式的按钮行保持同一水平线，切换时界面不跳动
+            int rowY = buttonTop;
             this.inputRowY = rowY;
             this.amountInput = new EditBox(this.font, left + 8, rowY + 5,
                     inputWidth - 16, BUTTON_HEIGHT - 10, Component.empty());
             this.amountInput.setMaxLength(12);
             // 边框由界面自绘，关掉 EditBox 默认的白框，避免两层描边
             this.amountInput.setBordered(false);
+            this.amountInput.setHint(Component.translatable("gui.marketbox.balance.input_hint",
+                    Component.translatable(mode == Mode.DEPOSIT
+                            ? "gui.marketbox.button.feature1" : "gui.marketbox.button.feature2")));
             this.amountInput.setFilter(s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
             this.amountInput.setFocused(true);
             this.setFocused(this.amountInput);
@@ -183,12 +186,7 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         renderBalanceCard(guiGraphics, left);
 
         if (mode != Mode.NONE) {
-            // 说明当前是存还是取
-            Component action = Component.translatable(mode == Mode.DEPOSIT
-                    ? "gui.marketbox.button.feature1" : "gui.marketbox.button.feature2");
-            guiGraphics.drawString(font, Component.translatable("gui.marketbox.balance.input_hint", action),
-                    left, buttonTop - 2, 0xAAAAAA, false);
-
+            // 当前操作由输入框占位符说明，不再单独占一行
             // 输入框底衬与边框
             guiGraphics.fill(left, inputRowY, left + 176, inputRowY + BUTTON_HEIGHT, 0xFF050505);
             guiGraphics.renderOutline(left, inputRowY, 176, BUTTON_HEIGHT, 0xFF666666);
