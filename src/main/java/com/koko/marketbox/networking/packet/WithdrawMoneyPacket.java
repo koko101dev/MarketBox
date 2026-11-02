@@ -74,8 +74,9 @@ public class WithdrawMoneyPacket implements CustomPacketPayload {
             double cleanAmount = cents / 100.0;
             // 面额被裁剪后可能凑不出该金额，先拦下，避免扣钱却发不足额物品
             if (!MoneyUtils.canMakeExact(cleanAmount)) {
-                ModMessages.sendToPlayer(player,
-                        new ActionFeedbackPacket("gui.marketbox.error.amount_not_makeable"));
+                ModMessages.sendToPlayer(player, new ActionFeedbackPacket(
+                        "gui.marketbox.error.amount_not_makeable",
+                        MoneyUtils.formatValue(MoneyUtils.minEnabledDenomination()), true));
                 return;
             }
             balance.addBalance(-cleanAmount, "gui.marketbox.transaction.withdraw");

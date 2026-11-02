@@ -345,5 +345,5 @@
   "gui.marketbox.config.saved_ok": "Settings saved",
   "gui.marketbox.config.section.denominations": "Denominations",
   "gui.marketbox.config.denomination": "%s",
-  "gui.marketbox.error.amount_not_makeable": "This amount can't be made with enabled denominations"
+  "gui.marketbox.error.amount_not_makeable": "This amount can't be made; smallest denomination is %s"
 }

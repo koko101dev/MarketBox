@@ -92,6 +92,15 @@ public class MoneyUtils {
         return minCent > 0 && cents % minCent == 0;
     }
 
+    /** 当前启用的最小面额，用于提示玩家可调整的粒度 */
+    public static double minEnabledDenomination() {
+        double min = Double.MAX_VALUE;
+        for (double value : activeValues()) {
+            min = Math.min(min, value);
+        }
+        return min == Double.MAX_VALUE ? 0.01 : min;
+    }
+
     public static Map<Double, Integer> calculateItemBreakdown(double amount) {
         Map<Double, Integer> breakdown = new HashMap<>();
         // 使用 long 以避免浮点数精度问题 (以分位单位)
