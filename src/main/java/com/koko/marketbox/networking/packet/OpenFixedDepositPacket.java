@@ -33,12 +33,9 @@ public class OpenFixedDepositPacket implements CustomPacketPayload {
     /** 可选期限（天） */
     public static final int[] ALLOWED_DAYS = {7, 14, 30};
 
+    /** 日利率由服主配置决定，客户端只做展示 */
     public static double rateForDays(int days) {
-        return switch (days) {
-            case 14 -> 0.12;
-            case 30 -> 0.15;
-            default -> 0.10;
-        };
+        return com.koko.marketbox.Config.getFixedRate(days);
     }
 
     private final double amount;

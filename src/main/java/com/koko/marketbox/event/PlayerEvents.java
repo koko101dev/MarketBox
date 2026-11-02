@@ -104,6 +104,28 @@ public final class PlayerEvents {
                     player.getName().getString(), PlayerBalanceAttachment.get(player).getBalanceCents());
         }
 
+        // 有到期的定期时提醒一次，避免玩家忘记领取
+        try {
+            PlayerBalance joinBalance = PlayerBalanceAttachment.get(player);
+            long now = System.currentTimeMillis();
+            int matured = 0;
+            long totalCents = 0;
+            for (com.koko.marketbox.capabilities.FixedDeposit d : joinBalance.getFixedDeposits()) {
+                if (d.isMatured(now)) {
+                    matured++;
+                    totalCents += d.totalCents();
+                }
+            }
+            if (matured > 0) {
+                final int count = matured;
+                final String amount = com.koko.marketbox.util.MoneyUtils.formatValue(totalCents / 100.0);
+                player.sendSystemMessage(net.minecraft.network.chat.Component.translatable(
+                        "gui.marketbox.fixed.matured_notice", count, amount));
+            }
+        } catch (Exception e) {
+            com.koko.marketbox.MarketBox.LOGGER.warn("Failed to check matured deposits for {}", player.getUUID(), e);
+        }
+
         // 同步管理员权限，客户端据此决定设置界面显示哪些项
         syncAdminStatus(player);
 

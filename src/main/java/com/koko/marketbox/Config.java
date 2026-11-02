@@ -49,6 +49,10 @@ public final class Config {
          * 默认 120 分钟（2 小时）。
          */
         public int listingExpiryMinutes = 120;
+        /** 定期存款日利率（%），按期限分档 */
+        public double fixedRate7Days = 0.10;
+        public double fixedRate14Days = 0.12;
+        public double fixedRate30Days = 0.15;
         /** 单人同时挂单数量上限 */
         public int maxListingsPerPlayer = 20;
         /** 单条挂单的价格上限（总价，单位：元） */
@@ -146,6 +150,23 @@ public final class Config {
     /** 结息周期（分钟），供界面与命令展示 */
     public static int getInterestIntervalMinutes() {
         return common.interestIntervalMinutes;
+    }
+
+    /** 指定期限的定期日利率（%） */
+    public static double getFixedRate(int days) {
+        double rate = switch (days) {
+            case 14 -> common.fixedRate14Days;
+            case 30 -> common.fixedRate30Days;
+            default -> common.fixedRate7Days;
+        };
+        return Math.max(0, Math.min(10, rate));
+    }
+
+    public static void setFixedRates(double r7, double r14, double r30) {
+        common.fixedRate7Days = Math.max(0, Math.min(10, r7));
+        common.fixedRate14Days = Math.max(0, Math.min(10, r14));
+        common.fixedRate30Days = Math.max(0, Math.min(10, r30));
+        write(COMMON_PATH, common);
     }
 
     /** 启用的面额列表；空配置时回退到全部面额，避免发不出钱 */

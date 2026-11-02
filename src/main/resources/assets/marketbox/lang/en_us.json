@@ -368,5 +368,6 @@
   "gui.marketbox.fixed.claimed": "Matured, received %s",
   "gui.marketbox.fixed.early_withdraw": "Early withdrawal: %s returned, no interest",
   "gui.marketbox.fixed.too_many": "Too many fixed deposits",
-  "gui.marketbox.fixed.not_found": "Deposit not found"
+  "gui.marketbox.fixed.not_found": "Deposit not found",
+  "gui.marketbox.fixed.matured_notice": "%s fixed deposit(s) matured, %s available"
 }
