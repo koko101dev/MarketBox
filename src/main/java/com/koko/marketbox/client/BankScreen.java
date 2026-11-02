@@ -90,9 +90,10 @@ public class BankScreen extends Screen implements FeedbackReceiver {
             // 与普通模式的按钮行保持同一水平线，切换时界面不跳动
             int rowY = buttonTop;
             this.inputRowY = rowY;
-            // 高度与按钮一致、起点对齐，EditBox 内部会把文字垂直居中
-            this.amountInput = new EditBox(this.font, innerLeft + 8, rowY,
-                    inputWidth - 16, BUTTON_HEIGHT, Component.empty());
+            // 无边框的 EditBox 固定把文字画在 y+4 处，不会按高度居中（原版行为）。
+            // 因此控件本身只给文字高度，靠 +3 的偏移把文字推到框的垂直中心附近。
+            this.amountInput = new EditBox(this.font, innerLeft + 8, rowY + 3,
+                    inputWidth - 16, 16, Component.empty());
             this.amountInput.setMaxLength(12);
             // 边框由界面自绘，关掉 EditBox 默认的白框，避免两层描边
             this.amountInput.setBordered(false);
