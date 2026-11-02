@@ -228,15 +228,33 @@ public class FixedDepositScreen extends Screen implements FeedbackReceiver {
                         hours >= 1 ? (hours + " 小时") : ((remainMs / 60_000L) + " 分钟")).getString();
                 statusColor = 0xAAAAAA;
             }
-            guiGraphics.drawString(font, status, x + w - 190, rowY + 9, statusColor, false);
+            int statusX = x + w - 190;
+            guiGraphics.drawString(font, status, statusX, rowY + 9, statusColor, false);
+
+            // 未到期时补一列「到期可得」：只给本金和日利率，玩家自己算不出最后能拿多少。
+            // 放在状态左侧，挤不下就不画——宁可少一列，也不让文字互相压盖。
+            if (!matured) {
+                String payout = Component.translatable("gui.marketbox.fixed.row_payout",
+                        MoneyUtils.formatValue(deposit.totalCents() / 100.0)).getString();
+                int payoutX = statusX - 10 - font.width(payout);
+                int planRight = x + 100 + font.width(plan) + 8;
+                if (payoutX > planRight) {
+                    guiGraphics.drawString(font, payout, payoutX, rowY + 9, 0xCCBB55, false);
+                }
+            }
 
             // 右侧操作提示
             String action = Component.translatable(matured
                     ? "gui.marketbox.fixed.action_claim"
                     : "gui.marketbox.fixed.action_early").getString();
-            guiGraphics.drawString(font, action, x + w - font.width(action) - 8, rowY + 9,
+            guiGraphics.drawString(font, action, actionTextX(x, w, action), rowY + 9,
                     matured ? 0x55FF55 : 0xCC7777, false);
         }
+    }
+
+    /** 行尾操作文字的起点：绘制与点击判定共用，避免两处各算一遍算出不一致 */
+    private int actionTextX(int x, int w, String action) {
+        return x + w - this.font.width(action) - 8;
     }
 
     @Override
@@ -248,10 +266,24 @@ public class FixedDepositScreen extends Screen implements FeedbackReceiver {
             int index = (int) ((mouseY - LIST_TOP) / ROW_HEIGHT);
             List<FixedDeposit> deposits = ClientData.getFixedDeposits();
             if (index >= 0 && index < deposits.size()) {
+                int rowY = LIST_TOP + index * ROW_HEIGHT;
                 FixedDeposit deposit = deposits.get(index);
-                // 提前取出只退本金：第一次点击先提示，再点一次才执行，避免误点白存
-                if (!deposit.isMatured(System.currentTimeMillis())
-                        && !deposit.id().equals(pendingEarlyId)) {
+                boolean matured = deposit.isMatured(System.currentTimeMillis());
+                String action = Component.translatable(matured
+                        ? "gui.marketbox.fixed.action_claim"
+                        : "gui.marketbox.fixed.action_early").getString();
+
+                // 只有点中行尾那个操作文字才算数：整行都可点的话，
+                // 连点两下误触就把定期取出来了
+                int actionLeft = actionTextX(x, w, action) - 6;
+                boolean onAction = mouseX >= actionLeft && mouseX <= x + w - 2
+                        && mouseY <= rowY + ROW_HEIGHT - 2;
+                if (!onAction) {
+                    return super.mouseClicked(mouseX, mouseY, button);
+                }
+
+                // 提前取出只退本金：第一次点击先提示，再点一次才执行
+                if (!matured && !deposit.id().equals(pendingEarlyId)) {
                     pendingEarlyId = deposit.id();
                     toast.show(Component.translatable("gui.marketbox.fixed.early_confirm"), true);
                     return true;
