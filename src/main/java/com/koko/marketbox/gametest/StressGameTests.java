@@ -160,6 +160,43 @@ public class StressGameTests implements FabricGameTest {
         helper.succeed();
     }
 
+    /**
+     * 禁用 0.01 元后，凑不出的金额必须被识别出来。
+     * 否则取款会先扣余额、再发出不足额的物品，玩家凭空丢钱。
+     */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 200)
+    public void unmakeableAmountIsRejected(GameTestHelper helper) {
+        var original = com.koko.marketbox.Config.getEnabledDenominations();
+        try {
+            com.koko.marketbox.Config.setEnabledDenominations(
+                    java.util.List.of(0.1, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0));
+
+            if (com.koko.marketbox.util.MoneyUtils.canMakeExact(0.15)) {
+                helper.fail("0.15 元在最小 0.1 元时不该判定为可凑出");
+                return;
+            }
+            if (!com.koko.marketbox.util.MoneyUtils.canMakeExact(0.3)) {
+                helper.fail("0.3 元应该可以凑出");
+                return;
+            }
+            if (!com.koko.marketbox.util.MoneyUtils.canMakeExact(7.0)) {
+                helper.fail("7 元应该可以凑出");
+                return;
+            }
+
+            // 恢复全量面额后，0.15 又可以凑出
+            com.koko.marketbox.Config.setEnabledDenominations(original);
+            if (!com.koko.marketbox.util.MoneyUtils.canMakeExact(0.15)) {
+                helper.fail("恢复全部面额后 0.15 元仍判定为不可凑出");
+                return;
+            }
+            System.out.println("[Stress] 金额可行性校验通过：0.15 在禁用 0.01 时被拦截");
+        } finally {
+            com.koko.marketbox.Config.setEnabledDenominations(original);
+        }
+        helper.succeed();
+    }
+
     /** 一千个玩家的余额数据存读耗时：决定服务器保存时的卡顿程度 */
     @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 1200)
     public void saveAndLoadThousandPlayers(GameTestHelper helper) {

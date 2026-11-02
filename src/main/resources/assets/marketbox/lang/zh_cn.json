@@ -344,5 +344,6 @@
   "gui.marketbox.config.transfer_enabled": "允许玩家互转",
   "gui.marketbox.config.saved_ok": "配置已保存",
   "gui.marketbox.config.section.denominations": "货币面额",
-  "gui.marketbox.config.denomination": "%s 元"
+  "gui.marketbox.config.denomination": "%s 元",
+  "gui.marketbox.error.amount_not_makeable": "当前面额凑不出该金额，请调整后再试"
 }

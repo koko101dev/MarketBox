@@ -74,6 +74,24 @@ public class MoneyUtils {
         return values;
     }
 
+    /**
+     * 当前启用的面额能否精确凑出该金额。
+     *
+     * 禁用 0.01 元之后，最小单位变成 0.1 元，0.15 这类金额就凑不出来了。
+     * 取款前必须检查：否则会先扣余额、再发出不足额的物品，玩家凭空丢钱。
+     */
+    public static boolean canMakeExact(double amount) {
+        long cents = Math.round(amount * 100);
+        if (cents <= 0) {
+            return false;
+        }
+        long minCent = Long.MAX_VALUE;
+        for (double value : activeValues()) {
+            minCent = Math.min(minCent, Math.round(value * 100));
+        }
+        return minCent > 0 && cents % minCent == 0;
+    }
+
     public static Map<Double, Integer> calculateItemBreakdown(double amount) {
         Map<Double, Integer> breakdown = new HashMap<>();
         // 使用 long 以避免浮点数精度问题 (以分位单位)
