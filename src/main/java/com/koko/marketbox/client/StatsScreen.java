@@ -40,6 +40,7 @@ public class StatsScreen extends Screen {
         this.contentWidth = this.width - navWidth;
         this.contentHeight = this.height;
         Sidebar.buttons(this, Sidebar.Page.STATS).forEach(this::addRenderableWidget);
+        this.addRenderableWidget(Sidebar.exitButton(this));
     }
 
     /** 列表可滚动区域（顶部概览占固定高度） */

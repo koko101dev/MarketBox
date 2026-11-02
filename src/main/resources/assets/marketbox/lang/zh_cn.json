@@ -137,6 +137,7 @@
   "gui.marketbox.config.disable_menu_blur": "关闭所有界面背景模糊（本模组界面已不受影响）",
   "gui.marketbox.nav.title": "MarketBox",
   "gui.marketbox.nav.bank": "银行",
+  "gui.marketbox.nav.exit": "退出",
   "gui.marketbox.nav.market": "市场",
   "gui.marketbox.nav.settings": "设置",
   "gui.marketbox.nav.stats": "统计",

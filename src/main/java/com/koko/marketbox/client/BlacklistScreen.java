@@ -97,6 +97,7 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
         this.resultsHeight = this.height - resultsTop - PADDING - 26;
 
         Sidebar.buttons(this, Sidebar.Page.BLACKLIST).forEach(this::addRenderableWidget);
+        this.addRenderableWidget(Sidebar.exitButton(this));
 
         this.searchBox = new EditBox(this.font, contentLeft + PADDING, 44,
                 Math.min(320, contentWidth - PADDING * 2 - 100), 18,

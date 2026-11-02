@@ -137,6 +137,7 @@
   "gui.marketbox.config.disable_menu_blur": "Disable blur on all screens (this mod's screens already skip it)",
   "gui.marketbox.nav.title": "MarketBox",
   "gui.marketbox.nav.bank": "Bank",
+  "gui.marketbox.nav.exit": "Exit",
   "gui.marketbox.nav.market": "Market",
   "gui.marketbox.nav.settings": "Settings",
   "gui.marketbox.nav.stats": "Stats",

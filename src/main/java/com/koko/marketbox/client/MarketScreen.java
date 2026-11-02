@@ -76,6 +76,7 @@ public class MarketScreen extends Screen implements FeedbackReceiver {
         this.topPos = 0;
 
         Sidebar.buttons(this, Sidebar.Page.MARKET).forEach(this::addRenderableWidget);
+        this.addRenderableWidget(Sidebar.exitButton(this));
 
         this.sidebarWidth = (int)(this.guiWidth * 0.22f);
         this.mainWidth = this.guiWidth - this.sidebarWidth;

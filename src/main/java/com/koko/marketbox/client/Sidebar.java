@@ -25,13 +25,55 @@ final class Sidebar {
         return Math.max(56, Math.min(110, screenWidth / 10));
     }
 
+    /** 导航按钮的基准行距与起始高度 */
+    private static final int STEP = 22;
+    private static final int NAV_TOP = 52;
+    /** 底部给退出按钮预留的空间 */
+    private static final int BOTTOM_RESERVE = 34;
+
+    /**
+     * 导航行距。窗口过矮时压缩，保证七（八）项排完之后，
+     * 底部还放得下退出按钮，不压住最后一项。
+     */
+    static int stepFor(int screenHeight, boolean admin) {
+        int count = admin ? 8 : 7;
+        int available = screenHeight - NAV_TOP - BOTTOM_RESERVE;
+        if (count * STEP <= available) {
+            return STEP;
+        }
+        return Math.max(18, available / count);
+    }
+
+    /**
+     * 侧边栏底部的退出按钮。
+     *
+     * 只由一级页面（侧边栏那七项 + 黑名单）调用。定期存款、批量上架这类二级页面不要加：
+     * 它们的关闭本来就是「返回上一级」，再多一个退出入口容易误关。
+     */
+    static StyledButton exitButton(Screen host) {
+        int navWidth = width(host.width);
+        int buttonHeight = 20;
+        int y = host.height - buttonHeight - 6;
+        StyledButton button = new StyledButton(6, y, navWidth - 12, buttonHeight,
+                Component.translatable("gui.marketbox.nav.exit"),
+                b -> Minecraft.getInstance().setScreen(null));
+
+        int count = ClientData.isAdmin() ? 8 : 7;
+        int lastBottom = NAV_TOP + stepFor(host.height, ClientData.isAdmin()) * (count - 1) + buttonHeight;
+        // 极端矮窗口下导航本身已经排到底部：这时不画，避免按钮压在导航项上
+        if (y < lastBottom + 2) {
+            button.visible = false;
+        }
+        return button;
+    }
+
     /** 生成导航按钮；由各界面自行 addRenderableWidget（该方法为 protected） */
     static java.util.List<StyledButton> buttons(Screen host, Page current) {
         int navWidth = width(host.width);
         int btnWidth = navWidth - 12;
         int x = 6;
-        int y = 52;
-        int step = 22;
+        int y = NAV_TOP;
+        int step = stepFor(host.height, ClientData.isAdmin());
 
         java.util.List<StyledButton> list = new java.util.ArrayList<>();
         list.add(nav(host, x, y, btnWidth, "bank", current == Page.BANK,
@@ -93,8 +135,9 @@ final class Sidebar {
             String badge = marketBadge > 9 ? "9+" : String.valueOf(marketBadge);
             int btnWidth = navWidth - 12;
             int textX = 6 + btnWidth - Minecraft.getInstance().font.width(badge) - 3;
-            // 市场按钮位于第三个：y = 52 + 22 * 2
-            guiGraphics.drawString(Minecraft.getInstance().font, badge, textX, 52 + 22 * 2 + 4, 0xFFFF5555, true);
+            // 市场按钮位于第三个：y = 起始高度 + 行距 * 2
+            int badgeY = NAV_TOP + stepFor(screenHeight, ClientData.isAdmin()) * 2 + 4;
+            guiGraphics.drawString(Minecraft.getInstance().font, badge, textX, badgeY, 0xFFFF5555, true);
         }
     }
 }

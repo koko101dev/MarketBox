@@ -63,6 +63,7 @@ public class TransferScreen extends Screen implements FeedbackReceiver {
         this.contentHeight = this.height;
 
         Sidebar.buttons(this, Sidebar.Page.TRANSFER).forEach(this::addRenderableWidget);
+        this.addRenderableWidget(Sidebar.exitButton(this));
 
         // 玩家列表搜索：人多时按名字快速定位
         int listW = (int) (contentWidth * 0.52f);

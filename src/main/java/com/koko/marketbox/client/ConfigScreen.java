@@ -170,6 +170,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         this.leftPos = navWidth;
 
         Sidebar.buttons(this, Sidebar.Page.SETTINGS).forEach(this::addRenderableWidget);
+        this.addRenderableWidget(Sidebar.exitButton(this));
         this.contentWidth = Math.min(this.guiWidth, 620);
         this.contentLeft = this.leftPos + (this.guiWidth - this.contentWidth) / 2;
 

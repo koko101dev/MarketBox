@@ -63,6 +63,7 @@ public class BankScreen extends Screen implements FeedbackReceiver {
         this.historyTop = buttonTop + BUTTON_HEIGHT + 22;
 
         Sidebar.buttons(this, Sidebar.Page.BANK).forEach(this::addRenderableWidget);
+        this.addRenderableWidget(Sidebar.exitButton(this));
 
         // 与卡片内容同一条内边距，避免按钮顶在边框上
         int innerLeft = left + 14;

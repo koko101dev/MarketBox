@@ -61,6 +61,7 @@ public class RankingScreen extends Screen {
         this.contentWidth = this.width - navWidth;
         this.contentHeight = this.height;
         Sidebar.buttons(this, Sidebar.Page.RANKING).forEach(this::addRenderableWidget);
+        this.addRenderableWidget(Sidebar.exitButton(this));
 
         // 分类切换：总资产 / 存款 / 收入 / 支出
         sortButtons.clear();

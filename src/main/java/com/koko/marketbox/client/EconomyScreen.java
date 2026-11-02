@@ -37,6 +37,7 @@ public class EconomyScreen extends Screen implements FeedbackReceiver {
         this.contentHeight = this.height;
 
         Sidebar.buttons(this, Sidebar.Page.ECONOMY).forEach(this::addRenderableWidget);
+        this.addRenderableWidget(Sidebar.exitButton(this));
 
         // 打开即拉取一次最新数据
         ClientNetwork.send(new com.koko.marketbox.networking.packet.RequestEconomyPacket());
