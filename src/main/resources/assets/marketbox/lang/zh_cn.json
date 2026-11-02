@@ -337,5 +337,10 @@
   "gui.marketbox.blacklist.prev": "上一页",
   "gui.marketbox.blacklist.next": "下一页",
   "gui.marketbox.blacklist.page": "第 %s / %s 页",
-  "gui.marketbox.market.bulk_back_market": "返回市场"
+  "gui.marketbox.market.bulk_back_market": "返回市场",
+  "gui.marketbox.config.max_listings": "单人挂单上限",
+  "gui.marketbox.config.max_price": "单挂单价格上限",
+  "gui.marketbox.config.max_tx": "单笔交易上限",
+  "gui.marketbox.config.transfer_enabled": "允许玩家互转",
+  "gui.marketbox.config.saved_ok": "配置已保存"
 }

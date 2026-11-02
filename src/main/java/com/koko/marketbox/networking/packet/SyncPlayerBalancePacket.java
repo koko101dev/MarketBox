@@ -36,6 +36,11 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
     private final boolean feeToTreasury;
     /** 挂单有效期（分钟），由服主设定，客户端只读 */
     private final int listingExpiryMinutes;
+    /** 市场限制项，管理员界面展示与编辑用 */
+    private final int maxListings;
+    private final double maxListingPrice;
+    private final double maxTransactionAmount;
+    private final boolean transferEnabled;
     private final List<ItemStack> returnedItems;
     private final List<PlayerBalance.Transaction> transactions;
     /** 分类累计收入/支出（分），供统计页拆分展示 */
@@ -49,7 +54,9 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
                                    List<PlayerBalance.Transaction> transactions,
                                    java.util.Map<String, Long> incomeByCategory,
                                    java.util.Map<String, Long> expenseByCategory,
-                                   int listingExpiryMinutes) {
+                                   int listingExpiryMinutes,
+                                   int maxListings, double maxListingPrice,
+                                   double maxTransactionAmount, boolean transferEnabled) {
         this.balance = balance;
         this.totalInterest = totalInterest;
         this.lastInterestTime = lastInterestTime;
@@ -66,6 +73,10 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         this.incomeByCategory = incomeByCategory;
         this.expenseByCategory = expenseByCategory;
         this.listingExpiryMinutes = listingExpiryMinutes;
+        this.maxListings = maxListings;
+        this.maxListingPrice = maxListingPrice;
+        this.maxTransactionAmount = maxTransactionAmount;
+        this.transferEnabled = transferEnabled;
     }
 
     public SyncPlayerBalancePacket(RegistryFriendlyByteBuf buf) {
@@ -81,6 +92,10 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         this.treasuryBalance = buf.readDouble();
         this.feeToTreasury = buf.readBoolean();
         this.listingExpiryMinutes = buf.readVarInt();
+        this.maxListings = buf.readVarInt();
+        this.maxListingPrice = buf.readDouble();
+        this.maxTransactionAmount = buf.readDouble();
+        this.transferEnabled = buf.readBoolean();
 
         int returnedSize = buf.readVarInt();
         this.returnedItems = new ArrayList<>(returnedSize);
@@ -128,6 +143,10 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
         buf.writeDouble(treasuryBalance);
         buf.writeBoolean(feeToTreasury);
         buf.writeVarInt(listingExpiryMinutes);
+        buf.writeVarInt(maxListings);
+        buf.writeDouble(maxListingPrice);
+        buf.writeDouble(maxTransactionAmount);
+        buf.writeBoolean(transferEnabled);
 
         buf.writeVarInt(returnedItems.size());
         for (ItemStack stack : returnedItems) {
@@ -200,6 +219,22 @@ public class SyncPlayerBalancePacket implements CustomPacketPayload {
 
     public int listingExpiryMinutes() {
         return listingExpiryMinutes;
+    }
+
+    public int maxListings() {
+        return maxListings;
+    }
+
+    public double maxListingPrice() {
+        return maxListingPrice;
+    }
+
+    public double maxTransactionAmount() {
+        return maxTransactionAmount;
+    }
+
+    public boolean transferEnabled() {
+        return transferEnabled;
     }
 
     public java.util.Map<String, Long> incomeByCategory() {

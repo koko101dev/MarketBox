@@ -24,6 +24,10 @@ final class ConfigScreenState {
         screen.tempInterestRate = commonDefaults.interestRate;
         screen.tempInterestIntervalMinutes = commonDefaults.interestIntervalMinutes;
         screen.tempMarketFee = commonDefaults.marketFeePercent;
+        screen.tempMaxListings = commonDefaults.maxListingsPerPlayer;
+        screen.tempMaxPrice = commonDefaults.maxListingPrice;
+        screen.tempMaxTx = commonDefaults.maxTransactionAmount;
+        screen.tempTransferEnabled = commonDefaults.transferEnabled;
 
         screen.tempShowHud = clientDefaults.showHud;
         screen.tempShowMarketPriceTooltip = clientDefaults.showMarketPriceTooltip;
@@ -96,6 +100,21 @@ final class ConfigScreenState {
             if (screen.feeBox != null && !screen.feeBox.getValue().isEmpty()) {
                 if (Math.abs(Double.parseDouble(screen.feeBox.getValue()) - screen.savedMarketFee) > 0.001) return true;
             }
+            if (screen.maxListingsBox != null && !screen.maxListingsBox.getValue().isEmpty()
+                    && Math.abs(Double.parseDouble(screen.maxListingsBox.getValue()) - screen.savedMaxListings) > 0.001) {
+                return true;
+            }
+            if (screen.maxPriceBox != null && !screen.maxPriceBox.getValue().isEmpty()
+                    && Math.abs(Double.parseDouble(screen.maxPriceBox.getValue()) - screen.savedMaxPrice) > 0.001) {
+                return true;
+            }
+            if (screen.maxTxBox != null && !screen.maxTxBox.getValue().isEmpty()
+                    && Math.abs(Double.parseDouble(screen.maxTxBox.getValue()) - screen.savedMaxTx) > 0.001) {
+                return true;
+            }
+            if (screen.tempTransferEnabled != screen.savedTransferEnabled) {
+                return true;
+            }
         } catch (NumberFormatException ignored) {
         }
 
@@ -154,7 +173,14 @@ final class ConfigScreenState {
         boolean inGame = Minecraft.getInstance().getConnection() != null;
         if (inGame) {
             try {
-                ClientNetwork.send(new UpdateCommonConfigPacket(rate, interval, parseOrDefault(screen.feeBox, screen.savedMarketFee)));
+                screen.savedMaxListings = parseOrDefault(screen.maxListingsBox, screen.savedMaxListings);
+                screen.savedMaxPrice = parseOrDefault(screen.maxPriceBox, screen.savedMaxPrice);
+                screen.savedMaxTx = parseOrDefault(screen.maxTxBox, screen.savedMaxTx);
+                screen.savedTransferEnabled = screen.tempTransferEnabled;
+                ClientNetwork.send(new UpdateCommonConfigPacket(
+                        rate, interval, parseOrDefault(screen.feeBox, screen.savedMarketFee),
+                        (int) screen.savedMaxListings, screen.savedMaxPrice, screen.savedMaxTx,
+                        screen.savedTransferEnabled));
             } catch (Exception e) {
                 MarketBox.LOGGER.error("Failed to sync config to server", e);
                 screen.showStatus(Component.translatable("gui.marketbox.config.error.network"), true);

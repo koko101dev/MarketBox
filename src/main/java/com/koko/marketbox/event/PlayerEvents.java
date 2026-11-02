@@ -149,7 +149,11 @@ public final class PlayerEvents {
                 balance.getTransactions(),
                 balance.getIncomeByCategory(),
                 balance.getExpenseByCategory(),
-                Config.getListingExpiryMinutes()
+                Config.getListingExpiryMinutes(),
+                Config.getMaxListingsPerPlayer(),
+                Config.getMaxListingPrice(),
+                Config.getMaxTransactionAmount(),
+                Config.isTransferEnabled()
         ));
     }
 

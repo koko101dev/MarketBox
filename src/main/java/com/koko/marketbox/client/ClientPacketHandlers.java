@@ -36,6 +36,8 @@ public final class ClientPacketHandlers {
 
                     ClientData.setCategoryTotals(payload.incomeByCategory(), payload.expenseByCategory());
                     ClientData.setListingExpiryMinutes(payload.listingExpiryMinutes());
+                    ClientData.setMarketLimits(payload.maxListings(), payload.maxListingPrice(),
+                            payload.maxTransactionAmount(), payload.transferEnabled());
                 }));
 
         ClientPlayNetworking.registerGlobalReceiver(

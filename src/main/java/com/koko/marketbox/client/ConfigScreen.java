@@ -53,6 +53,11 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
     int tempHudXOffset;
     int tempHudYOffset;
     double tempMarketFee;
+    /** 市场限制项（管理员可改） */
+    double tempMaxListings;
+    double tempMaxPrice;
+    double tempMaxTx;
+    boolean tempTransferEnabled;
     double tempQuick1;
     double tempQuick2;
     double tempQuick3;
@@ -65,6 +70,9 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
     EditBox hudXOffsetBox;
     EditBox hudYOffsetBox;
     EditBox feeBox;
+    EditBox maxListingsBox;
+    EditBox maxPriceBox;
+    EditBox maxTxBox;
     EditBox quick1Box;
     EditBox quick2Box;
     EditBox quick3Box;
@@ -89,6 +97,10 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
     int savedHudXOffset;
     int savedHudYOffset;
     double savedMarketFee;
+    double savedMaxListings;
+    double savedMaxPrice;
+    double savedMaxTx;
+    boolean savedTransferEnabled;
     double savedQuick1;
     double savedQuick2;
     double savedQuick3;
@@ -114,6 +126,10 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         tempHudXOffset = Config.getHudXOffset();
         tempHudYOffset = Config.getHudYOffset();
         tempMarketFee = ClientData.getMarketFeePercent();
+        tempMaxListings = ClientData.getMaxListings();
+        tempMaxPrice = ClientData.getMaxListingPrice();
+        tempMaxTx = ClientData.getMaxTransactionAmount();
+        tempTransferEnabled = ClientData.isTransferEnabled();
         tempQuick1 = Config.getQuickAmount(1);
         tempQuick2 = Config.getQuickAmount(2);
         tempQuick3 = Config.getQuickAmount(3);
@@ -129,6 +145,10 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         savedHudXOffset = tempHudXOffset;
         savedHudYOffset = tempHudYOffset;
         savedMarketFee = tempMarketFee;
+        savedMaxListings = tempMaxListings;
+        savedMaxPrice = tempMaxPrice;
+        savedMaxTx = tempMaxTx;
+        savedTransferEnabled = tempTransferEnabled;
         savedQuick1 = tempQuick1;
         savedQuick2 = tempQuick2;
         savedQuick3 = tempQuick3;
@@ -148,7 +168,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
 
         // 金钱相关项仅管理员可见：利息 2 行 + 手续费 1 行为管理区块，其余所有人可见
         boolean admin = ClientData.isAdmin();
-        int contentRows = admin ? (2 + 9 + 1 + 3 + AdminPanel.rowCount()) : (9 + 3);
+        int contentRows = admin ? (2 + 9 + 5 + 3 + AdminPanel.rowCount()) : (9 + 3);
         int sectionCount = admin ? 5 : 2;
 
         // 面板铺满整屏；底部按钮栏固定在底部，中间内容区可滚动
@@ -207,6 +227,17 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
             y += SECTION_HEADER_HEIGHT;
             feeBox = createEditBox(y, String.format("%.2f", tempMarketFee),
                     s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
+            y += rowHeight;
+            maxListingsBox = createEditBox(y, String.valueOf((int) tempMaxListings),
+                    s -> s.isEmpty() || s.matches("\\d{0,3}"));
+            y += rowHeight;
+            maxPriceBox = createEditBox(y, formatAmount(tempMaxPrice),
+                    s -> s.isEmpty() || s.matches("\\d{0,12}"));
+            y += rowHeight;
+            maxTxBox = createEditBox(y, formatAmount(tempMaxTx),
+                    s -> s.isEmpty() || s.matches("\\d{0,12}"));
+            y += rowHeight;
+            addToggleButtons(y, "transferEnabled", tempTransferEnabled);
             y += rowHeight;
         }
 
@@ -300,6 +331,7 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
                     if (configKey.equals("showHud")) tempShowHud = newVal;
                     else if (configKey.equals("showMarketPriceTooltip")) tempShowMarketPriceTooltip = newVal;
                     else if (configKey.equals("disableMenuBlur")) tempDisableMenuBlur = newVal;
+                    else if (configKey.equals("transferEnabled")) tempTransferEnabled = newVal;
                     this.rebuildWidgets();
                 }, false, currentValue);
         this.addRenderableWidget(toggleBtn);
@@ -425,6 +457,18 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
             y += SECTION_HEADER_HEIGHT;
             ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
                     Component.translatable("gui.marketbox.config.market_fee"), y);
+            y += rowHeight;
+            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.max_listings"), y);
+            y += rowHeight;
+            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.max_price"), y);
+            y += rowHeight;
+            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.max_tx"), y);
+            y += rowHeight;
+            ConfigScreenRenderer.renderConfigRow(this, guiGraphics,
+                    Component.translatable("gui.marketbox.config.transfer_enabled"), y);
             y += rowHeight;
         }
 

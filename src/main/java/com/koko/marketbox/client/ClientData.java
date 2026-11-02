@@ -42,6 +42,11 @@ public class ClientData {
     private static int listingExpiryMinutes = 120;
     /** 禁止上架的物品 ID，管理员界面用 */
     private static java.util.List<String> blacklist = new java.util.ArrayList<>();
+    /** 市场限制项，管理员设置界面用 */
+    private static int maxListings = 20;
+    private static double maxListingPrice = 1_000_000;
+    private static double maxTransactionAmount = 1_000_000_000;
+    private static boolean transferEnabled = true;
 
     public static boolean isAdmin() {
         return admin;
@@ -261,6 +266,29 @@ public class ClientData {
                                          java.util.Map<String, Long> expense) {
         incomeByCategory = income == null ? new java.util.HashMap<>() : income;
         expenseByCategory = expense == null ? new java.util.HashMap<>() : expense;
+    }
+
+    public static int getMaxListings() {
+        return maxListings;
+    }
+
+    public static double getMaxListingPrice() {
+        return maxListingPrice;
+    }
+
+    public static double getMaxTransactionAmount() {
+        return maxTransactionAmount;
+    }
+
+    public static boolean isTransferEnabled() {
+        return transferEnabled;
+    }
+
+    public static void setMarketLimits(int listings, double price, double tx, boolean transfer) {
+        maxListings = listings;
+        maxListingPrice = price;
+        maxTransactionAmount = tx;
+        transferEnabled = transfer;
     }
 
     public static java.util.List<String> getBlacklist() {

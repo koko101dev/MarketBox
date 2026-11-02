@@ -153,6 +153,26 @@ public final class Config {
         return Math.max(1, Math.min(1_000_000_000, common.maxTransactionAmount));
     }
 
+    public static void setMaxListingsPerPlayer(int value) {
+        common.maxListingsPerPlayer = Math.max(1, Math.min(200, value));
+        write(COMMON_PATH, common);
+    }
+
+    public static void setMaxListingPrice(double value) {
+        common.maxListingPrice = Math.max(1, Math.min(1_000_000_000, value));
+        write(COMMON_PATH, common);
+    }
+
+    public static void setMaxTransactionAmount(double value) {
+        common.maxTransactionAmount = Math.max(1, Math.min(1_000_000_000, value));
+        write(COMMON_PATH, common);
+    }
+
+    public static void setTransferEnabled(boolean value) {
+        common.transferEnabled = value;
+        write(COMMON_PATH, common);
+    }
+
     public static boolean isTransferEnabled() {
         return common.transferEnabled;
     }

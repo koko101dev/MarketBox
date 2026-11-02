@@ -337,5 +337,10 @@
   "gui.marketbox.blacklist.prev": "Prev",
   "gui.marketbox.blacklist.next": "Next",
   "gui.marketbox.blacklist.page": "Page %s / %s",
-  "gui.marketbox.market.bulk_back_market": "Back to market"
+  "gui.marketbox.market.bulk_back_market": "Back to market",
+  "gui.marketbox.config.max_listings": "Max listings",
+  "gui.marketbox.config.max_price": "Max listing price",
+  "gui.marketbox.config.max_tx": "Max transaction",
+  "gui.marketbox.config.transfer_enabled": "Player transfers",
+  "gui.marketbox.config.saved_ok": "Settings saved"
 }
