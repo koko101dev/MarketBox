@@ -187,12 +187,13 @@
 | 操作 | 所需等级 |
 |---|---|
 | 查看自己余额、HUD 设置、快捷金额 | 无 |
-| 上架黑名单管理（增删禁止上架的物品） | 2（普通 OP） |
+| 查看经济页（全服聚合数据）、上架黑名单管理 | 2（普通 OP） |
 | 调整利率、结息周期、手续费、市场限制项 | **4（服主）** |
-| 改他人余额、金库拨款、查看经济页 | **4（服主）** |
+| 改他人余额、金库拨款 | **4（服主）** |
 
-等级 4 对应服务器的 `/op <玩家> 4`。这样普通管理员可以日常维护物品流通，
-但动不了钱。界面按等级显示：权限 2 只多出黑名单入口，权限 4 才出现经济相关项。
+等级 4 对应服务器的 `/op <玩家> 4`。这样普通管理员可以日常维护物品流通与经济概览，
+但动不了钱和全服参数。界面按等级显示：权限 2 多出经济页与黑名单入口，
+权限 4 才出现利率、手续费等设置项。
 
 金钱相关的设置项对普通玩家完全不渲染（不是禁用），服务端对每个请求仍会再次校验 `hasPermissions`——伪造网络包同样会被拒绝。
 
@@ -294,7 +295,7 @@ If you are worried about crashes, save corruption, or issues after removing the 
 
 **Market**: prices come entirely from player activity (no built-in price table) — tooltips show the last deal price and the median of current listings. Listing uses a dialog with a quantity slider, unit price, duration and an optional per-player purchase limit. Buyers can purchase partially; the remaining quantity updates for everyone.
 
-**Permission levels**: level 2 for daily admin (view balances, adjust rate/fees); level 4 for money operations (set balances, clear market, treasury grants).
+**Permission levels**: level 2 for daily admin (view balances, economy overview, item blacklist); level 4 for money operations (adjust rate/fees, set balances, clear market, treasury grants).
 
 **Commands**: run `/marketbox help` in game. Most actions are also available in the UI (treasury grants on the Economy page).
 

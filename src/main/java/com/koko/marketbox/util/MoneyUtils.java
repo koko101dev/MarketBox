@@ -103,18 +103,78 @@ public class MoneyUtils {
 
     public static Map<Double, Integer> calculateItemBreakdown(double amount) {
         Map<Double, Integer> breakdown = new HashMap<>();
+        if (amount <= 0 || !Double.isFinite(amount)) {
+            return breakdown;
+        }
         // 使用 long 以避免浮点数精度问题 (以分位单位)
         long remainingCents = Math.round(amount * 100);
 
         for (double value : activeValues()) {
             long valueCents = Math.round(value * 100);
+            if (valueCents <= 0) continue;
             if (remainingCents >= valueCents) {
-                int count = (int) (remainingCents / valueCents);
-                breakdown.put(value, count);
+                // 强转 int 前先夹住上限：金额极大时（例如取款 10 亿）直接转 int 会溢出成负数，
+                // 随后 new ItemStack(item, 负数) 等于把整笔钱吞掉
+                long count = remainingCents / valueCents;
+                breakdown.put(value, (int) Math.min(Integer.MAX_VALUE, count));
                 remainingCents %= valueCents;
             }
         }
         return breakdown;
+    }
+
+    /**
+     * 按「剩余总价 / 剩余数量」结算一笔部分购买，返回这一笔应扣的分数。
+     *
+     * 向下取整，余数留到最后一笔（want == totalCount 时直接收掉剩余总价），
+     * 保证分多次买完的累计金额恰好等于挂单标价。
+     * 每次至少收 1 分会把 64 个卖 0.20 元的挂单分 64 次买成 0.64 元。
+     */
+    public static long prorateCostCents(long totalCents, int totalCount, int want) {
+        if (totalCents <= 0 || totalCount <= 0 || want <= 0) {
+            return 0;
+        }
+        if (want >= totalCount) {
+            return totalCents;
+        }
+        return totalCents * want / totalCount;
+    }
+
+    /**
+     * 估算背包能否完整装下这笔金额。
+     *
+     * 取款前必须检查：金额大到超过背包容量时，货币会溢出掉在地上，
+     * 而按面额分解出的单个堆叠又可能远超堆叠上限，掉落后既捡不起来也会消失。
+     */
+    public static boolean canHoldAmount(Player player, double amount) {
+        if (player == null || amount <= 0) return true;
+        var inventory = player.getInventory();
+        int freeSlots = 0;
+        for (int i = 0; i < 36; i++) {
+            if (inventory.getItem(i).isEmpty()) {
+                freeSlots++;
+            }
+        }
+
+        for (Map.Entry<Double, Integer> entry : calculateItemBreakdown(amount).entrySet()) {
+            net.minecraft.world.item.Item item = DENOMINATIONS.get(entry.getKey());
+            if (item == null) continue;
+            int remaining = entry.getValue();
+            int maxStack = Math.max(1, new ItemStack(item).getMaxStackSize());
+            // 先合并进已有的同类堆叠，剩余部分才需要占用空槽
+            for (int i = 0; i < 36 && remaining > 0; i++) {
+                ItemStack stack = inventory.getItem(i);
+                if (!stack.isEmpty() && stack.is(item)) {
+                    remaining -= Math.min(remaining, Math.max(0, maxStack - stack.getCount()));
+                }
+            }
+            long slotsNeeded = ((long) remaining + maxStack - 1) / maxStack;
+            if (slotsNeeded > freeSlots) {
+                return false;
+            }
+            freeSlots -= (int) slotsNeeded;
+        }
+        return true;
     }
 
     /**
@@ -244,6 +304,11 @@ public class MoneyUtils {
 
         // 4. 如果成功凑齐
         if (remainingCents == 0) {
+            // 找零凑不出来时整笔放弃：否则上面已经扣了大面额，下面按启用面额又发不出零头，
+            // 差额会凭空消失（禁用 0.01 元后存 0.95 元、背包只有 1 元纸币就会触发）
+            if (changeCents > 0 && !canMakeExact(changeCents / 100.0)) {
+                return false;
+            }
             // 执行扣除
             for (Map.Entry<Double, Integer> entry : toRemove.entrySet()) {
                 int countToRemove = entry.getValue();
@@ -269,23 +334,35 @@ public class MoneyUtils {
     }
 
     /**
-     * 给玩家发放指定金额的货币物品（按面值分解）
+     * 给玩家发放指定金额的货币物品（按面值分解）。
+     *
+     * @return 是否全部装进背包；false 表示有部分掉在地上
      */
-    public static void giveMoneyToInventory(Player player, double amount) {
-        if (player == null || amount <= 0) return;
-        
+    public static boolean giveMoneyToInventory(Player player, double amount) {
+        if (player == null || amount <= 0) return true;
+
+        boolean allStored = true;
         Map<Double, Integer> breakdown = calculateItemBreakdown(amount);
         for (Map.Entry<Double, Integer> entry : breakdown.entrySet()) {
             double denom = entry.getKey();
-            int count = entry.getValue();
             net.minecraft.world.item.Item item = DENOMINATIONS.get(denom);
-            if (item != null) {
-                ItemStack stack = new ItemStack(item, count);
+            if (item == null) continue;
+
+            int remaining = entry.getValue();
+            // 按最大堆叠分批发放：直接 new ItemStack(item, 一千万) 会生成一个
+            // 远超堆叠上限的实体，既捡不起来，也会在 5 分钟后消失
+            int maxStack = Math.max(1, new ItemStack(item).getMaxStackSize());
+            while (remaining > 0) {
+                int batch = Math.min(remaining, maxStack);
+                ItemStack stack = new ItemStack(item, batch);
                 if (!player.getInventory().add(stack)) {
                     player.drop(stack, false);
+                    allStored = false;
                 }
+                remaining -= batch;
             }
         }
+        return allStored;
     }
 }
 

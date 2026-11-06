@@ -46,7 +46,9 @@ final class ConfigScreenState {
         screen.tempQuick2 = clientDefaults.quickAmount2;
         screen.tempQuick3 = clientDefaults.quickAmount3;
 
-        screen.refreshWidgets();
+        // 不能走 refreshWidgets：它内部先 captureEdits，会把输入框里的旧值读回来
+        // 覆盖刚写入的默认值，界面看起来没变却提示「已恢复默认」
+        screen.rebuildWithoutCapture();
         screen.showStatus(Component.translatable("gui.marketbox.config.reset_done"), false);
     }
 
@@ -287,7 +289,9 @@ final class ConfigScreenState {
         screen.savedHudScale = scale;
         screen.savedHudXOffset = xOffset;
         screen.savedHudYOffset = yOffset;
-        screen.savedMarketFee = parseOrDefault(screen.feeBox, screen.savedMarketFee);
+        // 手续费 0 是合法值（0-50），不能按「必须大于 0」回落，
+        // 否则服主把它改成 0 会被静默改回旧值
+        screen.savedMarketFee = parseOrDefault(screen.feeBox, screen.savedMarketFee, true);
         screen.savedQuick1 = parseOrDefault(screen.quick1Box, screen.savedQuick1);
         screen.savedQuick2 = parseOrDefault(screen.quick2Box, screen.savedQuick2);
         screen.savedQuick3 = parseOrDefault(screen.quick3Box, screen.savedQuick3);
@@ -296,13 +300,20 @@ final class ConfigScreenState {
     }
 
     private static double parseOrDefault(EditBox box, double fallback) {
+        return parseOrDefault(box, fallback, false);
+    }
+
+    private static double parseOrDefault(EditBox box, double fallback, boolean allowZero) {
         // 控件可能不存在（非服主没有市场相关的输入框）
         if (box == null) {
             return fallback;
         }
         try {
             double v = Double.parseDouble(box.getValue());
-            return v > 0 ? v : fallback;
+            if (!Double.isFinite(v)) {
+                return fallback;
+            }
+            return allowZero ? (v >= 0 ? v : fallback) : (v > 0 ? v : fallback);
         } catch (NumberFormatException e) {
             return fallback;
         }

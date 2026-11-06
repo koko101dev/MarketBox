@@ -1,5 +1,6 @@
 package com.koko.marketbox.networking.packet;
 
+import com.koko.marketbox.Config;
 import com.koko.marketbox.MarketBox;
 import com.koko.marketbox.capabilities.FixedDeposit;
 import com.koko.marketbox.capabilities.PlayerBalance;
@@ -64,7 +65,14 @@ public class OpenFixedDepositPacket implements CustomPacketPayload {
     public static void handle(OpenFixedDepositPacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer player = context.player();
         context.server().execute(() -> {
-            if (!PacketRateLimiter.allow(player)) {
+            if (!PacketRateLimiter.allow(player, "fixed_open")) {
+                return;
+            }
+            // 与存取款一致：定期通道过去只校验了 cents>0，
+            // 可以把远超单笔限额的钱直接转进去，绕过 maxTransactionAmount
+            if (!Double.isFinite(payload.amount) || payload.amount > Config.getMaxTransactionAmount()) {
+                ModMessages.sendToPlayer(player,
+                        new ActionFeedbackPacket("gui.marketbox.error.amount_too_large"));
                 return;
             }
             long cents = Math.round(payload.amount * 100);
@@ -88,21 +96,35 @@ public class OpenFixedDepositPacket implements CustomPacketPayload {
             }
 
             double cleanAmount = cents / 100.0;
-            // 余额 → 定期同样是资产形式转换，不计入累计支出
-            balance.moveBalance(-cleanAmount, "gui.marketbox.transaction.fixed_deposit");
-            balance.addFixedDeposit(new FixedDeposit(
-                    UUID.randomUUID(),
-                    cents,
-                    rateForDays(payload.days),
-                    System.currentTimeMillis(),
-                    payload.days));
+            boolean deducted = false;
+            try {
+                // 余额 → 定期同样是资产形式转换，不计入累计支出
+                balance.moveBalance(-cleanAmount, "gui.marketbox.transaction.fixed_deposit");
+                deducted = true;
+                balance.addFixedDeposit(new FixedDeposit(
+                        UUID.randomUUID(),
+                        cents,
+                        rateForDays(payload.days),
+                        System.currentTimeMillis(),
+                        payload.days));
 
-            PlayerEvents.syncPlayerBalance(player);
-            ServerEvents.markLeaderboardDirty();
-            PlayerEvents.persistPlayer(player);
-            ModMessages.sendToPlayer(player, ActionFeedbackPacket.success(
-                    "gui.marketbox.fixed.opened",
-                    MoneyUtils.formatValue(cleanAmount) + " / " + payload.days + "天"));
+                PlayerEvents.syncPlayerBalance(player);
+                ServerEvents.markLeaderboardDirty();
+                PlayerEvents.persistPlayer(player);
+                ModMessages.sendToPlayer(player, ActionFeedbackPacket.success(
+                        "gui.marketbox.fixed.opened",
+                        MoneyUtils.formatValue(cleanAmount) + " / " + payload.days + "天"));
+            } catch (Exception e) {
+                // 余额已扣但定期没建起来：把钱退回活期余额
+                if (deducted) {
+                    balance.moveBalance(cleanAmount, "gui.marketbox.transaction.fixed_deposit");
+                }
+                com.koko.marketbox.MarketBox.LOGGER.error(
+                        "Open fixed deposit failed: player={}, amount={}, days={}",
+                        player.getUUID(), cleanAmount, payload.days, e);
+                ModMessages.sendToPlayer(player,
+                        new ActionFeedbackPacket("gui.marketbox.error.operation_failed"));
+            }
         });
     }
 }

@@ -152,7 +152,8 @@ tasks.register('pruneOldJars') {
         def current = "${base.archivesName.get()}-${project.version}"
         def removed = []
         dir.listFiles()?.each { f ->
-            if (f.isFile() && f.name.endsWith('.jar') && !f.name.startsWith(current)) {
+            // 精确匹配：startsWith 会把 MarketBox-4.8.0-hotfix.jar 之类当成当前产物保留
+            if (f.isFile() && f.name.endsWith('.jar') && f.name != "${current}.jar") {
                 if (f.delete()) {
                     removed << f.name
                 }
@@ -170,7 +171,7 @@ tasks.named('build') {
 }
 
 /**
- * 项目规则自检，对应 AGENTS.txt 里的硬性约束。
+ * 项目规则自检，对应开发机上的 AGENTS.txt（本地规则文件，被 .gitignore 排除，不随仓库分发）。
  * 违反时构建失败，避免规则只停留在文档里。
  */
 tasks.register('checkRules') {
@@ -206,8 +207,14 @@ tasks.register('checkRules') {
             exclude 'client/**'
         }.each { f ->
             f.readLines().eachWithIndex { line, idx ->
-                if (line.contains('com.koko.marketbox.client.') && !line.trim().startsWith('*')) {
-                    violations << "  [跨端] ${f.name}:${idx + 1} 引用了客户端包"
+                def trimmed = line.trim()
+                // 原版与 Fabric 的客户端包才是专用服务器 NoClassDefFoundError 的主要来源，
+                // 只查 mod 自己的 client 包会漏掉它们
+                boolean referencesClient = line.contains('com.koko.marketbox.client.')
+                        || line.contains('net.minecraft.client.')
+                        || line.contains('net.fabricmc.fabric.api.client.')
+                if (referencesClient && !trimmed.startsWith('*') && !trimmed.startsWith('//')) {
+                    violations << "  [跨端] ${f.name}:${idx + 1} 引用了客户端类"
                 }
             }
         }

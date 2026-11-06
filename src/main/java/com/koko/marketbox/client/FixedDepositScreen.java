@@ -195,7 +195,7 @@ public class FixedDepositScreen extends Screen implements FeedbackReceiver {
             return;
         }
 
-        int maxRows = Math.max(1, (this.height - LIST_TOP - PADDING - 24) / ROW_HEIGHT);
+        int maxRows = visibleRows();
         for (int i = 0; i < Math.min(deposits.size(), maxRows); i++) {
             FixedDeposit deposit = deposits.get(i);
             int rowY = LIST_TOP + i * ROW_HEIGHT;
@@ -252,6 +252,11 @@ public class FixedDepositScreen extends Screen implements FeedbackReceiver {
         }
     }
 
+    /** 当前窗口高度下能完整显示的行数；绘制与点击必须共用，避免两边算出不同结果 */
+    private int visibleRows() {
+        return Math.max(1, (this.height - LIST_TOP - PADDING - 24) / ROW_HEIGHT);
+    }
+
     /** 行尾操作文字的起点：绘制与点击判定共用，避免两处各算一遍算出不一致 */
     private int actionTextX(int x, int w, String action) {
         return x + w - this.font.width(action) - 8;
@@ -265,7 +270,9 @@ public class FixedDepositScreen extends Screen implements FeedbackReceiver {
         if (button == 0 && mouseX >= x && mouseX <= x + w && mouseY >= LIST_TOP) {
             int index = (int) ((mouseY - LIST_TOP) / ROW_HEIGHT);
             List<FixedDeposit> deposits = ClientData.getFixedDeposits();
-            if (index >= 0 && index < deposits.size()) {
+            // 必须同时受可见行数限制：未绘制的行也落在鼠标范围内，
+            // 点到列表下方空白处会把看不见的那笔定期提前取出
+            if (index >= 0 && index < deposits.size() && index < visibleRows()) {
                 int rowY = LIST_TOP + index * ROW_HEIGHT;
                 FixedDeposit deposit = deposits.get(index);
                 boolean matured = deposit.isMatured(System.currentTimeMillis());

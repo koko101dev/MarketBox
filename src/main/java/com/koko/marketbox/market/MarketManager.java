@@ -271,10 +271,19 @@ public class MarketManager extends SavedData {
     @Override
     public @NotNull CompoundTag save(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider registries) {
         ListTag listTag = new ListTag();
+        Set<UUID> unencodable = new HashSet<>();
         for (MarketListing listing : listings) {
+            Tag itemTag = writeItem(listing.item(), registries);
+            if (itemTag == null) {
+                // 编码失败时不能写空 tag：重启后整条挂单会被当成损坏数据跳过，
+                // 物品既不能买也不退还，等于凭空消失。这里退还给卖家并移出列表——
+                // 只退还不出列的话，每次 autosave 都会再退一份，变成复制物品
+                unencodable.add(listing.id());
+                continue;
+            }
             CompoundTag listingTag = new CompoundTag();
             listingTag.putUUID("id", listing.id());
-            listingTag.put("item", writeItem(listing.item(), registries));
+            listingTag.put("item", itemTag);
             listingTag.putDouble("price", listing.price());
             listingTag.putUUID("sellerUUID", listing.sellerUUID());
             listingTag.putString("sellerName", listing.sellerName());
@@ -286,11 +295,28 @@ public class MarketManager extends SavedData {
         }
         tag.put("listings", listTag);
 
+        if (!unencodable.isEmpty()) {
+            for (MarketListing listing : listings) {
+                if (unencodable.contains(listing.id())) {
+                    MarketBox.LOGGER.error("[MarketBox] Failed to encode listing item, returning to seller: listing={}, seller={}",
+                            listing.id(), listing.sellerUUID());
+                    returnedItems.computeIfAbsent(listing.sellerUUID(), k -> new ArrayList<>())
+                            .add(listing.item().copy());
+                }
+            }
+            listings.removeIf(listing -> unencodable.contains(listing.id()));
+        }
+
         CompoundTag returnedTag = new CompoundTag();
         for (Map.Entry<UUID, List<ItemStack>> entry : returnedItems.entrySet()) {
             ListTag itemTags = new ListTag();
             for (ItemStack stack : entry.getValue()) {
-                itemTags.add(writeItem(stack, registries));
+                Tag itemTag = writeItem(stack, registries);
+                if (itemTag != null) {
+                    itemTags.add(itemTag);
+                } else {
+                    MarketBox.LOGGER.error("[MarketBox] Failed to encode returned item for {}", entry.getKey());
+                }
             }
             returnedTag.put(entry.getKey().toString(), itemTags);
         }
@@ -424,12 +450,16 @@ public class MarketManager extends SavedData {
         return manager;
     }
 
-    /** 物品栈 -> NBT，需要注册表上下文以解析数据组件 */
+    /**
+     * 物品栈 -> NBT，需要注册表上下文以解析数据组件。
+     * 编码失败返回 null：调用方必须显式处理，写空 tag 会让数据在重启后静默消失。
+     */
+    @Nullable
     private static Tag writeItem(ItemStack stack, HolderLookup.Provider registries) {
         return ItemStack.CODEC
                 .encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), stack)
                 .result()
-                .orElseGet(CompoundTag::new);
+                .orElse(null);
     }
 
     private static ItemStack readItem(@Nullable Tag tag, HolderLookup.Provider registries) {

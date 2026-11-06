@@ -300,7 +300,9 @@ public final class MarketBoxCommand {
     private static int updateBalance(CommandSourceStack source, ServerPlayer target, double amount, boolean isSet) {
         PlayerBalance balance = PlayerBalanceAttachment.get(target);
         if (isSet) {
-            balance.setBalance(amount);
+            // 用 admin 版本：setBalance 会把差额记进「累计收入」，
+            // 管理员设一次 100 万，排行榜的总收入维度就被污染了
+            balance.setBalanceAdmin(amount);
         } else {
             balance.addBalance(amount, "gui.marketbox.transaction.admin");
             com.koko.marketbox.util.EconomyStats.addAdminIssued(amount);

@@ -22,6 +22,9 @@ public class SyncBlacklistPacket implements CustomPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncBlacklistPacket> CODEC =
             StreamCodec.ofMember(SyncBlacklistPacket::write, SyncBlacklistPacket::new);
 
+    /** 黑名单最多条目数 */
+    public static final int MAX_ITEMS = 10_000;
+
     private final List<String> itemIds;
 
     public SyncBlacklistPacket(List<String> itemIds) {
@@ -30,9 +33,12 @@ public class SyncBlacklistPacket implements CustomPacketPayload {
 
     public SyncBlacklistPacket(RegistryFriendlyByteBuf buf) {
         int size = buf.readVarInt();
+        if (size < 0 || size > MAX_ITEMS) {
+            throw new io.netty.handler.codec.DecoderException("invalid blacklist size: " + size);
+        }
         this.itemIds = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            this.itemIds.add(buf.readUtf());
+            this.itemIds.add(buf.readUtf(256));
         }
     }
 

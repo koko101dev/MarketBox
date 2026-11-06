@@ -75,7 +75,9 @@ public class ListMarketItemPacket implements CustomPacketPayload {
                 return;
             }
 
-            if (payload.price <= 0) {
+            // NaN 与任何数比较都是 false，能同时绕过 <=0 和 >上限 两道检查，
+            // 挂单会以 NaN 存盘，购买时被当成 0 元，1 分钱就能买走
+            if (!Double.isFinite(payload.price) || payload.price <= 0) {
                 ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.error.invalid_price"));
                 return;
             }
@@ -127,35 +129,55 @@ public class ListMarketItemPacket implements CustomPacketPayload {
                 return;
             }
 
-            int remaining = payload.quantity;
-            for (int i = 0; i < player.getInventory().getContainerSize() && remaining > 0; i++) {
-                ItemStack invStack = player.getInventory().getItem(i);
-                if (!invStack.isEmpty() && ItemStack.isSameItemSameComponents(invStack, payload.item)) {
-                    int toShrink = Math.min(invStack.getCount(), remaining);
-                    invStack.shrink(toShrink);
-                    remaining -= toShrink;
+            boolean deducted = false;
+            ItemStack itemToSell = null;
+            try {
+                int remaining = payload.quantity;
+                for (int i = 0; i < player.getInventory().getContainerSize() && remaining > 0; i++) {
+                    ItemStack invStack = player.getInventory().getItem(i);
+                    if (!invStack.isEmpty() && ItemStack.isSameItemSameComponents(invStack, payload.item)) {
+                        int toShrink = Math.min(invStack.getCount(), remaining);
+                        invStack.shrink(toShrink);
+                        remaining -= toShrink;
+                    }
                 }
+                deducted = true;
+
+                itemToSell = payload.item.copy();
+                itemToSell.setCount(payload.quantity);
+
+                MarketListing created = new MarketListing(
+                        UUID.randomUUID(),
+                        itemToSell,
+                        payload.price,
+                        player.getUUID(),
+                        player.getName().getString(),
+                        System.currentTimeMillis(),
+                        // 用服务端裁剪后的时长：客户端传 0 / 负数会让挂单刚上架就被判定过期，
+                        // 传 Integer.MAX_VALUE 则永远不会超时
+                        expiryMinutes,
+                        // 限购上限不能超过这一单的堆叠上限，否则填一个巨大值等于没有限购
+                        Math.max(0, Math.min(payload.perPlayerLimit, maxStack))
+                );
+                manager.addListing(created);
+
+                player.containerMenu.broadcastChanges();
+                // 增量推送：只发这一条，带宽不再随在线人数平方增长
+                ModMessages.sendToAll(player.getServer(), new MarketListingAddedPacket(created));
+                ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.list_success", "", false));
+            } catch (Exception e) {
+                // 物品已从背包扣走但挂单没建起来：原样还给玩家，避免凭空消失
+                if (deducted && itemToSell != null) {
+                    if (!player.getInventory().add(itemToSell)) {
+                        player.drop(itemToSell, false);
+                    }
+                    player.containerMenu.broadcastChanges();
+                }
+                com.koko.marketbox.MarketBox.LOGGER.error(
+                        "List market item failed: player={}, item={}", player.getUUID(), payload.item, e);
+                ModMessages.sendToPlayer(player,
+                        new ActionFeedbackPacket("gui.marketbox.error.operation_failed"));
             }
-
-            ItemStack itemToSell = payload.item.copy();
-            itemToSell.setCount(payload.quantity);
-
-            MarketListing created = new MarketListing(
-                    UUID.randomUUID(),
-                    itemToSell,
-                    payload.price,
-                    player.getUUID(),
-                    player.getName().getString(),
-                    System.currentTimeMillis(),
-                    payload.expiryMinutes,
-                    payload.perPlayerLimit
-            );
-            manager.addListing(created);
-
-            player.containerMenu.broadcastChanges();
-            // 增量推送：只发这一条，带宽不再随在线人数平方增长
-            ModMessages.sendToAll(player.getServer(), new MarketListingAddedPacket(created));
-            ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.list_success", "", false));
         });
     }
 }

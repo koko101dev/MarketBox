@@ -67,19 +67,26 @@ public class UpdateBlacklistPacket implements CustomPacketPayload {
                 return;
             }
 
-            if (payload.add) {
-                Config.addToBlacklist(payload.itemId);
-            } else {
-                Config.removeFromBlacklist(payload.itemId);
+            try {
+                if (payload.add) {
+                    Config.addToBlacklist(payload.itemId);
+                } else {
+                    Config.removeFromBlacklist(payload.itemId);
+                }
+
+                MarketBox.LOGGER.info("[Audit] {} {} blacklist entry {}",
+                        player.getName().getString(),
+                        payload.add ? "added" : "removed",
+                        payload.itemId);
+
+                // 回发最新列表，界面据此刷新
+                ModMessages.sendToPlayer(player, new SyncBlacklistPacket(Config.getListingBlacklist()));
+            } catch (Exception e) {
+                MarketBox.LOGGER.error("Blacklist update failed: player={}, item={}",
+                        player.getUUID(), payload.itemId, e);
+                ModMessages.sendToPlayer(player,
+                        new ActionFeedbackPacket("gui.marketbox.error.operation_failed"));
             }
-
-            MarketBox.LOGGER.info("[Audit] {} {} blacklist entry {}",
-                    player.getName().getString(),
-                    payload.add ? "added" : "removed",
-                    payload.itemId);
-
-            // 回发最新列表，界面据此刷新
-            ModMessages.sendToPlayer(player, new SyncBlacklistPacket(Config.getListingBlacklist()));
         });
     }
 

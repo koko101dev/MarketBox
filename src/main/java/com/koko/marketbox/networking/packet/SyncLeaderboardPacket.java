@@ -19,6 +19,9 @@ public class SyncLeaderboardPacket implements CustomPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncLeaderboardPacket> CODEC =
             StreamCodec.ofMember(SyncLeaderboardPacket::write, SyncLeaderboardPacket::new);
 
+    /** 榜单最多容纳的条目数（在线玩家数上限，留足余量） */
+    public static final int MAX_ENTRIES = 4096;
+
     private final List<PlayerEntry> entries;
 
     public SyncLeaderboardPacket(List<PlayerEntry> entries) {
@@ -27,9 +30,13 @@ public class SyncLeaderboardPacket implements CustomPacketPayload {
 
     public SyncLeaderboardPacket(RegistryFriendlyByteBuf buf) {
         int size = buf.readVarInt();
+        if (size < 0 || size > MAX_ENTRIES) {
+            throw new io.netty.handler.codec.DecoderException("invalid leaderboard size: " + size);
+        }
         this.entries = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            String name = buf.readUtf();
+            // 玩家名最长 16，限到 64 避免伪造超长字符串
+            String name = buf.readUtf(64);
             UUID uuid = buf.readUUID();
             double balance = buf.readDouble();
             double deposits = buf.readDouble();

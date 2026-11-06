@@ -104,10 +104,16 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
                 Component.translatable("gui.marketbox.blacklist.search"));
         this.searchBox.setMaxLength(40);
         this.searchBox.setHint(Component.translatable("gui.marketbox.blacklist.search"));
+        // 重建界面后恢复搜索词，否则 lastQuery 还留着旧词，
+        // 用户重新输入同样的内容会被判成「没变化」，列表永远不刷新
+        this.searchBox.setValue(lastQuery);
         this.searchBox.setResponder(text -> {
             if (!text.equals(lastQuery)) {
                 lastQuery = text;
                 pageIndex = 0;
+                // 结果集变了，旧的滚动位置可能已经超出范围：
+                // 不归零会让整个列表停在空白处，且没有翻页按钮可以救回来
+                scrollOffset = 0;
                 refreshResults();
             }
         });
@@ -339,7 +345,10 @@ public class BlacklistScreen extends Screen implements FeedbackReceiver {
             // row 是页内行号，index 是全局索引：用全局索引和「一页能显示几行」比较，
             // 会让第 2 页起的每一行都判为越界，整页点不动
             int row = (int) ((mouseY - resultsTop + scrollOffset) / ROW_HEIGHT);
-            int maxRows = Math.max(1, resultsHeight / ROW_HEIGHT);
+            // 上限要同时受「可视行数」和「本页实际条目数」约束：
+            // 只按可视高度算会多出几行，点到未绘制的空白处会静默加入/移除看不见的条目
+            int maxRows = Math.min(Math.max(1, resultsHeight / ROW_HEIGHT), pageSize());
+            maxRows = Math.min(maxRows, Math.max(0, totalSize() - pageStart()));
             if (row >= 0 && row < maxRows) {
                 int index = pageStart() + row;
                 if (searching()) {

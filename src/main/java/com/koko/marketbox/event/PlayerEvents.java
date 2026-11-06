@@ -137,6 +137,9 @@ public final class PlayerEvents {
             PlayerBalanceAttachment.get(player)
                     .addBalance(pendingPayment, "gui.marketbox.transaction.market_result");
             player.sendSystemMessage(Component.translatable("gui.marketbox.market.pending_payment_received"));
+            // 领取同时改了玩家余额和市场数据，必须立刻标脏：
+            // 否则崩在两次落盘之间会重复领取（或反过来丢失）
+            persistPlayer(player);
         }
 
         if (!manager.getReturnedItems(player.getUUID()).isEmpty()) {
@@ -148,7 +151,9 @@ public final class PlayerEvents {
 
         sendFullMarketSync(player, manager);
         ModMessages.sendToPlayer(player, new SyncDealPricesPacket(manager.getDealPrices()));
-        // 玩家加入时同步最新价格表
+        // 转账、管理员选人、管理员操作都直接读客户端缓存的榜单：
+        // 不先给一份的话，没打开过排行榜的玩家这些列表全是空的
+        sendLeaderboardSnapshot(player);
     }
 
     private static void tickPlayer(ServerPlayer player) {
@@ -157,6 +162,8 @@ public final class PlayerEvents {
             if (checkAndApplyInterest(player)) {
                 syncPlayerBalance(player);
                 ServerEvents.markLeaderboardDirty();
+                // 利息是真金白银：不标脏的话，崩在周期落盘之前这一期就白发了
+                persistPlayer(player);
             }
         }
 
@@ -225,8 +232,14 @@ public final class PlayerEvents {
         ServerEvents.markPlayerDataDirty();
     }
 
-    /** 单包最多携带的挂单条数，避免超过网络包 1MB 上限 */
-    private static final int LISTING_CHUNK_SIZE = 200;
+    /**
+     * 单包最多携带的挂单条数。
+     *
+     * 按条数而不是按字节切：单条挂单的真实大小要编码物品 NBT 才知道，
+     * 每次同步都多编码一遍的开销比省下的带宽更贵。降到 100 条留出约一倍余量，
+     * 常规物品远达不到 1MB；带超大 NBT 的极端挂单仍可能超限，但概率已大幅降低。
+     */
+    private static final int LISTING_CHUNK_SIZE = 100;
 
     /** 进服时同步完整市场：按块发送，客户端收齐后整体替换 */
     public static void sendFullMarketSync(ServerPlayer player, MarketManager manager) {
@@ -248,7 +261,11 @@ public final class PlayerEvents {
         if (player == null) {
             return;
         }
-        LEADERBOARD_SUBSCRIBERS.add(player.getUUID());
+        // 已在订阅集合里就不再重复推全量：客户端每次打开界面都会发一次订阅，
+        // 重复推等于把「一个请求 → 全服计算 + 全服发包」的放大效应留着
+        if (!LEADERBOARD_SUBSCRIBERS.add(player.getUUID())) {
+            return;
+        }
         // 立刻推一次，打开界面不用等下一轮。
         // 必须传全服在线玩家：只传玩家自己的话，榜单里只有自己一条，要等下一次 tick 才补全。
         net.minecraft.server.MinecraftServer server = player.getServer();
@@ -262,6 +279,25 @@ public final class PlayerEvents {
     }
 
     public static void syncLeaderboard(List<ServerPlayer> players) {
+        SyncLeaderboardPacket packet = new SyncLeaderboardPacket(buildEntries(players));
+        for (ServerPlayer player : players) {
+            // 只推给正在看排行榜的玩家；关闭界面后不再消耗带宽
+            if (LEADERBOARD_SUBSCRIBERS.contains(player.getUUID())) {
+                ModMessages.sendToPlayer(player, packet);
+            }
+        }
+    }
+
+    /** 只给这一名玩家推一份当前在线榜单，不加入订阅集合：转账与管理员选人要用 */
+    public static void sendLeaderboardSnapshot(ServerPlayer target) {
+        if (target == null || target.getServer() == null) {
+            return;
+        }
+        ModMessages.sendToPlayer(target,
+                new SyncLeaderboardPacket(buildEntries(target.getServer().getPlayerList().getPlayers())));
+    }
+
+    private static List<PlayerEntry> buildEntries(List<ServerPlayer> players) {
         List<PlayerEntry> entries = new ArrayList<>();
         for (ServerPlayer player : players) {
             PlayerBalance balance = PlayerBalanceAttachment.get(player);
@@ -276,13 +312,6 @@ public final class PlayerEvents {
             LAST_SYNCED_TOTAL.put(player.getUUID(), totalValue);
         }
         entries.sort((a, b) -> Double.compare(b.balance(), a.balance()));
-
-        SyncLeaderboardPacket packet = new SyncLeaderboardPacket(entries);
-        for (ServerPlayer player : players) {
-            // 只推给正在看排行榜的玩家；关闭界面后不再消耗带宽
-            if (LEADERBOARD_SUBSCRIBERS.contains(player.getUUID())) {
-                ModMessages.sendToPlayer(player, packet);
-            }
-        }
+        return entries;
     }
 }

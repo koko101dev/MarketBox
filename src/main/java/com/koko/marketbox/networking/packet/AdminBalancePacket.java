@@ -5,6 +5,7 @@ import com.koko.marketbox.capabilities.PlayerBalance;
 import com.koko.marketbox.capabilities.PlayerBalanceAttachment;
 import com.koko.marketbox.event.PlayerEvents;
 import com.koko.marketbox.event.ServerEvents;
+import com.koko.marketbox.market.MarketManager;
 import com.koko.marketbox.networking.PacketRateLimiter;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -78,7 +79,15 @@ public class AdminBalancePacket implements CustomPacketPayload {
                 switch (payload.action) {
                     case ACTION_SET -> balance.setBalanceAdmin(amount);
                     case ACTION_ADD -> balance.addBalance(amount, "gui.marketbox.transaction.admin");
-                    case ACTION_RESET -> balance.setBalanceAdmin(0);
+                    case ACTION_RESET -> {
+                        balance.setBalanceAdmin(0);
+                        // 与 /marketbox reset 保持一致：只清余额的话，玩家还能把定期本息
+                        // 和待领取的市场收益再取回来，等于没清
+                        for (var deposit : balance.getFixedDeposits()) {
+                            balance.removeFixedDeposit(deposit.id());
+                        }
+                        MarketManager.get(target.serverLevel()).claimPendingPayment(target.getUUID());
+                    }
                     default -> {
                         return;
                     }

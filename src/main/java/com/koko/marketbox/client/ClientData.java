@@ -22,10 +22,12 @@ public class ClientData {
     private static double pendingPayment;
     /** 当前玩家权限等级：0 普通，1~2 管理员，4 服主 */
     private static int permissionLevel = 0;
-    /** 市场成交手续费百分比（服务端同步） */
-    private static double marketFeePercent = 0;
+    /** 市场成交手续费百分比（服务端同步）。默认值与 Config.Common 保持一致，
+     *  否则同步包到达前设置页会显示 0%（服务端默认是 2%） */
+    private static double marketFeePercent = 2.0;
     private static double treasuryBalance = 0;
-    private static boolean feeToTreasury = false;
+    /** 同步前按服务端默认（进金库）显示，避免先闪一下「销毁」 */
+    private static boolean feeToTreasury = true;
     // 经济概览（打开经济页时向服务端请求）
     private static double economyOnlineTotal;
     private static int economyOnlineCount;
@@ -171,6 +173,8 @@ public class ClientData {
     /** 上次收到分块的时间：长时间收不齐说明连接中断，丢弃半成品 */
     private static long lastChunkAt = 0;
     private static final long CHUNK_TIMEOUT_MS = 10_000;
+    /** 分块总数上限：写入侧每块 200 条，512 块足够 10 万条挂单 */
+    private static final int MAX_CHUNKS = 512;
 
     public static void setMarketListings(List<MarketListing> listings) {
         marketListings = new java.util.ArrayList<>(listings);
@@ -178,6 +182,11 @@ public class ClientData {
 
     /** 收到一块全量数据；收齐后整体替换本地列表 */
     public static void acceptListingChunk(int page, int totalPages, List<MarketListing> chunk) {
+        // 非法分块直接丢弃：page 越界时这一页永远等不到合并，
+        // 而下面用 size() 判断收齐，越界页会凑数触发提前合并、把缺失页补成空列表
+        if (totalPages <= 0 || totalPages > MAX_CHUNKS || page < 0 || page >= totalPages) {
+            return;
+        }
         if (totalPages <= 1) {
             setMarketListings(chunk);
             clearListingChunks();

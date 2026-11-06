@@ -25,29 +25,43 @@ public final class PacketRateLimiter {
      */
     private static final long MIN_INTERVAL_MS = 120;
 
-    private static final Map<UUID, Long> LAST_ACTION = new ConcurrentHashMap<>();
+    /** key = 玩家 UUID + ":" + 操作类型，按操作分别计时 */
+    private static final Map<String, Long> LAST_ACTION = new ConcurrentHashMap<>();
 
     private PacketRateLimiter() {
     }
 
     /** 允许则记录时间并返回 true；过于频繁返回 false */
     public static boolean allow(ServerPlayer player) {
+        return allow(player, "action");
+    }
+
+    /**
+     * 按操作类型分桶限流。
+     *
+     * 所有操作共用一个窗口时，「存完钱立刻开定期」会被当成连点吞掉，
+     * 玩家看到的是「点了没反应」。分桶后同类操作仍防连点，不同类互不影响。
+     */
+    public static boolean allow(ServerPlayer player, String bucket) {
         if (player == null) {
             return false;
         }
+        String key = player.getUUID() + ":" + bucket;
         long now = System.currentTimeMillis();
-        Long last = LAST_ACTION.get(player.getUUID());
+        Long last = LAST_ACTION.get(key);
         if (last != null && now - last < MIN_INTERVAL_MS) {
             return false;
         }
-        LAST_ACTION.put(player.getUUID(), now);
+        LAST_ACTION.put(key, now);
         return true;
     }
 
     /** 玩家退出时清理，避免长期运行后 Map 无限增长 */
     public static void forget(UUID playerId) {
-        if (playerId != null) {
-            LAST_ACTION.remove(playerId);
+        if (playerId == null) {
+            return;
         }
+        String prefix = playerId + ":";
+        LAST_ACTION.keySet().removeIf(key -> key.startsWith(prefix));
     }
 }

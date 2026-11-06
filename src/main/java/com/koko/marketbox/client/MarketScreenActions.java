@@ -30,8 +30,8 @@ final class MarketScreenActions {
         // Also find and update the claim button and back button
         screen.children().forEach(r -> {
             if (r instanceof StyledButton btn) {
-                // Keep everything visible but control active state
-                btn.visible = true;
+                // 不要覆盖 visible：侧边栏在极矮窗口会刻意隐藏退出按钮，
+                // 这里每帧改成 true 会让它重新压在导航项上
                 // 侧边栏导航始终可用，其余按钮跟随选择状态
                 if (!isNavButton(screen, btn)) {
                     btn.active = active;

@@ -57,7 +57,7 @@ public class TransferMoneyPacket implements CustomPacketPayload {
     public static void handle(TransferMoneyPacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer sender = context.player();
         context.server().execute(() -> {
-            if (!PacketRateLimiter.allow(sender)) {
+            if (!PacketRateLimiter.allow(sender, "transfer")) {
                 return;
             }
             double amount = payload.amount;
@@ -101,25 +101,42 @@ public class TransferMoneyPacket implements CustomPacketPayload {
             }
             String targetName = profileLookup.get().getName();
 
-            senderBalance.addBalance(-cleanAmount, "gui.marketbox.transaction.transfer_to_prefix:" + targetName);
+            boolean deducted = false;
+            boolean credited = false;
+            try {
+                senderBalance.addBalance(-cleanAmount, "gui.marketbox.transaction.transfer_to_prefix:" + targetName);
+                deducted = true;
 
-            ServerPlayer target = sender.getServer().getPlayerList().getPlayer(targetUuid);
-            if (target != null) {
-                PlayerBalance targetBalance = PlayerBalanceAttachment.get(target);
-                targetBalance.addBalance(cleanAmount, "gui.marketbox.transaction.transfer_from_prefix:" + sender.getName().getString());
-                PlayerEvents.syncPlayerBalance(target);
-                target.sendSystemMessage(Component.translatable("gui.marketbox.transfer.received",
-                        sender.getName().getString(), cleanAmount));
-            } else {
-                MarketManager.get(sender.serverLevel()).addPendingPayment(targetUuid, cleanAmount);
+                ServerPlayer target = sender.getServer().getPlayerList().getPlayer(targetUuid);
+                if (target != null) {
+                    PlayerBalance targetBalance = PlayerBalanceAttachment.get(target);
+                    targetBalance.addBalance(cleanAmount, "gui.marketbox.transaction.transfer_from_prefix:" + sender.getName().getString());
+                    credited = true;
+                    PlayerEvents.syncPlayerBalance(target);
+                    target.sendSystemMessage(Component.translatable("gui.marketbox.transfer.received",
+                            sender.getName().getString(), cleanAmount));
+                } else {
+                    MarketManager.get(sender.serverLevel()).addPendingPayment(targetUuid, cleanAmount);
+                    credited = true;
+                }
+
+                PlayerEvents.syncPlayerBalance(sender);
+                ServerEvents.markLeaderboardDirty();
+                // 交易后立即落盘，避免异常退出丢失余额与物品变更
+                PlayerEvents.persistPlayer(sender);
+                ModMessages.sendToPlayer(sender, new ActionFeedbackPacket("gui.marketbox.feedback.transferred", MoneyUtils.formatValue(cleanAmount), false));
+                sender.sendSystemMessage(Component.translatable("gui.marketbox.transfer.success", targetName, cleanAmount));
+            } catch (Exception e) {
+                // 只扣了钱、还没入账就失败：原路退回，不能凭空销毁
+                if (deducted && !credited) {
+                    senderBalance.addBalance(cleanAmount, "gui.marketbox.transaction.transfer_refund");
+                }
+                com.koko.marketbox.MarketBox.LOGGER.error(
+                        "Transfer failed: sender={}, target={}, amount={}",
+                        sender.getUUID(), targetUuid, cleanAmount, e);
+                ModMessages.sendToPlayer(sender,
+                        new ActionFeedbackPacket("gui.marketbox.error.operation_failed"));
             }
-
-            PlayerEvents.syncPlayerBalance(sender);
-            ServerEvents.markLeaderboardDirty();
-            // 交易后立即落盘，避免异常退出丢失余额与物品变更
-            PlayerEvents.persistPlayer(sender);
-            ModMessages.sendToPlayer(sender, new ActionFeedbackPacket("gui.marketbox.feedback.transferred", MoneyUtils.formatValue(cleanAmount), false));
-            sender.sendSystemMessage(Component.translatable("gui.marketbox.transfer.success", targetName, cleanAmount));
         });
     }
 }

@@ -18,6 +18,9 @@ public class SyncMarketListingsPacket implements CustomPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncMarketListingsPacket> CODEC =
             StreamCodec.ofMember(SyncMarketListingsPacket::write, SyncMarketListingsPacket::new);
 
+    /** 单包最多携带的挂单数：写入侧每块 200 条，这里留出余量并挡住伪造的长度前缀 */
+    public static final int MAX_LISTINGS = 512;
+
     private final List<MarketListing> listings;
     /** 分页信息：进服时挂单过多会拆成多个包，避免单包超过 1MB 上限 */
     private final int page;
@@ -37,6 +40,10 @@ public class SyncMarketListingsPacket implements CustomPacketPayload {
         this.page = buf.readVarInt();
         this.totalPages = buf.readVarInt();
         int size = buf.readVarInt();
+        // 解码早于任何业务校验：不限制长度前缀的话，5 个字节就能让客户端预分配几个 G
+        if (size < 0 || size > MAX_LISTINGS) {
+            throw new io.netty.handler.codec.DecoderException("invalid listing count: " + size);
+        }
         this.listings = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             this.listings.add(MarketListing.STREAM_CODEC.decode(buf));

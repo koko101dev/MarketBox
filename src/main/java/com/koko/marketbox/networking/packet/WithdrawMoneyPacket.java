@@ -48,7 +48,7 @@ public class WithdrawMoneyPacket implements CustomPacketPayload {
     public static void handle(WithdrawMoneyPacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer player = context.player();
         context.server().execute(() -> {
-            if (!PacketRateLimiter.allow(player)) {
+            if (!PacketRateLimiter.allow(player, "withdraw")) {
                 return;
             }
             double amount = payload.amount;
@@ -79,14 +79,34 @@ public class WithdrawMoneyPacket implements CustomPacketPayload {
                         MoneyUtils.formatValue(MoneyUtils.minEnabledDenomination()), true));
                 return;
             }
-            balance.moveBalance(-cleanAmount, "gui.marketbox.transaction.withdraw");
-            MoneyUtils.giveMoneyToInventory(player, cleanAmount);
-            PlayerEvents.syncPlayerBalance(player);
-            player.containerMenu.broadcastChanges();
-            ServerEvents.markLeaderboardDirty();
-            // 交易后立即落盘，避免异常退出丢失余额与物品变更
-            PlayerEvents.persistPlayer(player);
-            ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.feedback.withdrew", MoneyUtils.formatValue(cleanAmount), false));
+            // 背包装不下时先拦下：否则余额已扣、货币却溢出掉在地上，
+            // 超大堆叠的掉落物既捡不起来也会自然消失
+            if (!MoneyUtils.canHoldAmount(player, cleanAmount)) {
+                ModMessages.sendToPlayer(player, new ActionFeedbackPacket(
+                        "gui.marketbox.error.inventory_full"));
+                return;
+            }
+            boolean withdrawn = false;
+            try {
+                balance.moveBalance(-cleanAmount, "gui.marketbox.transaction.withdraw");
+                withdrawn = true;
+                MoneyUtils.giveMoneyToInventory(player, cleanAmount);
+                PlayerEvents.syncPlayerBalance(player);
+                player.containerMenu.broadcastChanges();
+                ServerEvents.markLeaderboardDirty();
+                // 交易后立即落盘，避免异常退出丢失余额与物品变更
+                PlayerEvents.persistPlayer(player);
+                ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.feedback.withdrew", MoneyUtils.formatValue(cleanAmount), false));
+            } catch (Exception e) {
+                // 余额已扣但发钱失败：把钱加回余额，避免扣了钱却拿不到现金
+                if (withdrawn) {
+                    balance.moveBalance(cleanAmount, "gui.marketbox.transaction.withdraw");
+                }
+                com.koko.marketbox.MarketBox.LOGGER.error(
+                        "Withdraw failed: player={}, amount={}", player.getUUID(), cleanAmount, e);
+                ModMessages.sendToPlayer(player,
+                        new ActionFeedbackPacket("gui.marketbox.error.operation_failed"));
+            }
         });
     }
 }

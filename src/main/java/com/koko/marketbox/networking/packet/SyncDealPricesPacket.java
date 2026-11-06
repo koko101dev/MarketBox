@@ -18,6 +18,9 @@ public class SyncDealPricesPacket implements CustomPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncDealPricesPacket> CODEC =
             StreamCodec.ofMember(SyncDealPricesPacket::write, SyncDealPricesPacket::new);
 
+    /** 成交价表最多条目数（每种物品一条） */
+    public static final int MAX_ENTRIES = 100_000;
+
     private final Map<String, Double> prices;
 
     public SyncDealPricesPacket(Map<String, Double> prices) {
@@ -26,9 +29,13 @@ public class SyncDealPricesPacket implements CustomPacketPayload {
 
     public SyncDealPricesPacket(RegistryFriendlyByteBuf buf) {
         int size = buf.readVarInt();
+        if (size < 0 || size > MAX_ENTRIES) {
+            throw new io.netty.handler.codec.DecoderException("invalid deal price size: " + size);
+        }
         this.prices = new HashMap<>(size);
         for (int i = 0; i < size; i++) {
-            this.prices.put(buf.readUtf(), buf.readDouble());
+            // 物品 ID 最长约 100 字符，限到 256
+            this.prices.put(buf.readUtf(256), buf.readDouble());
         }
     }
 

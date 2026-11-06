@@ -51,7 +51,7 @@ public class CloseFixedDepositPacket implements CustomPacketPayload {
     public static void handle(CloseFixedDepositPacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer player = context.player();
         context.server().execute(() -> {
-            if (!PacketRateLimiter.allow(player)) {
+            if (!PacketRateLimiter.allow(player, "fixed_close")) {
                 return;
             }
 
@@ -68,31 +68,45 @@ public class CloseFixedDepositPacket implements CustomPacketPayload {
             long payoutCents = matured ? deposit.totalCents() : deposit.principalCents();
             double payout = payoutCents / 100.0;
 
-            balance.removeFixedDeposit(deposit.id());
-            // 本金是资产形式转换（定期 → 活期余额），只有利息算收入：
-            // 整笔走 addBalance 会让「累计收入」把本金也算成赚到的钱
-            balance.moveBalance(deposit.principalCents() / 100.0, matured
-                    ? "gui.marketbox.transaction.fixed_matured"
-                    : "gui.marketbox.transaction.fixed_early");
-            if (matured) {
-                long interestCents = deposit.totalCents() - deposit.principalCents();
-                if (interestCents > 0) {
-                    balance.addBalance(interestCents / 100.0, "gui.marketbox.transaction.interest");
+            boolean removed = false;
+            try {
+                balance.removeFixedDeposit(deposit.id());
+                removed = true;
+                // 本金是资产形式转换（定期 → 活期余额），只有利息算收入：
+                // 整笔走 addBalance 会让「累计收入」把本金也算成赚到的钱
+                balance.moveBalance(deposit.principalCents() / 100.0, matured
+                        ? "gui.marketbox.transaction.fixed_matured"
+                        : "gui.marketbox.transaction.fixed_early");
+                if (matured) {
+                    long interestCents = deposit.totalCents() - deposit.principalCents();
+                    if (interestCents > 0) {
+                        balance.addBalance(interestCents / 100.0, "gui.marketbox.transaction.interest");
+                    }
                 }
-            }
 
-            PlayerEvents.syncPlayerBalance(player);
-            ServerEvents.markLeaderboardDirty();
-            PlayerEvents.persistPlayer(player);
+                PlayerEvents.syncPlayerBalance(player);
+                ServerEvents.markLeaderboardDirty();
+                PlayerEvents.persistPlayer(player);
 
-            if (matured) {
-                ModMessages.sendToPlayer(player, ActionFeedbackPacket.success(
-                        "gui.marketbox.fixed.claimed",
-                        MoneyUtils.formatValue(payout)));
-            } else {
-                ModMessages.sendToPlayer(player, new ActionFeedbackPacket(
-                        "gui.marketbox.fixed.early_withdraw",
-                        MoneyUtils.formatValue(payout), true));
+                if (matured) {
+                    ModMessages.sendToPlayer(player, ActionFeedbackPacket.success(
+                            "gui.marketbox.fixed.claimed",
+                            MoneyUtils.formatValue(payout)));
+                } else {
+                    ModMessages.sendToPlayer(player, new ActionFeedbackPacket(
+                            "gui.marketbox.fixed.early_withdraw",
+                            MoneyUtils.formatValue(payout), true));
+                }
+            } catch (Exception e) {
+                // 定期已删掉但钱没到账：原样放回去，不能既不退本金也不给利息
+                if (removed) {
+                    balance.addFixedDeposit(deposit);
+                }
+                com.koko.marketbox.MarketBox.LOGGER.error(
+                        "Close fixed deposit failed: player={}, deposit={}",
+                        player.getUUID(), deposit.id(), e);
+                ModMessages.sendToPlayer(player,
+                        new ActionFeedbackPacket("gui.marketbox.error.operation_failed"));
             }
         });
     }

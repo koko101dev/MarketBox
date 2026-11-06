@@ -49,7 +49,7 @@ public class DepositMoneyPacket implements CustomPacketPayload {
         ServerPlayer player = context.player();
         // 统一切回服务端主线程，避免并发修改玩家数据
         context.server().execute(() -> {
-            if (!PacketRateLimiter.allow(player)) {
+            if (!PacketRateLimiter.allow(player, "deposit")) {
                 return;
             }
             double amount = payload.amount;
@@ -67,19 +67,33 @@ public class DepositMoneyPacket implements CustomPacketPayload {
             }
             double cleanAmount = cents / 100.0;
 
-            if (!MoneyUtils.takeMoneyFromInventory(player, cleanAmount)) {
-                ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.error.not_enough_items"));
-                return;
-            }
+            boolean taken = false;
+            try {
+                if (!MoneyUtils.takeMoneyFromInventory(player, cleanAmount)) {
+                    ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.error.not_enough_items"));
+                    return;
+                }
+                taken = true;
 
-            PlayerBalance balance = PlayerBalanceAttachment.get(player);
-            balance.moveBalance(cleanAmount, "gui.marketbox.transaction.deposit");
-            PlayerEvents.syncPlayerBalance(player);
-            player.containerMenu.broadcastChanges();
-            ServerEvents.markLeaderboardDirty();
-            // 交易后立即落盘，避免异常退出丢失余额与物品变更
-            PlayerEvents.persistPlayer(player);
-            ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.feedback.deposited", MoneyUtils.formatValue(cleanAmount), false));
+                PlayerBalance balance = PlayerBalanceAttachment.get(player);
+                balance.moveBalance(cleanAmount, "gui.marketbox.transaction.deposit");
+                PlayerEvents.syncPlayerBalance(player);
+                player.containerMenu.broadcastChanges();
+                ServerEvents.markLeaderboardDirty();
+                // 交易后立即落盘，避免异常退出丢失余额与物品变更
+                PlayerEvents.persistPlayer(player);
+                ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.feedback.deposited", MoneyUtils.formatValue(cleanAmount), false));
+            } catch (Exception e) {
+                // 现金已经扣掉但入账失败：把现金退回背包，避免钱凭空消失
+                if (taken) {
+                    MoneyUtils.giveMoneyToInventory(player, cleanAmount);
+                    player.containerMenu.broadcastChanges();
+                }
+                com.koko.marketbox.MarketBox.LOGGER.error(
+                        "Deposit failed: player={}, amount={}", player.getUUID(), cleanAmount, e);
+                ModMessages.sendToPlayer(player,
+                        new ActionFeedbackPacket("gui.marketbox.error.operation_failed"));
+            }
         });
     }
 }

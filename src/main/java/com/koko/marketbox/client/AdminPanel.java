@@ -20,6 +20,8 @@ final class AdminPanel {
     /** 目标玩家索引，跨 rebuildWidgets 保持 */
     private static int targetIndex = 0;
     private static EditBox amountBox;
+    /** 金额输入内容；跨 rebuildWidgets 保持，否则滚一下滚轮就被重置回 1000 */
+    private static String amountValue = "1000";
 
     private AdminPanel() {
     }
@@ -62,7 +64,8 @@ final class AdminPanel {
         amountBox = new EditBox(net.minecraft.client.Minecraft.getInstance().font, controlX, amountY, controlWidth, controlHeight, Component.empty());
         amountBox.setMaxLength(12);
         amountBox.setFilter(s -> s.isEmpty() || s.matches("\\d+(\\.\\d{0,2})?"));
-        amountBox.setValue("1000");
+        amountBox.setValue(amountValue);
+        amountBox.setResponder(s -> amountValue = s);
         addWidget.accept(amountBox);
 
         // 第 3 行：三个操作按钮

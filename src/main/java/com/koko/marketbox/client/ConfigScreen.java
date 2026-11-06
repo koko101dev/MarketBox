@@ -170,7 +170,8 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         this.leftPos = navWidth;
 
         Sidebar.buttons(this, Sidebar.Page.SETTINGS).forEach(this::addRenderableWidget);
-        this.addRenderableWidget(Sidebar.exitButton(this));
+        StyledButton exitButton = Sidebar.exitButton(this);
+        this.addRenderableWidget(exitButton);
         this.contentWidth = Math.min(this.guiWidth, 620);
         this.contentLeft = this.leftPos + (this.guiWidth - this.contentWidth) / 2;
 
@@ -188,7 +189,6 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
             sectionCount += 1;
         }
 
-        // 面板铺满整屏；底部按钮栏固定在底部，中间内容区可滚动
         this.guiHeight = this.height;
         this.topPos = 0;
         this.rowHeight = ROW_HEIGHT;
@@ -311,6 +311,8 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
                 Component.translatable("gui.marketbox.config.cancel"), b -> this.onClose());
         this.addRenderableWidget(cancelBtn);
         bottomBarWidgets.add(cancelBtn);
+        // 退出按钮也落在底部栏区域内，不登记会被内容区 scissor 裁成隐形按钮
+        bottomBarWidgets.add(exitButton);
     }
 
     /** 按键绑定行 */
@@ -321,24 +323,22 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
                 CONTROL_WIDTH, controlHeight));
     }
 
-    /** 供拆出去的工具类取字体（font 为 protected） */
+    // 供拆出去的工具类使用：font 与 addRenderableWidget 都是 protected
     net.minecraft.client.gui.Font font() {
         return this.font;
     }
 
-    /** 供拆出去的工具类登记控件（addRenderableWidget 为 protected） */
     void registerWidget(net.minecraft.client.gui.components.AbstractWidget widget) {
         this.addRenderableWidget(widget);
     }
 
     /** 供 ConfigKeyBind 触发布局刷新（rebuildWidgets 为 protected） */
     void refreshWidgets() {
-        // 重建前先回收输入框里的内容：init 是按 temp* 重建的，
-        // 不先写回的话，改完数值再点开关/滚一下滚轮，刚敲的值就没了。
-        // 具体逻辑放在 ConfigScreenState，本文件要控制在 500 行以内
+        // 重建前先回收输入框内容，否则刚敲的值会被 init 里的 temp* 覆盖
         ConfigScreenState.captureEdits(this);
         this.rebuildWidgets();
     }
+    void rebuildWithoutCapture() { super.rebuildWidgets(); }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
@@ -440,9 +440,9 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         // 内容区的控件也要裁剪：否则滚动时输入框会盖在底栏上。
         // 先只渲染非底栏控件，再单独渲染底栏。
         for (var child : this.children()) {
-            if (child instanceof net.minecraft.client.gui.components.Renderable r
-                    && !bottomBarWidgets.contains(child)) {
-                r.render(guiGraphics, mouseX, mouseY, partialTick);
+            if (child instanceof net.minecraft.client.gui.components.AbstractWidget w
+                    && w.visible && !bottomBarWidgets.contains(w)) {
+                w.render(guiGraphics, mouseX, mouseY, partialTick);
             }
         }
 
@@ -452,9 +452,8 @@ public class ConfigScreen extends Screen implements FeedbackReceiver {
         guiGraphics.fill(leftPos, contentBottom, leftPos + guiWidth, topPos + guiHeight, 0xF0101010);
         guiGraphics.fill(leftPos, contentBottom, leftPos + guiWidth, contentBottom + 1, 0xFF3A3A3A);
 
-        for (var widget : bottomBarWidgets) {
-            widget.render(guiGraphics, mouseX, mouseY, partialTick);
-        }
+        bottomBarWidgets.stream().filter(w -> w.visible)
+                .forEach(w -> w.render(guiGraphics, mouseX, mouseY, partialTick));
 
         if (saveButton != null) {
             saveButton.active = ConfigScreenState.isDirty(this);

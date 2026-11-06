@@ -36,7 +36,7 @@ final class Sidebar {
      * 底部还放得下退出按钮，不压住最后一项。
      */
     static int stepFor(int screenHeight, boolean admin) {
-        int count = admin ? 8 : 7;
+        int count = navCount(admin);
         int available = screenHeight - NAV_TOP - BOTTOM_RESERVE;
         if (count * STEP <= available) {
             return STEP;
@@ -58,13 +58,18 @@ final class Sidebar {
                 Component.translatable("gui.marketbox.nav.exit"),
                 b -> Minecraft.getInstance().setScreen(null));
 
-        int count = ClientData.isAdmin() ? 8 : 7;
+        int count = navCount(ClientData.isAdmin());
         int lastBottom = NAV_TOP + stepFor(host.height, ClientData.isAdmin()) * (count - 1) + buttonHeight;
         // 极端矮窗口下导航本身已经排到底部：这时不画，避免按钮压在导航项上
         if (y < lastBottom + 2) {
             button.visible = false;
         }
         return button;
+    }
+
+    /** 导航项数量：普通玩家 6 项，管理员多出经济页与黑名单 */
+    private static int navCount(boolean admin) {
+        return admin ? 8 : 6;
     }
 
     /** 生成导航按钮；由各界面自行 addRenderableWidget（该方法为 protected） */
@@ -74,26 +79,32 @@ final class Sidebar {
         int x = 6;
         int y = NAV_TOP;
         int step = stepFor(host.height, ClientData.isAdmin());
+        boolean admin = ClientData.isAdmin();
 
         java.util.List<StyledButton> list = new java.util.ArrayList<>();
-        list.add(nav(host, x, y, btnWidth, "bank", current == Page.BANK,
+        int index = 0;
+        list.add(nav(host, x, y + step * index++, btnWidth, "bank", current == Page.BANK,
                 () -> open(host, new BankScreen())));
-        list.add(nav(host, x, y + step, btnWidth, "transfer", current == Page.TRANSFER,
+        list.add(nav(host, x, y + step * index++, btnWidth, "transfer", current == Page.TRANSFER,
                 () -> open(host, new TransferScreen(host))));
-        list.add(nav(host, x, y + step * 2, btnWidth, "market", current == Page.MARKET,
+        list.add(nav(host, x, y + step * index++, btnWidth, "market", current == Page.MARKET,
                 () -> open(host, new MarketScreen(host))));
-        list.add(nav(host, x, y + step * 3, btnWidth, "stats", current == Page.STATS,
+        list.add(nav(host, x, y + step * index++, btnWidth, "stats", current == Page.STATS,
                 () -> open(host, new StatsScreen(host))));
-        list.add(nav(host, x, y + step * 4, btnWidth, "ranking", current == Page.RANKING,
+        list.add(nav(host, x, y + step * index++, btnWidth, "ranking", current == Page.RANKING,
                 () -> open(host, new RankingScreen(host))));
-        list.add(nav(host, x, y + step * 5, btnWidth, "economy", current == Page.ECONOMY,
-                () -> open(host, new EconomyScreen(host))));
-        list.add(nav(host, x, y + step * 6, btnWidth, "settings", current == Page.SETTINGS,
+
+        // 经济页展示全服聚合数据，与 /marketbox economy 一致，仅管理员可见
+        if (admin) {
+            list.add(nav(host, x, y + step * index++, btnWidth, "economy", current == Page.ECONOMY,
+                    () -> open(host, new EconomyScreen(host))));
+        }
+        list.add(nav(host, x, y + step * index++, btnWidth, "settings", current == Page.SETTINGS,
                 () -> open(host, new ConfigScreen(host))));
 
         // 黑名单只有管理员可见，普通玩家看不到这一项
-        if (ClientData.isAdmin()) {
-            list.add(nav(host, x, y + step * 7, btnWidth, "blacklist", current == Page.BLACKLIST,
+        if (admin) {
+            list.add(nav(host, x, y + step * index++, btnWidth, "blacklist", current == Page.BLACKLIST,
                     () -> open(host, new BlacklistScreen())));
         }
         return list;

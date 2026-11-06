@@ -2,6 +2,7 @@ package com.koko.marketbox.networking.packet;
 
 import com.koko.marketbox.MarketBox;
 import com.koko.marketbox.event.PlayerEvents;
+import com.koko.marketbox.networking.PacketRateLimiter;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -37,10 +38,22 @@ public class RequestLeaderboardPacket implements CustomPacketPayload {
     public static void handle(RequestLeaderboardPacket payload, ServerPlayNetworking.Context context) {
         var player = context.player();
         context.server().execute(() -> {
-            if (payload.subscribe) {
-                PlayerEvents.subscribeLeaderboard(player);
-            } else {
-                PlayerEvents.unsubscribeLeaderboard(player);
+            // 这个包原来没有限流：每发一次 subscribe 都会让服务端遍历全服玩家资产并排序，
+            // 1 字节的请求就能把主线程打满
+            if (!PacketRateLimiter.allow(player)) {
+                return;
+            }
+            try {
+                if (payload.subscribe) {
+                    PlayerEvents.subscribeLeaderboard(player);
+                } else {
+                    PlayerEvents.unsubscribeLeaderboard(player);
+                }
+            } catch (Exception e) {
+                // 订阅失败只影响榜单刷新，不需要打断客户端，但必须留下日志
+                com.koko.marketbox.MarketBox.LOGGER.error(
+                        "Leaderboard request failed: player={}",
+                        player == null ? "?" : player.getUUID(), e);
             }
         });
     }

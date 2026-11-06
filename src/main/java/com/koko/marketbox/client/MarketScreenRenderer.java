@@ -263,26 +263,16 @@ final class MarketScreenRenderer {
         boolean isOwner = player != null && listing.sellerUUID().equals(player.getUUID());
         
         if (isOwner) {
-            // Split button into Buy and Delist
-            int halfW = (btnW - 2) / 2;
-            
-        // Buy half
-        boolean buyHovered = !screen.isSelectingItem && mouseX >= btnX && mouseX <= btnX + halfW && mouseY >= btnY && mouseY <= btnY + btnH;
-        guiGraphics.fill(btnX, btnY, btnX + halfW, btnY + btnH, buyHovered ? 0xFF55FF55 : 0xFF33AA33);
-        guiGraphics.renderOutline(btnX, btnY, halfW, btnH, 0xFFAAAAAA);
-        
-        Component buyText = Component.translatable("gui.marketbox.market.buy_button");
-        renderButtonText(screen, guiGraphics, buyText, btnX, btnY, halfW, btnH);
-        
-        // Delist half
-        int delistX = btnX + halfW + 2;
-        boolean delistHovered = !screen.isSelectingItem && mouseX >= delistX && mouseX <= delistX + halfW && mouseY >= btnY && mouseY <= btnY + btnH;
-        guiGraphics.fill(delistX, btnY, delistX + halfW, btnY + btnH, delistHovered ? 0xFFFF5555 : 0xFFAA3333);
-        guiGraphics.renderOutline(delistX, btnY, halfW, btnH, 0xFFAAAAAA);
-        
-        Component delistText = Component.translatable("gui.marketbox.market.delist_button");
-        renderButtonText(screen, guiGraphics, delistText, delistX, btnY, halfW, btnH);
-    } else {
+            // 卖家只能下架：服务端本来就会拒绝购买自己的挂单，
+            // 切成两半只会多出一个必然失败的「购买」，还把「下架」挤得很窄
+            boolean delistHovered = !screen.isSelectingItem && mouseX >= btnX
+                    && mouseX <= btnX + btnW && mouseY >= btnY && mouseY <= btnY + btnH;
+            guiGraphics.fill(btnX, btnY, btnX + btnW, btnY + btnH,
+                    delistHovered ? 0xFFFF5555 : 0xFFAA3333);
+            guiGraphics.renderOutline(btnX, btnY, btnW, btnH, 0xFFAAAAAA);
+            Component delistText = Component.translatable("gui.marketbox.market.delist_button");
+            renderButtonText(screen, guiGraphics, delistText, btnX, btnY, btnW, btnH);
+        } else {
         // Full width Buy button
         boolean btnHovered = !screen.isSelectingItem && mouseX >= btnX && mouseX <= btnX + btnW && mouseY >= btnY && mouseY <= btnY + btnH;
         guiGraphics.fill(btnX, btnY, btnX + btnW, btnY + btnH, btnHovered ? 0xFF55FF55 : 0xFF33AA33);

@@ -142,7 +142,13 @@ public final class Config {
     // ---- 服务端配置 ----
 
     public static double getInterestRate() {
-        return common.interestRate;
+        // 读取侧也要裁剪：手改配置文件可以绕过 setInterestSettings 的写入限制。
+        // 填 1e9 会让复利因子溢出、利息被永久跳过；填 1000 则一期直接发十倍利息
+        double rate = common.interestRate;
+        if (!Double.isFinite(rate)) {
+            return 0;
+        }
+        return Math.max(0, Math.min(100, rate));
     }
 
     /** 结息周期（秒）。配置以分钟存储，这里换算后供内部计算使用 */
@@ -272,7 +278,15 @@ public final class Config {
 
     /** 手续费是否进入金库（否则销毁） */
     public static boolean isFeeToTreasury() {
-        return "TREASURY".equalsIgnoreCase(common.marketFeeMode);
+        String mode = common.marketFeeMode;
+        if ("DESTROY".equalsIgnoreCase(mode)) {
+            return false;
+        }
+        if (!"TREASURY".equalsIgnoreCase(mode)) {
+            // 这个字段只能手改配置文件，拼错时静默变成「销毁」会让服主以为钱进了金库
+            MarketBox.LOGGER.warn("[MarketBox] Unknown marketFeeMode '{}', falling back to TREASURY", mode);
+        }
+        return true;
     }
 
     /** 写入手续费并落盘；数值裁剪到 0-50，避免误配置抽干收益 */
@@ -318,15 +332,17 @@ public final class Config {
     }
 
     public static HudPosition getHudPosition() {
-        return client.hudPosition;
+        // 手改配置写成 null 时 Gson 会覆盖字段初始值，这里兜底避免 name() 空指针
+        return client.hudPosition == null ? HudPosition.TOP_LEFT : client.hudPosition;
     }
 
     public static HudTextStyle getHudTextStyle() {
-        return client.hudTextStyle;
+        return client.hudTextStyle == null ? HudTextStyle.NONE : client.hudTextStyle;
     }
 
     public static double getHudScale() {
-        return client.hudScale;
+        double scale = client.hudScale;
+        return Double.isFinite(scale) ? Math.max(0.5, Math.min(3.0, scale)) : 1.0;
     }
 
     public static int getHudXOffset() {
@@ -344,11 +360,12 @@ public final class Config {
         client.disableMenuBlur = disableMenuBlur;
         client.showHud = showHud;
         client.showMarketPriceTooltip = showTooltip;
-        client.hudPosition = position;
-        client.hudTextStyle = style;
-        client.hudScale = scale;
-        client.hudXOffset = xOffset;
-        client.hudYOffset = yOffset;
+        // 写入口裁剪：这里过去直接赋值，配置文件里一个 1e9 的缩放就能让 HUD 渲染异常
+        client.hudPosition = position == null ? HudPosition.TOP_LEFT : position;
+        client.hudTextStyle = style == null ? HudTextStyle.NONE : style;
+        client.hudScale = Double.isFinite(scale) ? Math.max(0.5, Math.min(3.0, scale)) : 1.0;
+        client.hudXOffset = Math.max(-10_000, Math.min(10_000, xOffset));
+        client.hudYOffset = Math.max(-10_000, Math.min(10_000, yOffset));
         write(CLIENT_PATH, client);
     }
 }

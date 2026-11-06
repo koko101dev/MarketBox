@@ -59,32 +59,46 @@ public class ClaimReturnedItemsPacket implements CustomPacketPayload {
             // 按物品类型合并通知，避免刷屏
             Map<String, ItemStack> combinedItems = new HashMap<>();
             boolean droppedAny = false;
+            int processed = 0;
 
-            for (ItemStack stack : items) {
-                String key = stack.getDescriptionId();
-                if (combinedItems.containsKey(key)) {
-                    combinedItems.get(key).grow(stack.getCount());
-                } else {
-                    combinedItems.put(key, stack.copy());
+            try {
+                for (ItemStack stack : items) {
+                    String key = stack.getDescriptionId();
+                    if (combinedItems.containsKey(key)) {
+                        combinedItems.get(key).grow(stack.getCount());
+                    } else {
+                        combinedItems.put(key, stack.copy());
+                    }
+
+                    if (!player.getInventory().add(stack)) {
+                        player.drop(stack, false);
+                        droppedAny = true;
+                    }
+                    processed++;
                 }
 
-                if (!player.getInventory().add(stack)) {
-                    player.drop(stack, false);
-                    droppedAny = true;
+                player.containerMenu.broadcastChanges();
+                PlayerEvents.syncPlayerBalance(player);
+
+                String translationKey = droppedAny
+                        ? "gui.marketbox.market.claim_success_dropped"
+                        : "gui.marketbox.market.claim_success";
+
+                for (ItemStack stack : combinedItems.values()) {
+                    MutableComponent countComponent = Component.literal(String.valueOf(stack.getCount()))
+                            .withStyle(ChatFormatting.BLUE);
+                    player.sendSystemMessage(Component.translatable(translationKey, stack.getHoverName(), countComponent));
                 }
-            }
-
-            player.containerMenu.broadcastChanges();
-            PlayerEvents.syncPlayerBalance(player);
-
-            String translationKey = droppedAny
-                    ? "gui.marketbox.market.claim_success_dropped"
-                    : "gui.marketbox.market.claim_success";
-
-            for (ItemStack stack : combinedItems.values()) {
-                MutableComponent countComponent = Component.literal(String.valueOf(stack.getCount()))
-                        .withStyle(ChatFormatting.BLUE);
-                player.sendSystemMessage(Component.translatable(translationKey, stack.getHoverName(), countComponent));
+            } catch (Exception e) {
+                // 还没处理的物品退回市场退货列表：领取失败不能等于销毁
+                for (int i = processed; i < items.size(); i++) {
+                    manager.addReturnedItem(player.getUUID(), items.get(i));
+                }
+                com.koko.marketbox.MarketBox.LOGGER.error(
+                        "Claim returned items failed: player={}, processed={}/{}",
+                        player.getUUID(), processed, items.size(), e);
+                ModMessages.sendToPlayer(player,
+                        new ActionFeedbackPacket("gui.marketbox.error.operation_failed"));
             }
         });
     }

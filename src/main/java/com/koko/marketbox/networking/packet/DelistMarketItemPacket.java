@@ -70,16 +70,29 @@ public class DelistMarketItemPacket implements CustomPacketPayload {
                 return;
             }
 
-            manager.removeListing(payload.listingId);
+            boolean removed = false;
+            try {
+                manager.removeListing(payload.listingId);
+                removed = true;
 
-            ItemStack returnedItem = listing.item().copy();
-            if (!player.getInventory().add(returnedItem)) {
-                player.drop(returnedItem, false);
+                ItemStack returnedItem = listing.item().copy();
+                if (!player.getInventory().add(returnedItem)) {
+                    player.drop(returnedItem, false);
+                }
+                player.containerMenu.broadcastChanges();
+
+                ModMessages.sendToAll(player.getServer(), new MarketListingRemovedPacket(payload.listingId));
+                ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.delist_success", "", false));
+            } catch (Exception e) {
+                // 挂单已移除但物品没能回到玩家手里：转入市场退货列表，可再次领取
+                if (removed) {
+                    manager.addReturnedItem(listing.sellerUUID(), listing.item());
+                }
+                com.koko.marketbox.MarketBox.LOGGER.error(
+                        "Delist failed: player={}, listing={}", player.getUUID(), payload.listingId, e);
+                ModMessages.sendToPlayer(player,
+                        new ActionFeedbackPacket("gui.marketbox.error.operation_failed"));
             }
-            player.containerMenu.broadcastChanges();
-
-            ModMessages.sendToAll(player.getServer(), new MarketListingRemovedPacket(payload.listingId));
-            ModMessages.sendToPlayer(player, new ActionFeedbackPacket("gui.marketbox.market.delist_success", "", false));
         });
     }
 }

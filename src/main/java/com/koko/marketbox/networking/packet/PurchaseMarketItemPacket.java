@@ -8,6 +8,7 @@ import com.koko.marketbox.event.PlayerEvents;
 import com.koko.marketbox.event.ServerEvents;
 import com.koko.marketbox.market.MarketListing;
 import com.koko.marketbox.market.MarketManager;
+import com.koko.marketbox.util.MoneyUtils;
 import com.koko.marketbox.networking.ModMessages;
 import com.koko.marketbox.networking.PacketRateLimiter;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -65,7 +66,7 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
     public static void handle(PurchaseMarketItemPacket payload, ServerPlayNetworking.Context context) {
         ServerPlayer buyer = context.player();
         context.server().execute(() -> {
-            if (!PacketRateLimiter.allow(buyer)) {
+            if (!PacketRateLimiter.allow(buyer, "purchase")) {
                 return;
             }
             if (buyer == null) {
@@ -111,11 +112,11 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
                 want = Math.min(want, Math.max(1, listing.item().getMaxStackSize()));
 
                 double unitPrice = listing.price() / available;
-                // 按分取整后夹到挂单总价之内：整组低价挂单（例如 64 个卖 0.20 元）单价不足 1 分，
-                // 直接取整会变成 0，最后几件就永远买不动；这里至少收 1 分，且不超过挂单总价
-                long listingCents = Math.max(1, Math.round(listing.price() * 100));
-                long costCents = Math.round(unitPrice * want * 100);
-                costCents = Math.max(1, Math.min(listingCents, costCents));
+                // 价格按「剩余总价」比例结算，余数留到最后一笔。
+                // 之前每次至少收 1 分：64 个卖 0.20 元的挂单分 64 次买走会累计收 0.64 元，
+                // 比标价多收 44 分，等于给低价挂单留了一个可以做诱饵的漏洞。
+                long listingCents = Math.max(0, Math.round(listing.price() * 100));
+                long costCents = MoneyUtils.prorateCostCents(listingCents, available, want);
                 double cost = costCents / 100.0;
 
                 PlayerBalance buyerBalance = PlayerBalanceAttachment.get(buyer);
@@ -168,7 +169,10 @@ public class PurchaseMarketItemPacket implements CustomPacketPayload {
                 buyer.containerMenu.broadcastChanges();
 
                 manager.addPurchase(listing.id(), buyer.getUUID(), want);
-                manager.recordDeal(listing.item(), unitPrice);
+                // 0 分成交（单价不足 1 分时的前几笔）不写入参考价，否则会把全服 tooltip 拉到 0
+                if (costCents > 0) {
+                    manager.recordDeal(listing.item(), unitPrice);
+                }
                 // 成交价只同步给参与双方，避免每次交易都全服广播
                 SyncDealPricesPacket dealUpdate = new SyncDealPricesPacket(manager.getDealPrices());
                 ModMessages.sendToPlayer(buyer, dealUpdate);

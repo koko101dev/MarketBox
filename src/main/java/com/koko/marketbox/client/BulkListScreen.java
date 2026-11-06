@@ -29,8 +29,11 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
     private static final int ROW_HEIGHT = 34;
     /** 每行高度固定，最多能显示的行数随窗口高度变化 */
     private int maxRows() {
-        return Math.max(3, (this.height - listTop - PADDING - 28) / ROW_HEIGHT);
+        // 不再强制至少 3 行：矮窗口里第 3 行会压到底部按钮甚至屏幕外
+        return Math.max(1, (this.height - listTop - PADDING - 28) / ROW_HEIGHT);
     }
+    /** 当前滚动到第几行（按行号，不按像素） */
+    private int scrollRow = 0;
     private static final int CHECKBOX_SIZE = 12;
 
     private final Screen parent;
@@ -119,7 +122,7 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
                 Component.translatable("gui.marketbox.market.bulk_back"), b -> this.onClose()));
     }
 
-    /** 收集背包里可卖的物品，同类合并，按数量排序后取前若干条 */
+    /** 收集背包里可卖的物品，同类合并，按数量排序（全部收集，超出可视行数靠滚动查看） */
     private void collectSellableItems() {
         rows.clear();
         var player = Minecraft.getInstance().player;
@@ -141,7 +144,6 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
 
         merged.entrySet().stream()
                 .sorted((a, b) -> Integer.compare(b.getValue(), a.getValue()))
-                .limit(maxRows())
                 .forEach(e -> {
                     Row row = new Row(e.getKey(), e.getValue());
                     row.selected = selectedItems.contains(e.getKey().getItem().toString());
@@ -151,28 +153,71 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
 
     /** 为每一行创建数量与单价输入框 */
     private void buildRowWidgets() {
+        // 窗口缩放会重建界面：物品数量变少时，旧的滚动位置可能已经越界
+        scrollRow = Math.max(0, Math.min(scrollRow, Math.max(0, rows.size() - maxRows())));
         int x = contentLeft + PADDING;
         int rowW = contentWidth - PADDING * 2;
 
+        // 右对齐排布：写死 x + rowW - 286 在窄窗口会把数量框推进侧边栏
+        int priceW = 62;
+        int qtyW = 46;
+        int priceX = x + rowW - priceW - 8;
+        int qtyX = priceX - qtyW - 6;
+
         for (int i = 0; i < rows.size(); i++) {
             Row row = rows.get(i);
-            int rowY = listTop + i * ROW_HEIGHT;
+            int rowY = listTop + (i - scrollRow) * ROW_HEIGHT;
+            boolean visible = i >= scrollRow && i < scrollRow + maxRows();
 
-            // 数量与单价贴在右侧，留给名称与图标足够宽度，不必挤在左边
-            EditBox qty = new EditBox(this.font, x + rowW - 286, rowY + 9, 46, 16, Component.empty());
+            EditBox qty = new EditBox(this.font, qtyX, rowY + 9, qtyW, 16, Component.empty());
             qty.setMaxLength(6);
             qty.setFilter(s -> s.isEmpty() || s.matches("\\d{0,6}"));
-            qty.setValue(String.valueOf(row.available));
+            // 重建时保留用户已经填过的值
+            qty.setValue(row.qtyBox != null ? row.qtyBox.getValue() : String.valueOf(row.available));
+            qty.setHint(Component.translatable("gui.marketbox.market.bulk_qty"));
+            qty.visible = visible;
             row.qtyBox = qty;
             this.addRenderableWidget(qty);
 
-            EditBox price = new EditBox(this.font, x + rowW - 180, rowY + 9, 62, 16, Component.empty());
+            EditBox price = new EditBox(this.font, priceX, rowY + 9, priceW, 16, Component.empty());
             price.setMaxLength(12);
             price.setFilter(s -> s.isEmpty() || s.matches("\\d{0,9}(\\.\\d{0,2})?"));
-            price.setValue("1.00");
+            price.setValue(row.priceBox != null ? row.priceBox.getValue() : "1.00");
+            price.setHint(Component.translatable("gui.marketbox.market.bulk_price"));
+            price.visible = visible;
             row.priceBox = price;
             this.addRenderableWidget(price);
         }
+    }
+
+    /** 滚动后只调整控件位置与可见性，不重建界面：重建会把已填好的数量单价清掉 */
+    private void applyScroll() {
+        int limit = maxRows();
+        for (int i = 0; i < rows.size(); i++) {
+            Row row = rows.get(i);
+            boolean visible = i >= scrollRow && i < scrollRow + limit;
+            int y = listTop + (i - scrollRow) * ROW_HEIGHT + 9;
+            if (row.qtyBox != null) {
+                row.qtyBox.visible = visible;
+                row.qtyBox.setY(y);
+            }
+            if (row.priceBox != null) {
+                row.priceBox.visible = visible;
+                row.priceBox.setY(y);
+            }
+        }
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        int maxRow = Math.max(0, rows.size() - maxRows());
+        int target = Math.max(0, Math.min(maxRow, scrollRow - (int) Math.signum(scrollY)));
+        if (target != scrollRow) {
+            scrollRow = target;
+            applyScroll();
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     private int selectedCount() {
@@ -211,9 +256,18 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
                     contentLeft + contentWidth / 2, listTop + 40, 0x666666);
         }
 
+        // 分页提示：物品太多时可以滚轮翻看，不再静默丢弃
+        if (rows.size() > maxRows()) {
+            String page = (scrollRow / maxRows() + 1) + " / " + ((rows.size() + maxRows() - 1) / maxRows());
+            guiGraphics.drawString(font, page, x + w - font.width(page), listTop - 12, 0x777777, false);
+        }
+
         for (int i = 0; i < rows.size(); i++) {
+            if (i < scrollRow || i >= scrollRow + maxRows()) {
+                continue;
+            }
             Row row = rows.get(i);
-            int rowY = listTop + i * ROW_HEIGHT;
+            int rowY = listTop + (i - scrollRow) * ROW_HEIGHT;
 
             if (i % 2 == 0) {
                 guiGraphics.fill(x, rowY, x + w, rowY + ROW_HEIGHT - 2, 0x12FFFFFF);
@@ -234,21 +288,18 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
 
             guiGraphics.renderItem(row.stack, x + 30, rowY + 9);
 
-            String name = font.plainSubstrByWidth(row.stack.getHoverName().getString(), 160);
+            // 名称宽度按输入框实际位置截断，窄窗口不会压到数量框上
+            int nameRight = row.qtyBox != null ? row.qtyBox.getX() - 6 : x + 214;
+            String name = font.plainSubstrByWidth(row.stack.getHoverName().getString(),
+                    Math.max(40, nameRight - (x + 54)));
             guiGraphics.drawString(font, name, x + 54, rowY + 13, 0xEEEEEE, false);
             guiGraphics.drawString(font, "×" + row.available,
                     x + 54 + font.width(name) + 6, rowY + 13, 0x888888, false);
 
-            // 标签放在输入框左侧，一行排完；右侧留白由输入框与小计占用
-            guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.bulk_qty"),
-                    x + w - 322, rowY + 13, 0x777777, false);
-            guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.bulk_price"),
-                    x + w - 216, rowY + 13, 0x777777, false);
-
+            // 小计挪到名称下方：输入框改右对齐后，行尾已经没有它的位置
             if (row.selected) {
                 String sub = MoneyUtils.formatValue(row.subtotal());
-                guiGraphics.drawString(font, sub,
-                        x + w - font.width(sub) - 10, rowY + 13, 0xFFFF55, false);
+                guiGraphics.drawString(font, sub, x + 54, rowY + 23, 0xFFFF55, false);
             }
         }
 
@@ -271,8 +322,11 @@ public class BulkListScreen extends Screen implements FeedbackReceiver {
         int x = contentLeft + PADDING;
         int w = contentWidth - PADDING * 2;
 
-        if (button == 0 && mouseX >= x && mouseX <= x + w && mouseY >= listTop) {
-            int index = (int) ((mouseY - listTop) / ROW_HEIGHT);
+        // 纵向也要有上界：列表下方是按钮区，滚动后仅靠 index 范围可能命中不可见的行
+        if (button == 0 && mouseX >= x && mouseX <= x + w
+                && mouseY >= listTop && mouseY < listTop + maxRows() * ROW_HEIGHT) {
+            // 加上滚动行号：否则滚到第二屏后点中的还是第一屏的条目
+            int index = (int) ((mouseY - listTop) / ROW_HEIGHT) + scrollRow;
             if (index >= 0 && index < rows.size()) {
                 // 只有点最左侧的勾选框才切换，避免点输入框时误触
                 if (mouseX <= x + 8 + CHECKBOX_SIZE) {

@@ -26,8 +26,6 @@ public class ListingDialogScreen extends Screen {
     private static final int W = 320;
     private static final int H = 268;
     private static final int PAD = 10;
-    /** 与服务端 MAX_PRICE_CENTS 保持一致：100 万 */
-    private static final double MAX_TOTAL_PRICE = 1_000_000.0;
 
     private final Screen parent;
     private final ItemStack item;
@@ -85,15 +83,18 @@ public class ListingDialogScreen extends Screen {
 
         // 时长循环按钮
 
+        // 底部按钮 y 先算出来：限购行要跟着它上移。窗口比弹窗矮时
+        //（自动 GUI 缩放到 426×240 很常见）贴屏幕底，否则按钮会落到屏幕外
+        int bottomY = Math.min(top + H - 32, this.height - 24);
         // 每人限购（0 = 不限）
-        this.limitBox = new EditBox(this.font, left + PAD + 42, top + 214, 60, 16, Component.empty());
+        int limitY = Math.min(top + 214, bottomY - 24);
+        this.limitBox = new EditBox(this.font, left + PAD + 42, limitY, 60, 16, Component.empty());
         this.limitBox.setMaxLength(4);
         this.limitBox.setFilter(s -> s.isEmpty() || s.chars().allMatch(Character::isDigit));
         this.limitBox.setValue("0");
         this.addRenderableWidget(this.limitBox);
 
         // 底部按钮
-        int bottomY = top + H - 32;
         this.addRenderableWidget(new StyledButton(left + W / 2 - 100, bottomY, 92, 20,
                 Component.translatable("gui.marketbox.market.cancel"), b -> close()));
         this.addRenderableWidget(new StyledButton(left + W / 2 + 8, bottomY, 92, 20,
@@ -202,7 +203,9 @@ public class ListingDialogScreen extends Screen {
         } catch (NumberFormatException ignored) {
         }
         double total = unitPrice * quantity;
-        if (total > MAX_TOTAL_PRICE) {
+        // 上限由服主配置并同步到客户端，不能写死 100 万：
+        // 调高时会把合法上架静默拒掉，调低时又放行服务端必然拒绝的价格
+        if (total > ClientData.getMaxListingPrice()) {
             return;
         }
         ClientNetwork.send(new ListMarketItemPacket(item, total, quantity, ClientData.getListingExpiryMinutes(), Math.max(0, limit)));
@@ -265,7 +268,7 @@ public class ListingDialogScreen extends Screen {
             if (unitPrice > 0) {
                 double total = unitPrice * quantity;
 
-                if (total > MAX_TOTAL_PRICE) {
+                if (total > ClientData.getMaxListingPrice()) {
                     guiGraphics.drawString(font,
                             Component.translatable("gui.marketbox.market.price_too_high").getString(),
                             left + PAD, top + 158, 0xFF5555, false);
@@ -293,13 +296,13 @@ public class ListingDialogScreen extends Screen {
         } catch (NumberFormatException ignored) {
         }
 
-        // 时长：由服主统一设定，这里只做说明
-        guiGraphics.drawString(font, expiryLabel(), left + PAD, top + 194, 0xAAAAAA, false);
+        // 时长：由服主统一设定，这里只做说明；跟着限购行一起上移，矮窗口不会重叠
+        guiGraphics.drawString(font, expiryLabel(), left + PAD, limitBox.getY() - 20, 0xAAAAAA, false);
 
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.limit_label_short"),
-                left + PAD, top + 218, 0xAAAAAA, false);
+                left + PAD, limitBox.getY() + 4, 0xAAAAAA, false);
         guiGraphics.drawString(font, Component.translatable("gui.marketbox.market.no_limit_hint"),
-                left + PAD + 108, top + 218, 0x777777, false);
+                left + PAD + 108, limitBox.getY() + 4, 0x777777, false);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }

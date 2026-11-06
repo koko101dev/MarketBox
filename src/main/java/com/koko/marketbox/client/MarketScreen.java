@@ -40,6 +40,8 @@ public class MarketScreen extends Screen implements FeedbackReceiver {
     // Right side components
     EditBox searchBox;
     float scrollOffset = 0;
+    /** 搜索词：界面重建（选物模式、弹窗返回）后要恢复 */
+    String searchQuery = "";
     float returnedItemsScrollOffset = 0;
     static final int CARD_WIDTH = 72;
     static final int CARD_HEIGHT = 112;
@@ -121,7 +123,13 @@ public class MarketScreen extends Screen implements FeedbackReceiver {
         this.searchBox = new EditBox(this.font, searchX, searchY, searchWidth, searchHeight, Component.translatable("gui.marketbox.market.search_hint"));
         this.searchBox.setBordered(true);
         this.searchBox.setMaxLength(32);
-        this.searchBox.setResponder(s -> this.scrollOffset = 0);
+        // 搜索词存在字段里：进入选物模式或从购买弹窗返回都会重建界面，
+        // 不恢复的话刚输入的搜索词就没了
+        this.searchBox.setValue(this.searchQuery);
+        this.searchBox.setResponder(s -> {
+            this.searchQuery = s;
+            this.scrollOffset = 0;
+        });
         this.addRenderableWidget(this.searchBox);
 
         // Category Buttons
@@ -273,7 +281,13 @@ public class MarketScreen extends Screen implements FeedbackReceiver {
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        
+
+        // 搜索框聚焦时不要抢按键：否则想搜 kelp，敲第一个 k 就把整个界面关了。
+        // EditBox 只处理导航键，普通字符走 charTyped，所以这里必须显式让开
+        if (this.searchBox != null && this.searchBox.isFocused()) {
+            return false;
+        }
+
         if (KeyInit.OPEN_MARKETBOX_GUI.matches(keyCode, scanCode)) {
             Minecraft.getInstance().setScreen(null);
             return true;
@@ -389,15 +403,8 @@ public class MarketScreen extends Screen implements FeedbackReceiver {
                     boolean isOwner = player != null && listing.sellerUUID().equals(player.getUUID());
 
                     if (isOwner) {
-                        int halfW = (btnW - 2) / 2;
-                        // Buy button
-                        if (mouseX >= btnX && mouseX <= btnX + halfW && mouseY >= btnY && mouseY <= btnY + btnH) {
-                            Minecraft.getInstance().setScreen(new PurchaseDialogScreen(this, listing));
-                            return true;
-                        }
-                        // Delist button
-                        int delistX = btnX + halfW + 2;
-                        if (mouseX >= delistX && mouseX <= delistX + halfW && mouseY >= btnY && mouseY <= btnY + btnH) {
+                        // 自己的挂单只有一个占满宽度的「下架」按钮
+                        if (mouseX >= btnX && mouseX <= btnX + btnW && mouseY >= btnY && mouseY <= btnY + btnH) {
                             ClientNetwork.send(new com.koko.marketbox.networking.packet.DelistMarketItemPacket(listing.id()));
                             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                             return true;

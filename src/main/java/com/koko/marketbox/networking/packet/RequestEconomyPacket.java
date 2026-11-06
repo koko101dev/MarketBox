@@ -39,6 +39,11 @@ public class RequestEconomyPacket implements CustomPacketPayload {
             if (!PacketRateLimiter.allow(player)) {
                 return;
             }
+            // 经济页展示的是全服聚合数据（金库余额、货币存量、发钱量），
+            // 与 /marketbox economy 一样要求等级 2；之前只限流不校验，普通玩家构造空包就能拿到
+            if (player == null || !player.hasPermissions(2)) {
+                return;
+            }
             try {
                 var server = player.getServer();
                 if (server == null) {

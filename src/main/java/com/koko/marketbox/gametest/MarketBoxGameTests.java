@@ -223,4 +223,64 @@ public class MarketBoxGameTests implements FabricGameTest {
         System.out.println("[Stress] 银行全部按钮取值正确：存入=" + depositAll + " 取出=" + withdrawAll);
         helper.succeed();
     }
+
+    /**
+     * 分次购买的总实收必须等于挂单标价。
+     *
+     * 曾经每次至少收 1 分：64 个卖 0.20 元的挂单分 64 次买走会累计收 0.64 元，
+     * 比标价多收 44 分，可以被当成低价诱饵。
+     */
+    @GameTest(template = EMPTY_STRUCTURE)
+    public void partialPurchaseNeverOvercharges(GameTestHelper helper) {
+        long remainingCents = 20;   // 一条挂单标价 0.20 元
+        int remainingCount = 64;    // 共 64 个
+        long collected = 0;
+        for (int i = 0; i < 64; i++) {
+            long cost = MoneyUtils.prorateCostCents(remainingCents, remainingCount, 1);
+            collected += cost;
+            remainingCents -= cost;
+            remainingCount -= 1;
+        }
+        if (remainingCount != 0 || remainingCents != 0) {
+            helper.fail("分次购买后应正好卖完，剩余 " + remainingCount + " 个 / " + remainingCents + " 分");
+            return;
+        }
+        if (collected != 20) {
+            helper.fail("64 个卖 0.20 元累计应收 20 分，实际 " + collected);
+            return;
+        }
+        // 整单购买必须一次收完，不能留零头
+        if (MoneyUtils.prorateCostCents(20, 64, 64) != 20) {
+            helper.fail("整单购买应收全部 20 分");
+            return;
+        }
+        helper.succeed();
+    }
+
+    /**
+     * 极大金额按面额分解时数量不能溢出成负数。
+     *
+     * 曾经 (int)(remainingCents / valueCents) 直接强转，
+     * 超出 int 范围会变成负数，随后 new ItemStack(item, 负数) 等于把整笔钱吞掉。
+     */
+    @GameTest(template = EMPTY_STRUCTURE)
+    public void hugeAmountBreakdownDoesNotOverflow(GameTestHelper helper) {
+        var extreme = MoneyUtils.calculateItemBreakdown(Double.MAX_VALUE);
+        if (extreme.isEmpty()) {
+            helper.fail("极大金额应至少分解出一种面额");
+            return;
+        }
+        for (var entry : extreme.entrySet()) {
+            if (entry.getValue() <= 0) {
+                helper.fail("面额 " + entry.getKey() + " 的数量非正：" + entry.getValue());
+                return;
+            }
+        }
+        // 非有限金额不应产生任何面额，否则会继续走到发钱流程
+        if (!MoneyUtils.calculateItemBreakdown(Double.POSITIVE_INFINITY).isEmpty()) {
+            helper.fail("无穷大金额不应分解出面额");
+            return;
+        }
+        helper.succeed();
+    }
 }

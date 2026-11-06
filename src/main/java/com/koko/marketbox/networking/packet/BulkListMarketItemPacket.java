@@ -139,7 +139,9 @@ public class BulkListMarketItemPacket implements CustomPacketPayload {
         if (stack.isEmpty() || quantity <= 0) {
             return false;
         }
-        if (entry.price <= 0 || entry.price > Config.getMaxListingPrice()) {
+        // NaN 能同时绕过 <=0 与 >上限：两个比较都返回 false
+        if (!Double.isFinite(entry.price) || entry.price <= 0
+                || entry.price > Config.getMaxListingPrice()) {
             return false;
         }
         if (MoneyUtils.isCurrency(stack)) {
